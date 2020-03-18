@@ -118,6 +118,7 @@ function loop() {
       
       // snake occupies same space as a body part. reset game
       if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
+        alert('You Lose!');
         snake.x = 160;
         snake.y = 160;
         snake.cells = [];
