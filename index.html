@@ -79,7 +79,7 @@ IMMEDIATELY DISCONTINUE use and consult your physician before resuming gameplay.
             $("#game").effect("shake");
           }
         }catch({message}){
-          alert (error);
+          alert (message);
           state.apple = new Apple(grid);
           state.snake = new Snake(160, 160, grid, 0, [], 4, grid);
         }
