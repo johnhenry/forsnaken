@@ -6,7 +6,9 @@ const Snake = class{
   #cells
   #maxCells
   #grid
-  constructor(x, y, dx, dy, cells, maxCells, grid){
+  #brain
+  #boundChangeDirection
+  constructor(x, y, dx, dy, cells, maxCells, grid, brain){
     this.#x = x;
     this.#y = y;
     this.#dx = dx;
@@ -14,13 +16,12 @@ const Snake = class{
     this.#cells = cells;
     this.#maxCells = maxCells;
     this.#grid = grid;
+    this.#brain = brain;
     // listen to keyboard events to move the snake
-    this.boundChangeDirection = this.changeDirection.bind(this);
-    window.document.addEventListener('keydown', this.boundChangeDirection);
+    this.#brain.addEventListener('signal', this.#boundChangeDirection = this.changeDirection.bind(this));
   }
   destroy(){
-    // listen to keyboard events to move the snake
-    window.document.removeEventListener('keydown', this.boundChangeDirection);
+    this.#brain.removeEventListener('signal', this.#boundChangeDirection);
   }
   get cells(){
     return this.#cells;
@@ -76,25 +77,25 @@ const Snake = class{
     // left won't do anything, and pressing right while moving left
     // shouldn't let you collide with your own body)
     switch(which){
-      case 37:
+      case 'left':
         if(!this.#dx){
           this.#dx = -this.#grid;
           this.#dy = 0;
         }
       break;
-      case 38:
+      case 'up':
         if(!this.#dy){
           this.#dy = -this.#grid;
           this.#dx = 0;
         }
       break;
-      case 39:
+      case 'right': 
         if(!this.#dx){
           this.#dx = this.#grid;
           this.#dy = 0;
         }
       break;
-      case 40:
+      case 'down':
         if(!this.#dy){
           this.#dy = this.#grid;
           this.#dx = 0;

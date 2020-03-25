@@ -5,9 +5,7 @@ const getRandomInt = (min, max) => {
 }
 
 const Apple = class{
-  #grid
   constructor(grid){
-    this.#grid = grid;
     this.x = getRandomInt(0, 25) * grid;
     this.y = getRandomInt(0, 25) * grid;
   }

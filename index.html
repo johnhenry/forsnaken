@@ -38,14 +38,17 @@
   - Seizures or
   - Any involuntary movement or convulsion`;
 
-  // if(!confirm(WARNING)){
-  //   window.location = 'https://www.google.com';
-  // };
+  if(!confirm(WARNING)){
+    window.location = 'https://www.google.com';
+  };
   </script>
   <script type="module">
+    
     import Apple from './apple.mjs';
     import Snake from './snake.mjs';
+    import KeyBrain from './keybrain.mjs';
     import collisions from './collisions.mjs';
+    import { arrows } from './keyboardConfigs.js'
     const collide = (subject, {x, y}) => subject.x===x && subject.y===y;
     const FPS = 12;// Set to divisors of 60: 60, 30, 20, 15, 12, 10, 6, 5, 4, 3, 2, 1
     let count = 0;
@@ -54,9 +57,10 @@
     const height =  canvas.height;
     const context = canvas.getContext('2d');
     const grid = 16;
+    const brain = new KeyBrain(arrows);
     const state = {
       status: 'playing',
-      snake: new Snake(160, 160, grid, 0, [], 4, grid),
+      snake: new Snake(160, 160, grid, 0, [], 4, grid, brain),
       apple: new Apple(grid)
     };
 
@@ -99,7 +103,7 @@
             alert ('game over'); // alert user
             state.apple = new Apple(grid); // create new apple
             state.snake.destroy(); // destory old snake (remove listeners)
-            state.snake = new Snake(160, 160, grid, 0, [], 4, grid); // create new snake
+            state.snake = new Snake(160, 160, grid, 0, [], 4, grid, brain); // create new snake
             break;
           }
       }
