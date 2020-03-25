@@ -89,7 +89,9 @@
             // if collision happens (snake eats apple)
             state.apple = new Apple(grid); // create new apple
             state.snake.grow(4); // grow snake
-            $("#game").effect("shake"); // shanke screen
+            // shanke screen based on snake direction
+            const { direction } = state.snake;
+            $("#game").effect("shake", { direction });
             break;
           }
           // check for collision between snake "head" and "body"

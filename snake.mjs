@@ -31,14 +31,15 @@ const Snake = class{
   get y(){
     return this.#y;
   }
-  get dx(){
-    return this.#dx;
-  }
-  get dy(){
-    return this.#dy;
-  }
-  get dx(){
-    return this.#dx;
+  get direction(){
+    if(this.#dy > 0 ){
+      return 'down';
+    }else if(this.#dy < 0 ){
+      return 'up';
+    }else if(this.#dx >0 ){
+      return 'right';
+    }
+    return 'left';
   }
   grow(size=1){
     this.#maxCells+=size;
@@ -76,25 +77,25 @@ const Snake = class{
     // shouldn't let you collide with your own body)
     switch(which){
       case 37:
-        if(!this.dx){
+        if(!this.#dx){
           this.#dx = -this.#grid;
           this.#dy = 0;
         }
       break;
       case 38:
-        if(!this.dy){
+        if(!this.#dy){
           this.#dy = -this.#grid;
           this.#dx = 0;
         }
       break;
       case 39:
-        if(!this.dx){
+        if(!this.#dx){
           this.#dx = this.#grid;
           this.#dy = 0;
         }
       break;
       case 40:
-        if(!this.dy){
+        if(!this.#dy){
           this.#dy = this.#grid;
           this.#dx = 0;
         }
