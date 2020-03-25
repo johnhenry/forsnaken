@@ -38,14 +38,16 @@
   - Seizures or
   - Any involuntary movement or convulsion`;
 
-  if(!confirm(WARNING)){
-    window.location = 'https://www.google.com';
-  };
+  // if(!confirm(WARNING)){
+  //   window.location = 'https://www.google.com';
+  // };
   </script>
   <script type="module">
     import Apple from './apple.mjs';
     import Snake from './snake.mjs';
-    const FPS = 20;
+    import collisions from './collisions.mjs';
+    const collide = (subject, {x, y}) => subject.x===x && subject.y===y;
+    const FPS = 12;// Set to divisors of 60: 60, 30, 20, 15, 12, 10, 6, 5, 4, 3, 2, 1
     let count = 0;
     const canvas = document.getElementById('game');
     const width =  canvas.width;
@@ -58,7 +60,10 @@
       apple: new Apple(grid)
     };
 
-    const draw = (context, item, ...rest) =>item.drawOnCanvasContext(context, ...rest);
+    const drawSquare = (context, fillStyle, {x, y}, grid)=>{
+      context.fillStyle = fillStyle;
+      context.fillRect(x, y, grid, grid);
+    }
     // game loop
     const loop = () => {
       requestAnimationFrame(loop);
@@ -71,17 +76,29 @@
       switch(state.status){
         case 'playing':
         default:
+          // move snake
           state.snake.move({width, height});
-          draw(context, state.apple);
-          try{
-            if(!draw(context, state.snake, state.apple)){
-              state.apple = new Apple(grid);
-              $("#game").effect("shake");
-            }
-          }catch({message}){
-            alert (message);
-            state.apple = new Apple(grid);
-            state.snake = new Snake(160, 160, grid, 0, [], 4, grid);
+          // draw apple
+          drawSquare(context, 'red', state.apple, grid);
+          // draw snake
+          for(const cell of state.snake.cells){
+            drawSquare(context, 'green', cell, grid);
+          }
+          // check for collision between snake and apple
+          if(collide(state.snake.cells[0], state.apple)){
+            // if collision happens (snake eats apple)
+            state.apple = new Apple(grid); // create new apple
+            state.snake.grow(4); // grow snake
+            $("#game").effect("shake"); // shanke screen
+            break;
+          }
+          // check for collision between snake "head" and "body"
+          for (const [] of collisions(collide, [state.snake.cells[0]], state.snake.cells.slice(1))){
+            alert ('game over'); // alert user
+            state.apple = new Apple(grid); // create new apple
+            state.snake.destroy(); // destory old snake (remove listeners)
+            state.snake = new Snake(160, 160, grid, 0, [], 4, grid); // create new snake
+            break;
           }
       }
     };

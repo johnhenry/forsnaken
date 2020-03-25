@@ -22,9 +22,6 @@ const Snake = class{
     // listen to keyboard events to move the snake
     window.document.removeEventListener('keydown', this.boundChangeDirection);
   }
-  set cells(_cells){
-    this.#cells = _cells;
-  }  
   get cells(){
     return this.#cells;
   }
@@ -37,26 +34,14 @@ const Snake = class{
   get dx(){
     return this.#dx;
   }
-  set x(x){
-    this.#x = x;
-  }
-  set y(y){
-    this.#y = y;
-  }
   get dy(){
     return this.#dy;
   }
-  set dx(dx){
-    this.#dx = dx;
+  get dx(){
+    return this.#dx;
   }
-  set dy(dy){
-    this.#dy = dy;
-  }
-  set dy(dy){
-    this.#dy = dy;
-  }
-  get maxCells(){
-    return this.#maxCells;
+  grow(size=1){
+    this.#maxCells+=size;
   }
   move(canvas) {
     // move snake by it's velocity
@@ -115,31 +100,6 @@ const Snake = class{
         }
         break;
     }
-  }
-  drawOnCanvasContext(context, apple) {
-    // draw snake one cell at a time
-    context.fillStyle = 'green';
-    let index = 0;
-    for(const cell of this.#cells){
-    // drawing 1 px smaller than the grid creates a grid effect in the snake body so you can see how long it is
-      context.fillRect(cell.x, cell.y, this.#grid, this.#grid);  
-      // snake ate apple
-      if (cell.x === apple.x && cell.y === apple.y) {
-        this.#maxCells++;
-        // canvas is 400x400 which is 25x25 grids
-        return false;
-      }
-      // check collision with all cells after this one (modified bubble sort)
-      for (let i = index + 1; i < this.#cells.length; i++) {
-        // snake occupies same space as a body part. reset game
-        if (cell.x === this.#cells[i].x && cell.y === this.#cells[i].y) {
-          this.destroy();
-          throw new Error('dead');
-        }
-      }
-      index++;
-    }
-    return true;
   }
 }
 export default Snake;

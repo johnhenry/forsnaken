@@ -11,10 +11,5 @@ const Apple = class{
     this.x = getRandomInt(0, 25) * grid;
     this.y = getRandomInt(0, 25) * grid;
   }
-  drawOnCanvasContext(context){
-    // draw apple
-    context.fillStyle = 'red';
-    context.fillRect(this.x, this.y, this.#grid, this.#grid);
-  }
 };
 export default Apple;
