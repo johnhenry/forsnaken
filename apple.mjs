@@ -9,5 +9,8 @@ const Apple = class{
     this.x = getRandomInt(0, 25) * grid;
     this.y = getRandomInt(0, 25) * grid;
   }
+  get cells(){
+    return [this];
+  }
 };
 export default Apple;

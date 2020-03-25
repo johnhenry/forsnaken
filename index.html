@@ -83,7 +83,9 @@
           // move snake
           state.snake.move({width, height});
           // draw apple
-          drawSquare(context, 'red', state.apple, grid);
+          for(const cell of state.apple.cells){
+            drawSquare(context, 'red', cell, grid);
+          }
           // draw snake
           for(const cell of state.snake.cells){
             drawSquare(context, 'green', cell, grid);
