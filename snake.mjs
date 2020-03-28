@@ -23,6 +23,12 @@ const Snake = class{
   destroy(){
     this.#brain.removeEventListener('signal', this.#boundChangeDirection);
   }
+  get head(){
+    return this.#cells[0]
+  }
+  get body(){
+    return this.#cells.slice(1);
+  }
   get cells(){
     return this.#cells;
   }

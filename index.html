@@ -61,7 +61,7 @@
     const state = {
       status: 'playing',
       snake: new Snake(160, 160, grid, 0, [], 4, grid, brain),
-      apple: new Apple(grid)
+      apples: [new Apple(grid), new Apple(grid)]
     };
 
     const drawSquare = (context, fillStyle, {x, y}, grid)=>{
@@ -83,25 +83,40 @@
           // move snake
           state.snake.move({width, height});
           // draw apple
-          for(const cell of state.apple.cells){
-            drawSquare(context, 'red', cell, grid);
+          for(const apple of state.apples){
+            for(const cell of apple.cells){
+              drawSquare(context, 'red', cell, grid);
+            }
           }
+
           // draw snake
           for(const cell of state.snake.cells){
             drawSquare(context, 'green', cell, grid);
           }
           // check for collision between snake and apple
-          if(collide(state.snake.cells[0], state.apple)){
+
+          for (const [head, apple] of collisions(collide, [state.snake.head], state.apples)){
             // if collision happens (snake eats apple)
-            state.apple = new Apple(grid); // create new apple
+            const index = state.apples.indexOf(apple);
+            state.apples[index] = new Apple(grid);
             state.snake.grow(4); // grow snake
             // shanke screen based on snake direction
             const { direction } = state.snake;
             $("#game").effect("shake", { direction });
             break;
           }
+
+          // if(collide(state.snake.cells[0], state.apple)){
+          //   // if collision happens (snake eats apple)
+          //   state.apple = new Apple(grid); // create new apple
+          //   state.snake.grow(4); // grow snake
+          //   // shanke screen based on snake direction
+          //   const { direction } = state.snake;
+          //   $("#game").effect("shake", { direction });
+          //   break;
+          // }
           // check for collision between snake "head" and "body"
-          for (const [] of collisions(collide, [state.snake.cells[0]], state.snake.cells.slice(1))){
+          for (const [] of collisions(collide, [state.snake.head], state.snake.body)){
             alert ('game over'); // alert user
             state.apple = new Apple(grid); // create new apple
             state.snake.destroy(); // destory old snake (remove listeners)
