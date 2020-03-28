@@ -38,9 +38,9 @@
   - Seizures or
   - Any involuntary movement or convulsion`;
 
-  if(!confirm(WARNING)){
-    window.location = 'https://www.google.com';
-  };
+  // if(!confirm(WARNING)){
+  //   window.location = 'https://www.google.com';
+  // };
   </script>
   <script type="module">
     
@@ -58,9 +58,11 @@
     const context = canvas.getContext('2d');
     const grid = 16;
     const brain = new KeyBrain({...arrows, ...wasd});
+    const brains = [new KeyBrain(arrows), new KeyBrain(wasd)];
+
     const state = {
       status: 'playing',
-      snake: new Snake(160, 160, grid, 0, [], 4, grid, brain),
+      snakes: [new Snake(160, 160, grid, 0, [], 4, grid, brains[0]), new Snake(160, 160, grid, 0, [], 4, grid, brains[1])],
       apples: [new Apple(grid), new Apple(grid)]
     };
 
@@ -80,47 +82,43 @@
       switch(state.status){
         case 'playing':
         default:
-          // move snake
-          state.snake.move({width, height});
-          // draw apple
+          // move each snake
+          for(const snake of state.snakes){
+            snake.move({width, height})
+          }
+          // draw each apple
           for(const apple of state.apples){
             for(const cell of apple.cells){
               drawSquare(context, 'red', cell, grid);
             }
           }
 
-          // draw snake
-          for(const cell of state.snake.cells){
-            drawSquare(context, 'green', cell, grid);
+          // draw each snakes
+          for(const snake of state.snakes){
+            for(const cell of snake.cells){
+              drawSquare(context, 'green', cell, grid);
+            }
           }
-          // check for collision between snake and apple
 
-          for (const [head, apple] of collisions(collide, [state.snake.head], state.apples)){
+          // check for collision between each snake's head and each apple
+          for (const [head, apple] of collisions(collide, state.snakes.map(({head})=>head), state.apples)){
             // if collision happens (snake eats apple)
+            const snake = state.snakes.find((snake=>collide(head, snake.head)));
             const index = state.apples.indexOf(apple);
             state.apples[index] = new Apple(grid);
-            state.snake.grow(4); // grow snake
+            snake.grow(4); // grow snake
             // shanke screen based on snake direction
-            const { direction } = state.snake;
+            const { direction } = snake;
             $("#game").effect("shake", { direction });
             break;
           }
 
-          // if(collide(state.snake.cells[0], state.apple)){
-          //   // if collision happens (snake eats apple)
-          //   state.apple = new Apple(grid); // create new apple
-          //   state.snake.grow(4); // grow snake
-          //   // shanke screen based on snake direction
-          //   const { direction } = state.snake;
-          //   $("#game").effect("shake", { direction });
-          //   break;
-          // }
-          // check for collision between snake "head" and "body"
-          for (const [] of collisions(collide, [state.snake.head], state.snake.body)){
-            alert ('game over'); // alert user
-            state.apple = new Apple(grid); // create new apple
-            state.snake.destroy(); // destory old snake (remove listeners)
-            state.snake = new Snake(160, 160, grid, 0, [], 4, grid, brain); // create new snake
+          // check for collision between each snake's head each snake's body
+          for (const [head] of collisions(collide, state.snakes.map(({head})=>head), state.snakes.map(({cells})=>cells).flat())){
+            const snake = state.snakes.find((snake=>collide(head, snake.head)));
+            snake.destroy(); // destory old snake (remove listeners)
+            const index = state.snakes.indexOf(snake);
+            state.snakes[index] = new Snake(160, 160, grid, 0, [], 4, grid, brains[index]); // create new snake
             break;
           }
       }

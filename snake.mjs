@@ -26,7 +26,7 @@ const Snake = class{
   get head(){
     return this.#cells[0]
   }
-  get body(){
+  get tail(){
     return this.#cells.slice(1);
   }
   get cells(){
