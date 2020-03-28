@@ -24,7 +24,7 @@ const Snake = class{
     this.#brain.removeEventListener('signal', this.#boundChangeDirection);
   }
   get head(){
-    return this.#cells[0]
+    return this.#cells[0];
   }
   get tail(){
     return this.#cells.slice(1);
@@ -51,23 +51,23 @@ const Snake = class{
   grow(size=1){
     this.#maxCells+=size;
   }
-  move(canvas) {
+  move({width, height}) {
     // move snake by it's velocity
     this.#x += this.#dx;
     this.#y += this.#dy;
 
     // wrap snake position horizontally on edge of screen
     if (this.#x < 0) {
-      this.#x = canvas.width - this.#grid;
+      this.#x = width - this.#grid;
     }
-    else if (this.#x >= canvas.width) {
+    else if (this.#x >= width) {
       this.#x = 0;
     }
     // wrap snake position vertically on edge of screen
     if (this.#y < 0) {
-      this.#y = canvas.height - this.#grid;
+      this.#y = height - this.#grid;
     }
-    else if (this.#y >= canvas.height) {
+    else if (this.#y >= height) {
       this.#y = 0;
     }
     // keep track of where snake has been. front of the array is always the head

@@ -49,12 +49,18 @@
     import KeyBrain from './keybrain.mjs';
     import collisions from './collisions.mjs';
     import { arrows, wasd } from './keyboardConfigs.js'
+    const colorsCycle = function *(...colors){
+      let i=0;
+      while(true){
+        yield colors[i++%colors.length];
+      }
+    }
+    const colorCycleInstance = colorsCycle('green', 'blue');
     const collide = (subject, {x, y}) => subject.x===x && subject.y===y;
     const FPS = 12;// Set to divisors of 60: 60, 30, 20, 15, 12, 10, 6, 5, 4, 3, 2, 1
     let count = 0;
     const canvas = document.getElementById('game');
-    const width =  canvas.width;
-    const height =  canvas.height;
+    const { width, height } =  canvas;
     const context = canvas.getContext('2d');
     const grid = 16;
     const brain = new KeyBrain({...arrows, ...wasd});
@@ -78,7 +84,7 @@
         return;
       }
       count = 0;
-      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.clearRect(0, 0, width, height);
       switch(state.status){
         case 'playing':
         default:
@@ -95,8 +101,9 @@
 
           // draw each snakes
           for(const snake of state.snakes){
+            const { value:color } = colorCycleInstance.next();
             for(const cell of snake.cells){
-              drawSquare(context, 'green', cell, grid);
+              drawSquare(context, color, cell, grid);
             }
           }
 
