@@ -4,68 +4,10 @@
     <title></title>
     <script src="//code.jquery.com/jquery-1.12.4.js"></script>
     <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-    }
-
-    body {
-      background: black;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    canvas {
-      width: 100%;
-      height: 100%;
-    }
-    </style>
+    <link rel="stylesheet" href="index.css">
   </head>
   <body>
   <canvas width="800" height="400" id="game"></canvas>
-  <script>
-  const WARNING = `WARNING: PHOTOSENSITIVITY/EPILEPSY SEIZURES
-
-  A very small percentage of individuals may experience epileptic seizures or blackouts when exposed to certain light patterns or flashing lights. Exposure to certain patterns or backgrounds on a television screen or when playing video games may trigger epileptic seizures or blackouts in these individuals. These conditions may trigger previously undetected epileptic symptoms or seizures in persons who have no history of prior seizures or epilepsy. If you, or anyone in your family has an epileptic condition or has had seizures of any kind, consult your physician before playing.
-
-  IMMEDIATELY DISCONTINUE use and consult your physician before resuming gameplay. If you or your child experience any of the following health problems or symptoms:
-
-  - Dizziness
-  - Altered vision
-  - Eye or muscle twitches
-  - Loss of awareness
-  - Disorientation
-  - Seizures or
-  - Any involuntary movement or convulsion`;
-
-  if(!confirm(WARNING)){
-    window.location = 'https://www.google.com';
-  };
-  </script>
-  <script type="module">
-    import KeyBrain, { arrows, wasd, antiArrows, antiWasd } from './keyBrain.mjs';
-    import GamePadBrain, { xbox, antiXbox } from './gamePadBrain.mjs';
-
-    import renderFactory from './renderFactory.mjs';
-    import gameFactory from './gameFactory.mjs';
-    import createAnimationLoop from './createAnimationLoop.mjs'
-    import context, {width, height} from './context.mjs';
-
-    const zoom = 8; // Must be a divisor of width and length; there exists n, m s.t. n * zoom === length && m * zoom = width;
-    const gameWidth = width/zoom;
-    const gameHeight = height/zoom;
-    const appleNum = Math.floor(0.01 * gameWidth * gameHeight);
-    const render = renderFactory(context, width, height, zoom);
-    const playerConfig = [
-      {x: 0,                 y: 0,                velocity:+1,  horizontal:true,    brain: new KeyBrain({...wasd, ...arrows}),          color:'green' },
-      {x: 0,                 y: gameHeight - 1,   velocity:-1,  horizontal:false,   brain: new KeyBrain({...antiWasd,...antiArrows}),   color:'yellow'},
-      {x: gameWidth - 1,     y: 0,                velocity:+1,  horizontal:false,   brain: new GamePadBrain(0, xbox),                   color:'blue'  },
-      {x: gameWidth - 1,     y: gameHeight - 1,   velocity:-1,   horizontal:true,   brain: new GamePadBrain(0, antiXbox),               color:'purple'},
-    ];
-    const {pause, resume} = createAnimationLoop(
-      gameFactory({appleNum, playerConfig, gameWidth, gameHeight}),
-      render);
-  </script>
+  <script src="index.mjs" type="module"></script>
   </body>
 </html>

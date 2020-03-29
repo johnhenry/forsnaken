@@ -7,10 +7,10 @@ const Snake = class{
   #cells
   #maxCells
   #color
-  #brain
+  #brains
   #enabled
   #boundChangeDirection
-  constructor({x, y, velocity, horizontal, maxCells=2, brain, color}){
+  constructor({x, y, velocity, horizontal, maxCells=2, brains, color}){
     this.#enabled = true;
     this.#x = x;
     this.#y = y;
@@ -23,13 +23,18 @@ const Snake = class{
     for(let i = 0; i < this.#maxCells; i++){
       this.cells.push({x,y});
     }
-    this.#brain = brain;
+    this.#brains = brains;
+    this.#boundChangeDirection = this.changeDirection.bind(this);
     // listen to keyboard events to move the snake
-    this.#brain.addEventListener('signal', this.#boundChangeDirection = this.changeDirection.bind(this));
+    for(const brain of this.#brains) {
+      brain.addEventListener('signal', this.#boundChangeDirection);
+    }
   }
   disable(){
     this.#enabled = false;
-    this.#brain.removeEventListener('signal', this.#boundChangeDirection);
+    for(const brain of this.#brains) {
+      brain.removeEventListener('signal', this.#boundChangeDirection);
+    }
   }
   get enabled(){
     return this.#enabled;

@@ -1,12 +1,8 @@
 <template>
-      <snake-game>
-      <apple-field :x="[0, 99]" :y="[0, 99]" :size="1" #goal>
-      </apple-field>
-      <snake :x="0" :y="0" :dy="1" :hp="4" #player>
-        <key-brain :map="{wasd}" #brain></key-brain>
-      </snake>
-      <snake :x="100" :y="100" :dy="-1" :hp="4" #player>
-        <key-brain :map="{asdf}" #brain></key-brain>
-      </snake>
+    <snake-game :apples="1" :width="400" :height="800">
+      <simple-snake :x="0" :y="0" :velocity="1" :horizontal="false" :maxCells="2" :color="green" #snake>
+        <key-brain :map="{asdf}" #brain/>
+        <game-pad-brain :map="{asdf}" #brain/>
+      </simple-snake>
     </snake-game>
 </template>
