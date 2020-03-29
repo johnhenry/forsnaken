@@ -22,7 +22,7 @@
     </style>
   </head>
   <body>
-  <canvas width="400" height="400" id="game"></canvas>
+  <canvas width="800" height="400" id="game"></canvas>
   <script>
   const WARNING = `WARNING: PHOTOSENSITIVITY/EPILEPSY SEIZURES
 
@@ -38,39 +38,35 @@
   - Seizures or
   - Any involuntary movement or convulsion`;
 
-  // if(!confirm(WARNING)){
-  //   window.location = 'https://www.google.com';
-  // };
+  if(!confirm(WARNING)){
+    window.location = 'https://www.google.com';
+  };
   </script>
   <script type="module">
     import Apple from './apple.mjs';
     import Snake from './snake.mjs';
     import KeyBrain, { arrows, wasd, antiArrows, antiWasd } from './keybrain.mjs';
     import collisions from './collisions.mjs';
-    import drawSquare from './drawSquare.mjs';
     import collide2d from './collide2d.mjs';
     // TODO: Units should be abstract. conversion with zoom should be done in drawSquare function
     const canvas = document.getElementById('game');
-    const { width, height } =  canvas;
-    const context = canvas.getContext('2d');
-    // State
-    const zoom = 16;
+    const zoom = 8;
     const FPS = 12;// Set to divisors of 60: 60, 30, 20, 15, 12, 10, 6, 5, 4, 3, 2, 1
 
-    const maxVelocityPerFrame = 1;
-    const velocity = maxVelocityPerFrame * zoom;
-    const size = 2;
+    const appleNum = 8;
+    const gameWidth = canvas.width/zoom;
+    const gameHeight = canvas.height/zoom;
+    const context = canvas.getContext('2d');
     const playerConfig = [
-      {x:0,             y:0,            velocity:+1*velocity, horizontal:true,  brain: new KeyBrain(arrows), color:'green' },
-      {x:width - zoom,  y:0,            velocity:+1*velocity, horizontal:false, brain: new KeyBrain(wasd), color:'blue'  },
-      {x:width - zoom,  y:width - zoom, velocity:-1*velocity, horizontal:true,  brain: new KeyBrain(antiArrows), color:'purple'},
-      {x:0,             y:width - zoom, velocity:-1*velocity, horizontal:false, brain: new KeyBrain(antiWasd), color:'yellow'},
+      {x: 0,                 y: 0,                  velocity:+1, horizontal:true,  brain: new KeyBrain(arrows),     color:'green' },
+      {x: gameWidth - zoom,  y: 0,                  velocity:+1, horizontal:false, brain: new KeyBrain(wasd),       color:'blue'  },
+      {x: gameWidth - zoom,  y: gameHeight - zoom,  velocity:-1, horizontal:true,  brain: new KeyBrain(antiArrows), color:'purple'},
+      {x: 0,                 y: gameHeight - zoom,  velocity:-1, horizontal:false, brain: new KeyBrain(antiWasd),   color:'yellow'},
     ];
     const snakes = playerConfig.map(config=>new Snake(config));
     const apples = [];
-    const appleNum = 3;
     for(let i = 0; i < appleNum; i++){
-      apples.push(new Apple({ zoom, width, height }));
+      apples.push(new Apple({xrange:[0, gameWidth], yrange:[0, gameHeight] }));
     }
     let status = 'playing';
     // State
@@ -84,14 +80,15 @@
         return;
       }
       count = 0;
-      context.clearRect(0, 0, width, height);
       switch(status){
         case 'playing':
         default:
           // draw each apple and snake
+          context.clearRect(0, 0, canvas.width, canvas.height);
           for(const {color, cells} of [...apples, ...snakes]){
             for(const cell of cells){
-              drawSquare(context, color, cell, zoom, zoom);
+              context.fillStyle = color;
+              context.fillRect(cell.x*zoom, cell.y*zoom, zoom, zoom);
             }
           }
           // check for collision between each snake's head and each apple
@@ -100,7 +97,7 @@
             const snake = snakes.find((snake=>collide2d(head, snake.head)));
             const index = apples.indexOf(apple);
             snake.grow(apple.value)
-            apples[index] = new Apple({ zoom, width, height });
+            apples[index] = new Apple({xrange:[0, gameWidth], yrange:[0, gameHeight] });
             // grow snake
             // shanke screen based on snake direction
             const { direction } = snake;
@@ -127,7 +124,7 @@
           }
           // move each snake
           for(const snake of snakes){
-            snake.move({width, height})
+            snake.move({width: gameWidth, height: gameHeight})
           }
       }
     };
