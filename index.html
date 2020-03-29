@@ -49,32 +49,33 @@
     import collisions from './collisions.mjs';
     import drawSquare from './drawSquare.mjs';
     import collide2d from './collide2d.mjs';
-
+    // TODO: Units should be abstract. conversion with zoom should be done in drawSquare function
     const canvas = document.getElementById('game');
     const { width, height } =  canvas;
     const context = canvas.getContext('2d');
     // State
-    const unit = 16;
-    const velocity = 16;
+    const zoom = 16;
+    const FPS = 12;// Set to divisors of 60: 60, 30, 20, 15, 12, 10, 6, 5, 4, 3, 2, 1
+
+    const maxVelocityPerFrame = 1;
+    const velocity = maxVelocityPerFrame * zoom;
     const size = 2;
-    const brains = [, new KeyBrain(wasd)];
     const playerConfig = [
-      {x:0,   y:0,   velocity:+1*velocity, horizontal:true,  brain: new KeyBrain(arrows), color:'green' },
-      {x:384, y:0,   velocity:+1*velocity, horizontal:false, brain: new KeyBrain(wasd), color:'blue'  },
-      {x:384, y:384, velocity:-1*velocity, horizontal:true,  brain: new KeyBrain(antiArrows), color:'purple'},
-      {x:0,   y:384, velocity:-1*velocity, horizontal:false, brain: new KeyBrain(antiWasd), color:'yellow'},
+      {x:0,             y:0,            velocity:+1*velocity, horizontal:true,  brain: new KeyBrain(arrows), color:'green' },
+      {x:width - zoom,  y:0,            velocity:+1*velocity, horizontal:false, brain: new KeyBrain(wasd), color:'blue'  },
+      {x:width - zoom,  y:width - zoom, velocity:-1*velocity, horizontal:true,  brain: new KeyBrain(antiArrows), color:'purple'},
+      {x:0,             y:width - zoom, velocity:-1*velocity, horizontal:false, brain: new KeyBrain(antiWasd), color:'yellow'},
     ];
     const snakes = playerConfig.map(config=>new Snake(config));
     const apples = [];
     const appleNum = 3;
     for(let i = 0; i < appleNum; i++){
-      apples.push(new Apple({ unit, width, height }));
+      apples.push(new Apple({ zoom, width, height }));
     }
     let status = 'playing';
     // State
 
     // game loop
-    const FPS = 12;// Set to divisors of 60: 60, 30, 20, 15, 12, 10, 6, 5, 4, 3, 2, 1
     let count = 0;
     const loop = () => {
       requestAnimationFrame(loop);
@@ -90,7 +91,7 @@
           // draw each apple and snake
           for(const {color, cells} of [...apples, ...snakes]){
             for(const cell of cells){
-              drawSquare(context, color, cell, unit);
+              drawSquare(context, color, cell, zoom, zoom);
             }
           }
           // check for collision between each snake's head and each apple
@@ -99,7 +100,7 @@
             const snake = snakes.find((snake=>collide2d(head, snake.head)));
             const index = apples.indexOf(apple);
             snake.grow(apple.value)
-            apples[index] = new Apple({ unit, width, height });
+            apples[index] = new Apple({ zoom, width, height });
             // grow snake
             // shanke screen based on snake direction
             const { direction } = snake;

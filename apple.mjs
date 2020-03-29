@@ -6,9 +6,9 @@ const getRandomInt = (min, max) => {
 
 const Apple = class{
   #value=2
-  constructor({ unit, width, height }){
-    this.x = getRandomInt(0, width/unit) * unit;
-    this.y = getRandomInt(0, height/unit) * unit;
+  constructor({ zoom, width, height }){
+    this.x = getRandomInt(0, width/zoom) * zoom;
+    this.y = getRandomInt(0, height/zoom) * zoom;
   }
   get value (){
     return this.#value;
