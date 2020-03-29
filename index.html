@@ -55,7 +55,7 @@
     const gameHeight = canvas.height/zoom;
     const context = canvas.getContext('2d');
 
-    const drawFactory = (context, width, height, zoom) => (...things)=>{
+    const renderFactory = (context, width, height, zoom) => (...things)=>{
       // draw each apple and snake
       context.clearRect(0, 0, canvas.width, canvas.height);
       for(const {color, cells} of things){
@@ -65,7 +65,7 @@
         }
       }
     }
-    const draw = drawFactory(context, canvas.width, canvas.height, zoom);
+    const render = renderFactory(context, canvas.width, canvas.height, zoom);
 
     const playerConfig = [
       {x: 0,                 y: 0,                velocity:+1,  horizontal:true,    brain: new KeyBrain(arrows),      color:'green' },
@@ -80,13 +80,13 @@
       }
     }
     // State
-    const gameFactory = ({appleNum=1, playerConfig=[], gameWidth=400, gameHeight=400}) => {
+    const gameFactory = function *({appleNum=1, playerConfig=[], gameWidth=400, gameHeight=400}){
       const snakes = playerConfig.map(config=>new Snake(config));
       const apples = [];
       for(let i = 0; i < appleNum; i++){
         apples.push(new Apple({xrange:[0, gameWidth], yrange:[0, gameHeight] }));
       }
-      return () => {
+      while(true){
         const events = [];
         // check for collision between each snake's head and each apple
         for (const [head, apple] of collisions(collide2d, snakes.map(({head})=>head), apples)){
@@ -97,8 +97,7 @@
           // grow snake
           // shanke screen based on snake direction
           const { direction } = snake;
-          const eatEvent = new AppleEatenEvent(direction);
-          events.push(eatEvent);
+          yield { status:'event', event:new AppleEatenEvent(direction)};
         }
 
         // check for collision between each snake's head and each other snake
@@ -127,14 +126,14 @@
         for(const snake of snakes){
           snake.move({width: gameWidth, height: gameHeight})
         }
-        return { status:'render', entities:[...apples, ...snakes], events:[...events] };
+        yield { status:'render', entities:[...apples, ...snakes] };
       }
     }
 
 
     const game = gameFactory({appleNum:32, playerConfig, gameWidth, gameHeight});
     // game loop
-    const FPS = 10;// Set to divisors of 60: 60, 30, 20, 15, 12, 10, 6, 5, 4, 3, 2, 1
+    const FPS = 12;// Set to divisors of 60: 60, 30, 20, 15, 12, 10, 6, 5, 4, 3, 2, 1
     let count = 0;
     const loop = () => {
       requestAnimationFrame(loop);
@@ -143,15 +142,17 @@
         return;
       }
       count = 0;
-      const {status, entities, events, error} = game();
+      const {status, entities, event, error} = game.next().value;
       switch(status){
         case 'render':
-          draw(...entities);
+          render(...entities);
+        break;
+        case 'event':
           // apply effects
-          const appleEatenEvents = events.filter(event => event instanceof AppleEatenEvent)
-          for(const { direction } of appleEatenEvents){
-            $("#game").effect("shake", { direction });
+          if(event instanceof AppleEatenEvent){
+            $("#game").effect("shake", event);
           }
+        break;
         case 'error':
         default:
         break;
