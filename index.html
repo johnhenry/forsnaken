@@ -45,7 +45,7 @@
   <script type="module">
     import Apple from './apple.mjs';
     import Snake from './snake.mjs';
-    import KeyBrain, { arrows, wasd } from './keybrain.mjs';
+    import KeyBrain, { arrows, wasd, antiArrows, antiWasd } from './keybrain.mjs';
     import collisions from './collisions.mjs';
     import drawSquare from './drawSquare.mjs';
     import collide2d from './collide2d.mjs';
@@ -57,12 +57,12 @@
     const unit = 16;
     const velocity = 16;
     const size = 2;
-    const brains = [new KeyBrain(arrows), new KeyBrain(wasd)];
+    const brains = [, new KeyBrain(wasd)];
     const playerConfig = [
-      {x:0,   y:0,   velocity:+1*velocity, horizontal:true,  brain:brains[0], color:'green' },
-      {x:384, y:0,   velocity:+1*velocity, horizontal:false, brain:brains[0], color:'blue'  },
-      {x:384, y:384, velocity:-1*velocity, horizontal:true,  brain:brains[1], color:'purple'},
-      {x:0,   y:384, velocity:-1*velocity, horizontal:false, brain:brains[1], color:'yellow'},
+      {x:0,   y:0,   velocity:+1*velocity, horizontal:true,  brain: new KeyBrain(arrows), color:'green' },
+      {x:384, y:0,   velocity:+1*velocity, horizontal:false, brain: new KeyBrain(wasd), color:'blue'  },
+      {x:384, y:384, velocity:-1*velocity, horizontal:true,  brain: new KeyBrain(antiArrows), color:'purple'},
+      {x:0,   y:384, velocity:-1*velocity, horizontal:false, brain: new KeyBrain(antiWasd), color:'yellow'},
     ];
     const snakes = playerConfig.map(config=>new Snake(config));
     const apples = [];

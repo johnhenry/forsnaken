@@ -1,4 +1,4 @@
-export { arrows, wasd } from './keyboardConfigs.mjs';
+export { arrows, wasd, antiArrows, antiWasd } from './keyboardConfigs.mjs';
 
 const SignalEvent = class extends Event{
   constructor(keyDownEvent, map){
