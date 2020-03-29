@@ -1,4 +1,4 @@
-
+export { arrows, wasd } from './keyboardConfigs.mjs';
 
 const SignalEvent = class extends Event{
   constructor(keyDownEvent, map){
