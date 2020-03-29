@@ -45,6 +45,8 @@
   </script>
   <script type="module">
     import KeyBrain, { arrows, wasd, antiArrows, antiWasd } from './keyBrain.mjs';
+    import GamePadBrain, { xbox, antiXbox } from './gamePadBrain.mjs';
+
     import renderFactory from './renderFactory.mjs';
     import gameFactory from './gameFactory.mjs';
     import createAnimationLoop from './createAnimationLoop.mjs'
@@ -56,10 +58,10 @@
     const appleNum = Math.floor(0.01 * gameWidth * gameHeight);
     const render = renderFactory(context, width, height, zoom);
     const playerConfig = [
-      {x: 0,                 y: 0,                velocity:+1,  horizontal:true,    brain: new KeyBrain(arrows),      color:'green' },
-      {x: gameWidth - 1,     y: 0,                velocity:+1,  horizontal:false,   brain: new KeyBrain(wasd),        color:'blue'  },
-      {x: gameWidth - 1,     y: gameHeight - 1,   velocity:-1,   horizontal:true,   brain: new KeyBrain(antiWasd),    color:'purple'},
-      {x: 0,                 y: gameHeight - 1,   velocity:-1,  horizontal:false,   brain: new KeyBrain(antiArrows),  color:'yellow'},
+      {x: 0,                 y: 0,                velocity:+1,  horizontal:true,    brain: new KeyBrain({...wasd, ...arrows}),          color:'green' },
+      {x: gameWidth - 1,     y: 0,                velocity:+1,  horizontal:false,   brain: new GamePadBrain(0, xbox),                   color:'blue'  },
+      {x: gameWidth - 1,     y: gameHeight - 1,   velocity:-1,   horizontal:true,   brain: new GamePadBrain(0, antiXbox),               color:'purple'},
+      {x: 0,                 y: gameHeight - 1,   velocity:-1,  horizontal:false,   brain: new KeyBrain({...antiWasd,...antiArrows}),   color:'yellow'},
     ];
     const {pause, resume} = createAnimationLoop(
       gameFactory({appleNum, playerConfig, gameWidth, gameHeight}),

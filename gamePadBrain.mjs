@@ -1,19 +1,25 @@
 import SignalEvent from './SignalEvent.mjs';
-
+export const xbox = {
+  12:'up',
+  13:'down',
+  14:'left',
+  15:'right'
+};
+export const antiXbox = {
+  13:'up',
+  12:'down',
+  15:'left',
+  14:'right'
+};
 export default class extends EventTarget {
   #index
   #map
   #interval
   #boundProcess
-  constructor(index, interval=1000, map){
+  constructor(index, map, interval=50){
     super();
     this.#index = index;
-    this.#map = {
-      'up':'up',
-      'down':'down',
-      'left':'left',
-      'right':'right',
-    };
+    this.#map = map;
     this.#boundProcess = this.process.bind(this);
     this.#interval = setInterval(() =>{
       const gamePadState = (navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []))[this.#index];
@@ -28,17 +34,13 @@ export default class extends EventTarget {
       return
     }
     const {buttons} = pad;
-    if(buttons[12].pressed) {
-      this.dispatchEvent(new SignalEvent({which:'up'}, this.#map ))
-    }
-    if(buttons[13].pressed) {
-      this.dispatchEvent(new SignalEvent({which:'down'}, this.#map ))
-    }
-    if(buttons[14].pressed) {
-      this.dispatchEvent(new SignalEvent({which:'left'}, this.#map ))
-    }
-    if(buttons[15].pressed) {
-      this.dispatchEvent(new SignalEvent({which:'right'}, this.#map ))
+    for(const index in buttons){
+      if(buttons[index].pressed){
+        const event = new SignalEvent({which:index}, this.#map);
+        if(event.which){
+          this.dispatchEvent(event);
+        }
+      }
     }
   }
 };
