@@ -1,12 +1,6 @@
 export { arrows, wasd, antiArrows, antiWasd } from './keyboardConfigs.mjs';
-
-const SignalEvent = class extends Event{
-  constructor(keyDownEvent, map){
-    super('signal');
-    this.which = map[keyDownEvent.which];
-  }
-}
-const KeyBrain = class extends EventTarget {
+import SignalEvent from './SignalEvent.mjs';
+export default class extends EventTarget {
   #map
   #boundProcess
   constructor(map = {}){
@@ -25,5 +19,3 @@ const KeyBrain = class extends EventTarget {
     }
   }
 };
-
-export default KeyBrain;

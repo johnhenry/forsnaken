@@ -44,14 +44,11 @@
   };
   </script>
   <script type="module">
-    import KeyBrain, { arrows, wasd, antiArrows, antiWasd } from './keybrain.mjs';
+    import KeyBrain, { arrows, wasd, antiArrows, antiWasd } from './keyBrain.mjs';
     import renderFactory from './renderFactory.mjs';
     import gameFactory from './gameFactory.mjs';
     import createAnimationLoop from './createAnimationLoop.mjs'
-    
-    const canvas = document.getElementById('game');
-    const { width, height } = canvas;
-    const context = canvas.getContext('2d');
+    import context, {width, height} from './context.mjs';
 
     const zoom = 8; // Must be a divisor of width and length; there exists n, m s.t. n * zoom === length && m * zoom = width;
     const gameWidth = width/zoom;
