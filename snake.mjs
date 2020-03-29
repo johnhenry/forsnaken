@@ -8,8 +8,10 @@ const Snake = class{
   #maxCells
   #color
   #brain
+  #enabled
   #boundChangeDirection
   constructor({x, y, velocity, horizontal, maxCells=2, brain, color}){
+    this.#enabled = true;
     this.#x = x;
     this.#y = y;
     this.#velocity = velocity;
@@ -26,7 +28,11 @@ const Snake = class{
     this.#brain.addEventListener('signal', this.#boundChangeDirection = this.changeDirection.bind(this));
   }
   destroy(){
+    this.#enabled = false;
     this.#brain.removeEventListener('signal', this.#boundChangeDirection);
+  }
+  get enabled(){
+    return this.#enabled;
   }
   get color(){
     return this.#color;

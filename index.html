@@ -38,9 +38,9 @@
   - Seizures or
   - Any involuntary movement or convulsion`;
 
-  if(!confirm(WARNING)){
-    window.location = 'https://www.google.com';
-  };
+  // if(!confirm(WARNING)){
+  //   window.location = 'https://www.google.com';
+  // };
   </script>
   <script type="module">
     import Apple from './apple.mjs';
@@ -58,10 +58,10 @@
     const gameHeight = canvas.height/zoom;
     const context = canvas.getContext('2d');
     const playerConfig = [
-      {x: 0,                 y: 0,                  velocity:+1, horizontal:true,  brain: new KeyBrain(arrows),     color:'green' },
-      {x: gameWidth - zoom,  y: 0,                  velocity:+1, horizontal:false, brain: new KeyBrain(wasd),       color:'blue'  },
-      {x: gameWidth - zoom,  y: gameHeight - zoom,  velocity:-1, horizontal:true,  brain: new KeyBrain(antiArrows), color:'purple'},
-      {x: 0,                 y: gameHeight - zoom,  velocity:-1, horizontal:false, brain: new KeyBrain(antiWasd),   color:'yellow'},
+      {x: 0,                 y: 0,                velocity:+1,  horizontal:true,    brain: new KeyBrain(arrows),      color:'green' },
+      {x: gameWidth - 1,     y: 0,                velocity:+1,  horizontal:false,   brain: new KeyBrain(wasd),        color:'blue'  },
+      {x: gameWidth - 1,     y: gameHeight - 1,   velocity:-1,   horizontal:true,    brain: new KeyBrain(antiWasd),    color:'purple'},
+      {x: 0,                 y: gameHeight - 1,   velocity:-1,  horizontal:false,   brain: new KeyBrain(antiArrows),  color:'yellow'},
     ];
     const snakes = playerConfig.map(config=>new Snake(config));
     const apples = [];
@@ -113,12 +113,17 @@
               snake = Math.random() < 0.5 ? snake : otherSnake;              
             }
             snake.destroy(); // destory old snake (remove listeners)
-            snakes[snakes.indexOf(snake)] = null;
           }
 
           // revive any dead snakes
           for(const index in snakes){
-            if(!snakes[index]){
+            if(!snakes[index].enabled){
+              snakes[index] = new Snake(playerConfig[index]); // create new snake
+            }
+          }
+          // revive any dead snakes
+          for(const index in snakes){
+            if(!snakes[index].enabled){
               snakes[index] = new Snake(playerConfig[index]); // create new snake
             }
           }
