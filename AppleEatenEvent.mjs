@@ -1,6 +1,6 @@
 export default class extends Event {
-  constructor(direction){
+  constructor(snake){
     super('apple eaten');
-    this.direction = direction;
+    this.snake = snake;
   }
 }

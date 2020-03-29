@@ -12,7 +12,9 @@ export default (context, width, height, zoom)=>
       case 'event':
         // apply effects
         if(event instanceof AppleEatenEvent){
-          $('#game').effect('shake', event);
+          $('#game').effect('shake', event.snake);
+          $('#game').stop().css('background-color', 'inherit')
+            .animate({ backgroundColor: event.snake.color}, 10);
         }
       break;
       default:

@@ -38,9 +38,9 @@
   - Seizures or
   - Any involuntary movement or convulsion`;
 
-  // if(!confirm(WARNING)){
-  //   window.location = 'https://www.google.com';
-  // };
+  if(!confirm(WARNING)){
+    window.location = 'https://www.google.com';
+  };
   </script>
   <script type="module">
     import KeyBrain, { arrows, wasd, antiArrows, antiWasd } from './keybrain.mjs';
@@ -62,9 +62,11 @@
       {x: gameWidth - 1,     y: gameHeight - 1,   velocity:-1,   horizontal:true,   brain: new KeyBrain(antiWasd),    color:'purple'},
       {x: 0,                 y: gameHeight - 1,   velocity:-1,  horizontal:false,   brain: new KeyBrain(antiArrows),  color:'yellow'},
     ];
-    createAnimationLoop(
+    const {pause, resume} = createAnimationLoop(
       gameFactory({appleNum:32, playerConfig, gameWidth, gameHeight}),
-      render)
+      render);
+      setTimeout(pause, 5000);
+      setTimeout(resume, 10000);
   </script>
   </body>
 </html>
