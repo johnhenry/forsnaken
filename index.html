@@ -48,33 +48,33 @@
     import Snake from './snake.mjs';
     import KeyBrain from './keybrain.mjs';
     import collisions from './collisions.mjs';
-    import { arrows, wasd } from './keyboardConfigs.js'
-    const colorsCycle = function *(...colors){
-      let i=0;
-      while(true){
-        yield colors[i++%colors.length];
-      }
-    }
-    const colorCycleInstance = colorsCycle('green', 'blue');
+    import { arrows, wasd } from './keyboardConfigs.js';
+
     const collide = (subject, {x, y}) => subject.x===x && subject.y===y;
     const FPS = 12;// Set to divisors of 60: 60, 30, 20, 15, 12, 10, 6, 5, 4, 3, 2, 1
     let count = 0;
     const canvas = document.getElementById('game');
     const { width, height } =  canvas;
     const context = canvas.getContext('2d');
-    const grid = 16;
-    const brain = new KeyBrain({...arrows, ...wasd});
+    const unit = 16;
+    const velocity = 16;
+    const size = 2;
     const brains = [new KeyBrain(arrows), new KeyBrain(wasd)];
-
+    const playerConfig = [
+      {x:0,   y:0,   velocity:+1*velocity, horizontal:true,  brain:brains[0], color:'green' },
+      {x:384, y:0,   velocity:+1*velocity, horizontal:false, brain:brains[0], color:'blue'  },
+      {x:384, y:384, velocity:-1*velocity, horizontal:true,  brain:brains[1], color:'purple'},
+      {x:0,   y:384, velocity:-1*velocity, horizontal:false, brain:brains[1], color:'yellow'},
+    ];
     const state = {
       status: 'playing',
-      snakes: [new Snake(160, 160, grid, 0, [], 4, grid, brains[0]), new Snake(160, 160, grid, 0, [], 4, grid, brains[1])],
-      apples: [new Apple(grid), new Apple(grid)]
+      snakes: playerConfig.map(config=>new Snake(config)),
+      apples: [new Apple({ unit, width, height }), new Apple({ unit, width, height })]
     };
 
-    const drawSquare = (context, fillStyle, {x, y}, grid)=>{
+    const drawSquare = (context, fillStyle, {x, y}, unit)=>{
       context.fillStyle = fillStyle;
-      context.fillRect(x, y, grid, grid);
+      context.fillRect(x, y, unit, unit);
     }
     // game loop
     const loop = () => {
@@ -88,45 +88,46 @@
       switch(state.status){
         case 'playing':
         default:
-          // move each snake
-          for(const snake of state.snakes){
-            snake.move({width, height})
-          }
-          // draw each apple
-          for(const apple of state.apples){
-            for(const cell of apple.cells){
-              drawSquare(context, 'red', cell, grid);
+          // draw each apple and snake
+          for(const {color, cells} of [...state.apples, ...state.snakes]){
+            for(const cell of cells){
+              drawSquare(context, color, cell, unit);
             }
           }
-
-          // draw each snakes
-          for(const snake of state.snakes){
-            const { value:color } = colorCycleInstance.next();
-            for(const cell of snake.cells){
-              drawSquare(context, color, cell, grid);
-            }
-          }
-
           // check for collision between each snake's head and each apple
           for (const [head, apple] of collisions(collide, state.snakes.map(({head})=>head), state.apples)){
             // if collision happens (snake eats apple)
             const snake = state.snakes.find((snake=>collide(head, snake.head)));
             const index = state.apples.indexOf(apple);
-            state.apples[index] = new Apple(grid);
-            snake.grow(4); // grow snake
+            snake.grow(apple.value)
+            state.apples[index] = new Apple({ unit, width, height });
+            // grow snake
             // shanke screen based on snake direction
             const { direction } = snake;
             $("#game").effect("shake", { direction });
             break;
           }
 
-          // check for collision between each snake's head each snake's body
-          for (const [head] of collisions(collide, state.snakes.map(({head})=>head), state.snakes.map(({cells})=>cells).flat())){
-            const snake = state.snakes.find((snake=>collide(head, snake.head)));
+          // check for collision between each snake's head and each other snake
+          for (const [head, part] of collisions(collide, state.snakes.map(({head})=>head), state.snakes.map(({cells})=>cells).flat())){
+            let snake = state.snakes.filter(_=>_).find((snake=>collide(head, snake.head)));
+            const otherSnake = state.snakes.filter(_=>_).flat().find((snake=>snake.head===part));
+            if(otherSnake){
+              snake = Math.random() < 0.5 ? snake : otherSnake;              
+            }
             snake.destroy(); // destory old snake (remove listeners)
-            const index = state.snakes.indexOf(snake);
-            state.snakes[index] = new Snake(160, 160, grid, 0, [], 4, grid, brains[index]); // create new snake
-            break;
+            state.snakes[state.snakes.indexOf(snake)] = null;
+          }
+
+          // revive any dead snakes
+          for(const index in state.snakes){
+            if(!state.snakes[index]){
+              state.snakes[index] = new Snake(playerConfig[index]); // create new snake
+            }
+          }
+          // move each snake
+          for(const snake of state.snakes){
+            snake.move({width, height})
           }
       }
     };

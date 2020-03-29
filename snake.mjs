@@ -1,27 +1,41 @@
 const Snake = class{
   #x
   #y
-  #dx
-  #dy
+  #velocity
+  #speed
+  #horizontal
   #cells
   #maxCells
-  #grid
+  #color
   #brain
   #boundChangeDirection
-  constructor(x, y, dx, dy, cells, maxCells, grid, brain){
+  constructor({x, y, velocity, horizontal, maxCells=2, brain, color}){
     this.#x = x;
     this.#y = y;
-    this.#dx = dx;
-    this.#dy = dy;
-    this.#cells = cells;
+    this.#velocity = velocity;
+    this.#speed = Math.abs(this.velocity);
+    this.#horizontal = horizontal;
+    this.#cells = [];
     this.#maxCells = maxCells;
-    this.#grid = grid;
+    this.#color = color;
+    for(let i = 0; i < this.#maxCells; i++){
+      this.cells.push({x,y});
+    }
     this.#brain = brain;
     // listen to keyboard events to move the snake
     this.#brain.addEventListener('signal', this.#boundChangeDirection = this.changeDirection.bind(this));
   }
   destroy(){
     this.#brain.removeEventListener('signal', this.#boundChangeDirection);
+  }
+  get color(){
+    return this.#color;
+  }
+  get horizontal(){
+    return this.#horizontal;
+  }
+  get velocity(){
+    return this.#velocity;
   }
   get head(){
     return this.#cells[0];
@@ -39,33 +53,38 @@ const Snake = class{
     return this.#y;
   }
   get direction(){
-    if(this.#dy > 0 ){
+    if(this.#velocity > 0){
+      if(this.#horizontal) {
+        return 'right';
+      }
       return 'down';
-    }else if(this.#dy < 0 ){
+    }else{
+      if(this.#horizontal) {
+        return 'left';
+      }
       return 'up';
-    }else if(this.#dx >0 ){
-      return 'right';
     }
-    return 'left';
   }
   grow(size=1){
     this.#maxCells+=size;
   }
   move({width, height}) {
     // move snake by it's velocity
-    this.#x += this.#dx;
-    this.#y += this.#dy;
-
+    if(this.#horizontal){
+      this.#x += this.#velocity;
+    }else{
+      this.#y += this.#velocity;
+    }
     // wrap snake position horizontally on edge of screen
     if (this.#x < 0) {
-      this.#x = width - this.#grid;
+      this.#x = width - this.#speed;
     }
     else if (this.#x >= width) {
       this.#x = 0;
     }
     // wrap snake position vertically on edge of screen
     if (this.#y < 0) {
-      this.#y = height - this.#grid;
+      this.#y = height - this.#speed;
     }
     else if (this.#y >= height) {
       this.#y = 0;
@@ -82,29 +101,38 @@ const Snake = class{
     // not already moving on the same axis (pressing left while moving
     // left won't do anything, and pressing right while moving left
     // shouldn't let you collide with your own body)
+
     switch(which){
       case 'left':
-        if(!this.#dx){
-          this.#dx = -this.#grid;
-          this.#dy = 0;
+        if(!this.#horizontal) {
+          this.#horizontal = true;
+          if(this.#velocity > 0){
+            this.#velocity *= -1;
+          }
         }
       break;
       case 'up':
-        if(!this.#dy){
-          this.#dy = -this.#grid;
-          this.#dx = 0;
+        if(this.#horizontal) {
+          this.#horizontal = false;
+          if(this.#velocity > 0){
+            this.#velocity *= -1;
+          }
         }
       break;
       case 'right': 
-        if(!this.#dx){
-          this.#dx = this.#grid;
-          this.#dy = 0;
+      if(!this.#horizontal) {
+        this.#horizontal = true;
+        if(this.#velocity < 0){
+          this.#velocity *= -1;
         }
+      }
       break;
       case 'down':
-        if(!this.#dy){
-          this.#dy = this.#grid;
-          this.#dx = 0;
+        if(this.#horizontal) {
+          this.#horizontal = false;
+          if(this.#velocity < 0){
+            this.#velocity *= -1;
+          }
         }
         break;
     }

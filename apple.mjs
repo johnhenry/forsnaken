@@ -5,9 +5,16 @@ const getRandomInt = (min, max) => {
 }
 
 const Apple = class{
-  constructor(grid){
-    this.x = getRandomInt(0, 25) * grid;
-    this.y = getRandomInt(0, 25) * grid;
+  #value=2
+  constructor({ unit, width, height }){
+    this.x = getRandomInt(0, width/unit) * unit;
+    this.y = getRandomInt(0, height/unit) * unit;
+  }
+  get value (){
+    return this.#value;
+  }
+  get color (){
+    return 'red';
   }
   get cells(){
     return [this];
