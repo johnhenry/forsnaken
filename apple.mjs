@@ -5,10 +5,21 @@ const getRandomInt = (min, max) => {
 }
 
 const Apple = class{
-  #value=2
-  constructor({ xrange, yrange }){
-    this.x = getRandomInt(...xrange);
-    this.y = getRandomInt(...yrange);
+  #value
+  #xrange
+  #yrange
+  constructor({ xrange, yrange, avoid=[] }){
+    this.#xrange = xrange;
+    this.#yrange = yrange
+    this.spawn(...avoid);
+  }
+  spawn(...avoid){
+    this.#value=2
+    let i = 0;
+    do {
+      this.x = getRandomInt(...this.#xrange);
+      this.y = getRandomInt(...this.#yrange);
+    }while(avoid.find(({ x, y }) => x === this.x && y === this.y));
   }
   get value (){
     return this.#value;

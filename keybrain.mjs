@@ -15,7 +15,7 @@ const KeyBrain = class extends EventTarget {
     this.#boundProcess = this.process.bind(this);
     window.document.addEventListener('keydown', this.#boundProcess);
   }
-  destroy(){
+  disable(){
     window.document.removeEventListener('keydown', this.#boundProcess);
   }
   process(keyDownEvent){

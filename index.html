@@ -48,19 +48,19 @@
     import KeyBrain, { arrows, wasd, antiArrows, antiWasd } from './keybrain.mjs';
     import collisions from './collisions.mjs';
     import collide2d from './collide2d.mjs';
-    // TODO: Units should be abstract. conversion with zoom should be done in drawSquare function
-    const canvas = document.getElementById('game');
-    const zoom = 8;
-    const FPS = 12;// Set to divisors of 60: 60, 30, 20, 15, 12, 10, 6, 5, 4, 3, 2, 1
 
-    const appleNum = 8;
+    const canvas = document.getElementById('game');
+    const zoom = 8; // Must be a divisor of width and length; there exists n, m s.t. n * zoom === length && m * zoom = width;
+
+    const FPS = 12;// Set to divisors of 60: 60, 30, 20, 15, 12, 10, 6, 5, 4, 3, 2, 1
+    const appleNum = 10;
     const gameWidth = canvas.width/zoom;
     const gameHeight = canvas.height/zoom;
     const context = canvas.getContext('2d');
     const playerConfig = [
       {x: 0,                 y: 0,                velocity:+1,  horizontal:true,    brain: new KeyBrain(arrows),      color:'green' },
       {x: gameWidth - 1,     y: 0,                velocity:+1,  horizontal:false,   brain: new KeyBrain(wasd),        color:'blue'  },
-      {x: gameWidth - 1,     y: gameHeight - 1,   velocity:-1,   horizontal:true,    brain: new KeyBrain(antiWasd),    color:'purple'},
+      {x: gameWidth - 1,     y: gameHeight - 1,   velocity:-1,   horizontal:true,   brain: new KeyBrain(antiWasd),    color:'purple'},
       {x: 0,                 y: gameHeight - 1,   velocity:-1,  horizontal:false,   brain: new KeyBrain(antiArrows),  color:'yellow'},
     ];
     const snakes = playerConfig.map(config=>new Snake(config));
@@ -95,14 +95,12 @@
           for (const [head, apple] of collisions(collide2d, snakes.map(({head})=>head), apples)){
             // if collision happens (snake eats apple)
             const snake = snakes.find((snake=>collide2d(head, snake.head)));
-            const index = apples.indexOf(apple);
             snake.grow(apple.value)
-            apples[index] = new Apple({xrange:[0, gameWidth], yrange:[0, gameHeight] });
+            apple.spawn(...snakes.map(({cells}) =>cells ).flat());
             // grow snake
             // shanke screen based on snake direction
             const { direction } = snake;
             $("#game").effect("shake", { direction });
-            break;
           }
 
           // check for collision between each snake's head and each other snake
@@ -112,7 +110,7 @@
             if(otherSnake){
               snake = Math.random() < 0.5 ? snake : otherSnake;              
             }
-            snake.destroy(); // destory old snake (remove listeners)
+            snake.disable(); // destory old snake (remove listeners)
           }
 
           // revive any dead snakes

@@ -27,7 +27,7 @@ const Snake = class{
     // listen to keyboard events to move the snake
     this.#brain.addEventListener('signal', this.#boundChangeDirection = this.changeDirection.bind(this));
   }
-  destroy(){
+  disable(){
     this.#enabled = false;
     this.#brain.removeEventListener('signal', this.#boundChangeDirection);
   }
