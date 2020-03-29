@@ -51,27 +51,90 @@
 
     const canvas = document.getElementById('game');
     const zoom = 8; // Must be a divisor of width and length; there exists n, m s.t. n * zoom === length && m * zoom = width;
-
-    const FPS = 12;// Set to divisors of 60: 60, 30, 20, 15, 12, 10, 6, 5, 4, 3, 2, 1
-    const appleNum = 10;
     const gameWidth = canvas.width/zoom;
     const gameHeight = canvas.height/zoom;
     const context = canvas.getContext('2d');
+
+    const drawFactory = (context, width, height, zoom) => (...things)=>{
+      // draw each apple and snake
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      for(const {color, cells} of things){
+        for(const cell of cells){
+          context.fillStyle = color;
+          context.fillRect(cell.x*zoom, cell.y*zoom, zoom, zoom);
+        }
+      }
+    }
+    const draw = drawFactory(context, canvas.width, canvas.height, zoom);
+
     const playerConfig = [
       {x: 0,                 y: 0,                velocity:+1,  horizontal:true,    brain: new KeyBrain(arrows),      color:'green' },
       {x: gameWidth - 1,     y: 0,                velocity:+1,  horizontal:false,   brain: new KeyBrain(wasd),        color:'blue'  },
       {x: gameWidth - 1,     y: gameHeight - 1,   velocity:-1,   horizontal:true,   brain: new KeyBrain(antiWasd),    color:'purple'},
       {x: 0,                 y: gameHeight - 1,   velocity:-1,  horizontal:false,   brain: new KeyBrain(antiArrows),  color:'yellow'},
     ];
-    const snakes = playerConfig.map(config=>new Snake(config));
-    const apples = [];
-    for(let i = 0; i < appleNum; i++){
-      apples.push(new Apple({xrange:[0, gameWidth], yrange:[0, gameHeight] }));
+    const AppleEatenEvent = class extends Event {
+      constructor(direction){
+        super('apple eaten');
+        this.direction = direction;
+      }
     }
-    let status = 'playing';
     // State
+    const gameFactory = ({appleNum=1, playerConfig=[], gameWidth=400, gameHeight=400}) => {
+      const snakes = playerConfig.map(config=>new Snake(config));
+      const apples = [];
+      for(let i = 0; i < appleNum; i++){
+        apples.push(new Apple({xrange:[0, gameWidth], yrange:[0, gameHeight] }));
+      }
+      return () => {
+        const events = [];
+        // check for collision between each snake's head and each apple
+        for (const [head, apple] of collisions(collide2d, snakes.map(({head})=>head), apples)){
+          // if collision happens (snake eats apple)
+          const snake = snakes.find((snake=>collide2d(head, snake.head)));
+          snake.grow(apple.value)
+          apple.spawn(...snakes.map(({cells}) =>cells ).flat());
+          // grow snake
+          // shanke screen based on snake direction
+          const { direction } = snake;
+          const eatEvent = new AppleEatenEvent(direction);
+          events.push(eatEvent);
+        }
 
+        // check for collision between each snake's head and each other snake
+        for (const [head, part] of collisions(collide2d, snakes.map(({head})=>head), snakes.map(({cells})=>cells).flat())){
+          let snake = snakes.filter(_=>_).find((snake=>collide2d(head, snake.head)));
+          const otherSnake = snakes.filter(_=>_).flat().find((snake=>snake.head===part));
+          if(otherSnake){
+            snake = Math.random() < 0.5 ? snake : otherSnake;              
+          }
+          snake.disable(); // destory old snake (remove listeners)
+        }
+
+        // revive any dead snakes
+        for(const index in snakes){
+          if(!snakes[index].enabled){
+            snakes[index] = new Snake(playerConfig[index]); // create new snake
+          }
+        }
+        // revive any dead snakes
+        for(const index in snakes){
+          if(!snakes[index].enabled){
+            snakes[index] = new Snake(playerConfig[index]); // create new snake
+          }
+        }
+        // move each snake
+        for(const snake of snakes){
+          snake.move({width: gameWidth, height: gameHeight})
+        }
+        return { status:'render', entities:[...apples, ...snakes], events:[...events] };
+      }
+    }
+
+
+    const game = gameFactory({appleNum:32, playerConfig, gameWidth, gameHeight});
     // game loop
+    const FPS = 10;// Set to divisors of 60: 60, 30, 20, 15, 12, 10, 6, 5, 4, 3, 2, 1
     let count = 0;
     const loop = () => {
       requestAnimationFrame(loop);
@@ -80,55 +143,18 @@
         return;
       }
       count = 0;
+      const {status, entities, events, error} = game();
       switch(status){
-        case 'playing':
-        default:
-          // draw each apple and snake
-          context.clearRect(0, 0, canvas.width, canvas.height);
-          for(const {color, cells} of [...apples, ...snakes]){
-            for(const cell of cells){
-              context.fillStyle = color;
-              context.fillRect(cell.x*zoom, cell.y*zoom, zoom, zoom);
-            }
-          }
-          // check for collision between each snake's head and each apple
-          for (const [head, apple] of collisions(collide2d, snakes.map(({head})=>head), apples)){
-            // if collision happens (snake eats apple)
-            const snake = snakes.find((snake=>collide2d(head, snake.head)));
-            snake.grow(apple.value)
-            apple.spawn(...snakes.map(({cells}) =>cells ).flat());
-            // grow snake
-            // shanke screen based on snake direction
-            const { direction } = snake;
+        case 'render':
+          draw(...entities);
+          // apply effects
+          const appleEatenEvents = events.filter(event => event instanceof AppleEatenEvent)
+          for(const { direction } of appleEatenEvents){
             $("#game").effect("shake", { direction });
           }
-
-          // check for collision between each snake's head and each other snake
-          for (const [head, part] of collisions(collide2d, snakes.map(({head})=>head), snakes.map(({cells})=>cells).flat())){
-            let snake = snakes.filter(_=>_).find((snake=>collide2d(head, snake.head)));
-            const otherSnake = snakes.filter(_=>_).flat().find((snake=>snake.head===part));
-            if(otherSnake){
-              snake = Math.random() < 0.5 ? snake : otherSnake;              
-            }
-            snake.disable(); // destory old snake (remove listeners)
-          }
-
-          // revive any dead snakes
-          for(const index in snakes){
-            if(!snakes[index].enabled){
-              snakes[index] = new Snake(playerConfig[index]); // create new snake
-            }
-          }
-          // revive any dead snakes
-          for(const index in snakes){
-            if(!snakes[index].enabled){
-              snakes[index] = new Snake(playerConfig[index]); // create new snake
-            }
-          }
-          // move each snake
-          for(const snake of snakes){
-            snake.move({width: gameWidth, height: gameHeight})
-          }
+        case 'error':
+        default:
+        break;
       }
     };
 
