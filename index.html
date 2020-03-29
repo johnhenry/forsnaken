@@ -17,7 +17,6 @@
       justify-content: center;
     }
     canvas {
-      border: 1px solid white;
       width: 100%;
       height: 100%;
     }
@@ -57,6 +56,7 @@
     const zoom = 8; // Must be a divisor of width and length; there exists n, m s.t. n * zoom === length && m * zoom = width;
     const gameWidth = width/zoom;
     const gameHeight = height/zoom;
+    const appleNum = Math.floor(0.01 * gameWidth * gameHeight);
     const render = renderFactory(context, width, height, zoom);
     const playerConfig = [
       {x: 0,                 y: 0,                velocity:+1,  horizontal:true,    brain: new KeyBrain(arrows),      color:'green' },
@@ -65,7 +65,7 @@
       {x: 0,                 y: gameHeight - 1,   velocity:-1,  horizontal:false,   brain: new KeyBrain(antiArrows),  color:'yellow'},
     ];
     const {pause, resume} = createAnimationLoop(
-      gameFactory({appleNum:32, playerConfig, gameWidth, gameHeight}),
+      gameFactory({appleNum, playerConfig, gameWidth, gameHeight}),
       render);
   </script>
   </body>
