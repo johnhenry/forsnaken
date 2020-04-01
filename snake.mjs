@@ -146,6 +146,44 @@ const Snake = class{
           }
         }
         break;
+      case 'clockwise':
+        switch(this.direction){
+          case 'up':
+            this.#horizontal = true;
+            this.#velocity *= -1;
+            break;
+          case 'right':
+            this.#horizontal = false;
+            break;
+          case 'down':
+            this.#horizontal = true;
+            this.#velocity *= -1;
+          break;
+          case 'left':
+            this.#horizontal = false;
+            break;
+          default:
+        }
+        break;
+      case 'counterclockwise':
+        switch(this.direction){
+          case 'up':
+            this.#horizontal = true;
+            break;
+          case 'left':
+            this.#horizontal = false;
+            this.#velocity *= -1;
+            break;
+          case 'down':
+            this.#horizontal = true;
+          break;
+          case 'right':
+            this.#horizontal = false;
+            this.#velocity *= -1;
+            break;
+          default:
+        }
+        break;
     }
   }
 }

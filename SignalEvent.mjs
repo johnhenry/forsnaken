@@ -1,6 +1,6 @@
 export default class extends Event{
-  constructor(keyDownEvent, map){
+  constructor(which){
     super('signal');
-    this.which = map[keyDownEvent.which];
+    this.which = which;
   }
 }

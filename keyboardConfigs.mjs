@@ -1,3 +1,22 @@
+export const arrowsRotation = {
+  37:'counterclockwise',
+  39:'clockwise',
+}
+export const wasdRotation = {
+  65:'counterclockwise',
+  68:'clockwise',
+}
+
+export const antiArrowsRotation = {
+  39:'counterclockwise',
+  37:'clockwise',
+}
+
+export const antiWasdRotation = {
+  68:'counterclockwise',
+  65:'clockwise',
+}
+
 export const arrows = {
   37:'left',
   38:'up',

@@ -36,9 +36,9 @@ export default class extends EventTarget {
     const {buttons} = pad;
     for(const index in buttons){
       if(buttons[index].pressed){
-        const event = new SignalEvent({which:index}, this.#map);
-        if(event.which){
-          this.dispatchEvent(event);
+        const which = this.#map[index];
+        if(which){
+          this.dispatchEvent(new SignalEvent(which))
         }
       }
     }

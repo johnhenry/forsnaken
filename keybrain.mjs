@@ -1,4 +1,4 @@
-export { arrows, wasd, antiArrows, antiWasd } from './keyboardConfigs.mjs';
+export * from './keyboardConfigs.mjs';
 import SignalEvent from './SignalEvent.mjs';
 export default class extends EventTarget {
   #map
@@ -13,9 +13,9 @@ export default class extends EventTarget {
     window.document.removeEventListener('keydown', this.#boundProcess);
   }
   process(keyDownEvent){
-    const event = new SignalEvent(keyDownEvent, this.#map);
-    if(event.which){
-      this.dispatchEvent(event);
+    const which = this.#map[keyDownEvent.which];
+    if(which){
+      this.dispatchEvent(new SignalEvent(which));
     }
   }
 };
