@@ -1,4 +1,3 @@
-export * from './keyboardConfigs.mjs';
 import SignalEvent from './SignalEvent.mjs';
 export default class extends EventTarget {
   #map

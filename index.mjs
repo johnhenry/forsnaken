@@ -1,6 +1,7 @@
 import './warning.js';
 
-import KeyBrain, { wasd, antiWasd, arrows, antiArrows } from './keyBrain.mjs';
+import KeyBrain from './keyBrain.mjs';
+export { wasd, antiWasd, arrows, antiArrows } from './keyboardConfigs.mjs';
 import GamePadBrain, { xbox, antiXbox } from './gamePadBrain.mjs';
 import RandomBrain from './randomBrain.mjs';
 
