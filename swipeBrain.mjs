@@ -4,14 +4,14 @@ const unify =  event => event.changedTouches ? event.changedTouches[0] : event;
 export default class extends EventTarget {
   #x = null
   #y = null
-  #min
+  #threshold
   #map
   #boundLock
   #boundMove
-  constructor(min=1, map={}){
+  constructor(threshold=1, map={}){
     super();
     this.#map = map;
-    this.#min = min;
+    this.#threshold = threshold;
     this.#boundLock = this.lock.bind(this);
     this.#boundMove = this.move.bind(this);
     window.addEventListener('mousedown', this.#boundLock, false);
@@ -38,14 +38,14 @@ export default class extends EventTarget {
     if(this.#y !== null) {
       dy = unify(event).clientY - this.#y;
     }
-    if(Math.abs(dy) > this.#min){
+    if(Math.abs(dy) >= this.#threshold){
       if (dy < 0) {
         this.dispatchEvent(new SignalEvent(this.#map['up'] || 'up'));
       } else {
         this.dispatchEvent(new SignalEvent(this.#map['down'] || 'down' ));
       }
     }
-    if(Math.abs(dx) > this.#min){
+    if(Math.abs(dx) >= this.#threshold){
       if (dx < 0) {
         this.dispatchEvent(new SignalEvent(this.#map['left'] || 'left'));
       } else {
