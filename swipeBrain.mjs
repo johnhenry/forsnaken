@@ -1,6 +1,5 @@
 import SignalEvent from './SignalEvent.mjs';
 const unify =  event => event.changedTouches ? event.changedTouches[0] : event;
-
 export default class extends EventTarget {
   #x = null
   #y = null
@@ -8,7 +7,7 @@ export default class extends EventTarget {
   #map
   #boundLock
   #boundMove
-  constructor(threshold=1, map={}){
+  constructor(threshold=1, map = ['up', 'down', 'left', 'right']) {
     super();
     this.#map = map;
     this.#threshold = threshold;
@@ -40,16 +39,16 @@ export default class extends EventTarget {
     }
     if(Math.abs(dy) >= this.#threshold){
       if (dy < 0) {
-        this.dispatchEvent(new SignalEvent(this.#map['up'] || 'up'));
+        this.dispatchEvent(new SignalEvent(this.#map[0]));
       } else {
-        this.dispatchEvent(new SignalEvent(this.#map['down'] || 'down' ));
+        this.dispatchEvent(new SignalEvent(this.#map[1]));
       }
     }
     if(Math.abs(dx) >= this.#threshold){
       if (dx < 0) {
-        this.dispatchEvent(new SignalEvent(this.#map['left'] || 'left'));
+        this.dispatchEvent(new SignalEvent(this.#map[2]));
       } else {
-        this.dispatchEvent(new SignalEvent(this.#map['right'] || 'right'));
+        this.dispatchEvent(new SignalEvent(this.#map[3]));
       }
     }
     this.#x = null;
