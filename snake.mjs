@@ -1,6 +1,7 @@
 const Snake = class{
   #x
   #y
+  #id
   #velocity
   #speed
   #horizontal
@@ -10,10 +11,11 @@ const Snake = class{
   #brains
   #enabled
   #boundChangeDirection
-  constructor({x, y, velocity, horizontal, maxCells=2, brains, color}){
+  constructor({x, y, velocity, horizontal, maxCells=2, brains, color, id=0}){
     this.#enabled = true;
     this.#x = x;
     this.#y = y;
+    this.#id = id;
     this.#velocity = velocity;
     this.#speed = Math.abs(this.velocity);
     this.#horizontal = horizontal;
@@ -35,6 +37,9 @@ const Snake = class{
     for(const brain of this.#brains) {
       brain.removeEventListener('signal', this.#boundChangeDirection);
     }
+  }
+  get id(){
+    return this.#id;
   }
   get enabled(){
     return this.#enabled;

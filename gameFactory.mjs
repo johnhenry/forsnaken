@@ -2,7 +2,9 @@ import collisions from './collisions.mjs';
 import collide2d from './collide2d.mjs';
 import Apple from './apple.mjs';
 import Snake from './snake.mjs';
-import AppleEatenEvent from './AppleEatenEvent.mjs';
+import DrawEvent from './DrawEvent.mjs';
+import ScoreEvent from './ScoreEvent.mjs';
+import DeathEvent from './DeathEvent.mjs';
 export default function *({appleNum=1, playerConfig=[], gameWidth=400, gameHeight=400}){
   const snakes = playerConfig.map(config=>new Snake(config));
   const apples = [];
@@ -18,17 +20,31 @@ export default function *({appleNum=1, playerConfig=[], gameWidth=400, gameHeigh
       apple.spawn(...snakes.map(({cells}) =>cells ).flat());
       // grow snake
       // shanke screen based on snake direction
-      yield { events:[ new AppleEatenEvent(snake)]};
+      yield [new ScoreEvent(snake, apple.value)];
     }
 
     // check for collision between each snake's head and each other snake
     for (const [head, part] of collisions(collide2d, snakes.map(({head})=>head), snakes.map(({cells})=>cells).flat())){
-      let snake = snakes.filter(_=>_).find((snake=>collide2d(head, snake.head)));
-      const otherSnake = snakes.filter(_=>_).flat().find((snake=>snake.head===part));
+      const snake = snakes.filter(({ enabled })=>enabled).find((snake=>collide2d(head, snake.head)));
+      const otherSnake = snakes.filter(({ enabled })=>enabled).flat().find((snake=>snake.head===part));
       if(otherSnake){
-        snake = Math.random() < 0.5 ? snake : otherSnake;              
+        if(Math.random() < 0.5){
+          if(snake.enabled){
+            snake.disable(); // destory old snake (remove listeners)
+            yield [new DeathEvent(snake)];
+          }
+        } else {
+          if(otherSnake.enabled){
+            otherSnake.disable(); // destory old snake (remove listeners)
+            yield [new DeathEvent(otherSnake)];
+          }
+        }           
+      } else {
+        if(snake.enabled){
+          snake.disable(); // destory old snake (remove listeners)
+          yield [new DeathEvent(snake)];
+        }
       }
-      snake.disable(); // destory old snake (remove listeners)
     }
 
     // revive any dead snakes
@@ -47,6 +63,6 @@ export default function *({appleNum=1, playerConfig=[], gameWidth=400, gameHeigh
     for(const snake of snakes){
       snake.move({width: gameWidth, height: gameHeight})
     }
-    yield { redraw:[...apples, ...snakes] };
+    yield [new DrawEvent(...apples, ...snakes)];
   }
 }
