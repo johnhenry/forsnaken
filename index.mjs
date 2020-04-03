@@ -1,16 +1,26 @@
 import './warning.js';
 
 import KeyBrain from './keyBrain.mjs';
-export { wasd, antiWasd, arrows, antiArrows } from './keyboardConfigs.mjs';
-import GamePadBrain, { xbox, antiXbox } from './gamePadBrain.mjs';
+import { wasd, antiWasd, arrows, antiArrows } from './keyboardConfigs.mjs';
+
+import GamePadBrain from './gamePadBrain.mjs';
+import { xbox, antiXbox } from './gamePadConfig.mjs';
+
 import RandomBrain from './randomBrain.mjs';
 
 import renderFactory from './renderFactory.mjs';
 import gameFactory from './gameFactory.mjs';
 import createAnimationLoop from './createAnimationLoop.mjs'
-import context, {width, height} from './context.mjs';
 
-const zoom = 8; // Must be a divisor of width and length; there exists n, m s.t. n * zoom === length && m * zoom = width;
+const canvas = document.getElementById('game');
+const { width, height } = canvas;
+const context = canvas.getContext('2d');
+
+const zoom = 8; 
+// Number describing how much to zoom in when drawing. 
+// Must be a divisor of width and length in order to draw game properly
+// For example, with a zoom of 1, 1 unit in the game would be drawn over a 1x1 (1) pixel square 
+//              with a zoom of 8, 1 unit in the game would be drawn over a 8x8 (64 pixel square 
 const gameWidth = width/zoom;
 const gameHeight = height/zoom;
 const appleNum = Math.ceil(0.01 * gameWidth * gameHeight);

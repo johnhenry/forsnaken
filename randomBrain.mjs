@@ -12,7 +12,6 @@ export default class extends EventTarget {
       }
       return result;
     }).flat();
-    console.log(this.#values)
     this.#boundProcess = this.process.bind(this);
     this.#interval = setInterval(() =>{
       this.#boundProcess();

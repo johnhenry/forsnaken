@@ -18,7 +18,7 @@ export default function *({appleNum=1, playerConfig=[], gameWidth=400, gameHeigh
       apple.spawn(...snakes.map(({cells}) =>cells ).flat());
       // grow snake
       // shanke screen based on snake direction
-      yield { status:'event', event: new AppleEatenEvent(snake)};
+      yield { events:[ new AppleEatenEvent(snake)]};
     }
 
     // check for collision between each snake's head and each other snake
@@ -47,6 +47,6 @@ export default function *({appleNum=1, playerConfig=[], gameWidth=400, gameHeigh
     for(const snake of snakes){
       snake.move({width: gameWidth, height: gameHeight})
     }
-    yield { status:'draw', entities:[...apples, ...snakes] };
+    yield { redraw:[...apples, ...snakes] };
   }
 }
