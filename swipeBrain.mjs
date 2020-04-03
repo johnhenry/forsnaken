@@ -5,10 +5,12 @@ export default class extends EventTarget {
   #x = null
   #y = null
   #min
+  #map
   #boundLock
   #boundMove
-  constructor(min=1){
+  constructor(min=1, map={}){
     super();
+    this.#map = map;
     this.#min = min;
     this.#boundLock = this.lock.bind(this);
     this.#boundMove = this.move.bind(this);
@@ -38,16 +40,16 @@ export default class extends EventTarget {
     }
     if(Math.abs(dy) > this.#min){
       if (dy < 0) {
-        this.dispatchEvent(new SignalEvent('up'));
+        this.dispatchEvent(new SignalEvent(this.#map['up'] || 'up'));
       } else {
-        this.dispatchEvent(new SignalEvent('down'));
+        this.dispatchEvent(new SignalEvent(this.#map['down'] || 'down' ));
       }
     }
     if(Math.abs(dx) > this.#min){
       if (dx < 0) {
-        this.dispatchEvent(new SignalEvent('left'));
+        this.dispatchEvent(new SignalEvent(this.#map['left'] || 'left'));
       } else {
-        this.dispatchEvent(new SignalEvent('right'));
+        this.dispatchEvent(new SignalEvent(this.#map['right'] || 'right'));
       }
     }
     this.#x = null;
