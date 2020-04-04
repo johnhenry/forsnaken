@@ -28,11 +28,11 @@ const gameHeight = height/zoom;
 const appleNum = Math.ceil(0.01 * gameWidth * gameHeight);
 const render = renderFactory(context, width, height, zoom);
 const playerConfig = [
-  {id: 0, x: 0,                 y: 0,                velocity:+1,  horizontal:true,    brains: [new GamePadBrain(0, xbox), new KeyBrain(arrows), new SwipeBrain(30)],           color:'#4e9a06' },
-  {id: 1, x: 0,                 y: gameHeight - 1,   velocity:-1,  horizontal:false,   brains: [new GamePadBrain(0, antiXbox), new KeyBrain(antiArrows), new SwipeBrain(30, ['down', 'up', 'right', 'left'])],   color:'#8ae232'},
-  {id: 2, x: gameWidth - 1,     y: 0,                velocity:+1,  horizontal:false,   brains: [new GamePadBrain(1, xbox), new KeyBrain(wasd)],             color:'#c4a000'  },
-  {id: 3, x: gameWidth - 1,     y: gameHeight - 1,   velocity:-1,  horizontal:true,    brains: [new GamePadBrain(1, antiXbox), new KeyBrain(antiWasd)],     color:'#fce94f'},
-  {id: 4, x: Math.floor(gameWidth/2),     y: Math.ceil(gameHeight/2),   velocity:Math.random() < 0.5 ? 1 : -1,  horizontal: Math.random() < 0.5 ? true : false,    brains: [new RandomBrain({'clockwise':1,'counterclockwise':1, '':2}, 500)],     color:'white'},
+  {id: 'green',   x: 0,                 y: 0,                velocity:+1,  horizontal:true,    brains: [new GamePadBrain(0, xbox), new KeyBrain(arrows), new SwipeBrain(30)],           color:'#4e9a06' },
+  {id: 'green',   x: 0,                 y: gameHeight - 2,   velocity:-1,  horizontal:false,   brains: [new GamePadBrain(0, antiXbox), new KeyBrain(antiArrows), new SwipeBrain(30, ['down', 'up', 'right', 'left'])],   color:'#8ae232'},
+  {id: 'yellow',  x: gameWidth - 1,     y: 0,                velocity:+1,  horizontal:false,   brains: [new GamePadBrain(1, xbox), new KeyBrain(wasd)],             color:'#c4a000'  },
+  {id: 'yellow',  x: gameWidth - 1,     y: gameHeight - 2,   velocity:-1,  horizontal:true,    brains: [new GamePadBrain(1, antiXbox), new KeyBrain(antiWasd)],     color:'#fce94f'},
+  {id: 'white',   x: Math.floor(gameWidth/2),     y: Math.ceil(gameHeight/2),   velocity:Math.random() < 0.5 ? 1 : -1,  horizontal: Math.random() < 0.5 ? true : false,    brains: [new RandomBrain({'clockwise':1,'counterclockwise':1, '':2}, 500)],     color:'white'},
 
 ];
 const {pause, resume} = createAnimationLoop(

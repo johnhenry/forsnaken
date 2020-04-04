@@ -2,6 +2,8 @@ import drawFactory from './drawFactory.mjs';
 import DrawEvent from './DrawEvent.mjs';
 import ScoreEvent from './ScoreEvent.mjs';
 import DeathEvent from './DeathEvent.mjs';
+const scores = {};
+const deaths = {};
 export default (context, width, height, zoom) =>
   {
     const draw = drawFactory(context, width, height, zoom);  
@@ -19,10 +21,20 @@ export default (context, width, height, zoom) =>
             .stop('fade', true)
             .css('background-color', 'inherit')
             .animate({ backgroundColor: color}, 10);
-          console.log(`snake ${id} scored ${score}`);
+          if(scores[id]){
+            scores[id] += score;
+          }else{
+            scores[id] = score;
+          }
+          console.log(`${id} score: ${scores[id]}`);
         } else if (event instanceof DeathEvent) {
           const { id } = event.subject;
-          console.log(`snake ${id} died`);
+          if(deaths[id]){
+            deaths[id] ++;
+          }else{
+            deaths[id] = 1;
+          }
+          console.log(`${id} died ${deaths[id]} times`);
         }
       }
     }
