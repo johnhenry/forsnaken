@@ -48,7 +48,12 @@ export default (canvasElement, width, height, zoom=1) =>
             deaths[id] = 1;
           }
           console.log(`${id} died ${deaths[id]} times`);
+        } else {
+          // Event not handled
+          return event;
         }
+        // Event handled
+        return;
       }
     }
   }

@@ -1,7 +1,7 @@
 // ## Canvas
 const canvas = document.getElementById('snake');
 
-// ## Render
+// ## Renderer Setup
 const canvaswidth = canvas.width = 800;// already set in HTML to prevent flash
 const canvasheight = canvas.height = 400;// already set in HTML to prevent flash
 const zoom = 8;
@@ -16,13 +16,15 @@ if(canvaswidth % zoom || canvasheight % zoom){
 import rendererFactory from './SnakeGame/rendererFactories/canvas.mjs';
 const renderer = rendererFactory(canvas, canvaswidth, canvasheight, zoom);
 
-// ## Setup Game
+// ## Game Setup
 // ### Game Properties 
 const width = canvaswidth/zoom;
 const height = canvasheight/zoom;
 const appleNum = Math.ceil(0.01 * width * height);
 
 // ### Game Players
+
+// #### Brains
 import KeyBrain from './brains/human/keyboard.mjs';
 import GamePadBrain from './brains/human/gamepad.mjs';
 import SwipeBrain from './brains/human/swipe.mjs';
@@ -31,9 +33,9 @@ import { wasd, antiWasd, arrows, antiArrows } from './brains/configurations/keyb
 import { xbox, antiXbox } from './brains/configurations/gamepad.mjs';
 
 // #### Players
-const players = [];
-// Human controled players
-players[0] = {
+const snakes = [];
+// Human controled snakes
+snakes[0] = {
   id: 'green',
   color: '#4e9a06',
   x: 0,
@@ -46,7 +48,7 @@ players[0] = {
     new SwipeBrain(30)
   ]
 };
-players[1] = {
+snakes[1] = {
   id: 'green',
   color: '#8ae232',
   x: 0,
@@ -59,7 +61,7 @@ players[1] = {
     new SwipeBrain(30, ['down', 'up', 'right', 'left'])
   ]
 };
-players[2] = {
+snakes[2] = {
   id: 'yellow',
   color: '#c4a000',
   x: width - 1,
@@ -71,7 +73,7 @@ players[2] = {
     new KeyBrain(wasd)
   ]
 };
-players[3] = {
+snakes[3] = {
   id: 'yellow',
   color: '#fce94f',
   x: width - 1,
@@ -83,8 +85,8 @@ players[3] = {
     new KeyBrain(antiWasd)
   ]
 };
-// Computer controlled players
-players[4] = {
+// Computer controlled snakes
+snakes[4] = {
   id: 'white',
   color: '#ffffff',
   x: Math.floor(width/2),
@@ -98,7 +100,7 @@ players[4] = {
 
 // ### Game Instance
 import SnakeGame from './SnakeGame/index.mjs';
-const game = SnakeGame({ appleNum, width, height }, ...players);
+const game = SnakeGame({ appleNum, width, height }, ...snakes);
 
 // ## Run Game
 // ### Game Run Properties 

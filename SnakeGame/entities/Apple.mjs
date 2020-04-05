@@ -15,7 +15,6 @@ const Apple = class{
   }
   spawn(...avoid){
     this.#value=2
-    let i = 0;
     do {
       this.x = getRandomInt(...this.#xrange);
       this.y = getRandomInt(...this.#yrange);
