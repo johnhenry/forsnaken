@@ -1,14 +1,13 @@
-html, body {
+html {
   height: 100%;
   margin: 0;
 }
 
 body {
-  background: black;
+  background-color: black;
+  height: 100%;
+  margin: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-canvas {
-  width: 100%;
 }

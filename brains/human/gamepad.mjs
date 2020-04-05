@@ -1,4 +1,4 @@
-import SignalEvent from './SignalEvent.mjs';
+import SignalEvent from '../SignalEvent.mjs';
 export default class extends EventTarget {
   #index
   #map

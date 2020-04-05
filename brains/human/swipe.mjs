@@ -1,5 +1,5 @@
 // https://css-tricks.com/simple-swipe-with-vanilla-javascript/
-import SignalEvent from './SignalEvent.mjs';
+import SignalEvent from '../SignalEvent.mjs';
 const unify =  event => event.changedTouches ? event.changedTouches[0] : event;
 export default class extends EventTarget {
   #x = null

@@ -1,9 +1,9 @@
-import SignalEvent from './SignalEvent.mjs';
+import SignalEvent from '../SignalEvent.mjs';
 export default class extends EventTarget {
   #values
   #interval
   #boundProcess
-  constructor(weights, interval=50){
+  constructor(weights, interval=1000){
     super();
     this.#values = Object.entries(weights).map(([value, weight]) => {
       const result = [];

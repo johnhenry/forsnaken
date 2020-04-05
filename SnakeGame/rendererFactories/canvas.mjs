@@ -1,12 +1,26 @@
-import drawFactory from './drawFactory.mjs';
-import DrawEvent from './DrawEvent.mjs';
-import ScoreEvent from './ScoreEvent.mjs';
-import DeathEvent from './DeathEvent.mjs';
+import DrawEvent from '../events/DrawEvent.mjs';
+import ScoreEvent from '../events/ScoreEvent.mjs';
+import DeathEvent from '../events/DeathEvent.mjs';
+const makeDraw = (context, width, height, zoom=1) => (...things)=>{
+  // draw each apple and snake
+  context.clearRect(0, 0, width, height);
+  for(const {color, cells} of things){
+    for(const cell of cells){
+      context.fillStyle = color;
+      context.fillRect(cell.x * zoom, cell.y * zoom, zoom, zoom);
+      // if (zoom > 2) {
+      //   context.fillRect(cell.x * zoom + 1, cell.y * zoom + 1, zoom - 2, zoom - 2);
+      // } else {
+      //   context.fillRect(cell.x * zoom, cell.y * zoom, zoom, zoom);
+      // }
+    }
+  }
+}
 const scores = {};
 const deaths = {};
-export default (context, width, height, zoom) =>
+export default (canvasElement, width, height, zoom=1) =>
   {
-    const draw = drawFactory(context, width, height, zoom);  
+    const draw = makeDraw(canvasElement.getContext('2d'), width, height, zoom);  
     return (events) => {
       for(const event of events){
         if (event instanceof DrawEvent){
@@ -15,9 +29,9 @@ export default (context, width, height, zoom) =>
         } else if (event instanceof ScoreEvent){
           const { direction, color, id } = event.subject;
           const { score } = event;
-          $('#game')
+          $(canvasElement)
             .effect('shake', { direction });
-          $('#game')
+          $(canvasElement)
             .stop('fade', true)
             .css('background-color', 'inherit')
             .animate({ backgroundColor: color}, 10);

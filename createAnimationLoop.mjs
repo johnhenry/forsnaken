@@ -1,4 +1,4 @@
-export default (iterator, render, FPS=12, start=true)=>{// Set FPS to divisors of 60: 60, 30, 20, 15, 12, 10, 6, 5, 4, 3, 2, 1
+export default (iterator, renderer, FPS=12, start=true)=>{// Set FPS to divisors of 60: 60, 30, 20, 15, 12, 10, 6, 5, 4, 3, 2, 1
   let count = 0;
   let running = false;
   const loop = () => {
@@ -10,7 +10,7 @@ export default (iterator, render, FPS=12, start=true)=>{// Set FPS to divisors o
       return;
     }
     count = 0;
-    render(iterator.next().value);
+    renderer(iterator.next().value);
   };
   const pause = () => running = false;
   const resume = () => {
