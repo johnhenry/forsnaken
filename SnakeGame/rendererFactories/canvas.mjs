@@ -7,12 +7,11 @@ const makeDraw = (context, width, height, zoom=1) => (...things)=>{
   for(const {color, cells} of things){
     for(const cell of cells){
       context.fillStyle = color;
-      context.fillRect(cell.x * zoom, cell.y * zoom, zoom, zoom);
-      // if (zoom > 2) {
-      //   context.fillRect(cell.x * zoom + 1, cell.y * zoom + 1, zoom - 2, zoom - 2);
-      // } else {
-      //   context.fillRect(cell.x * zoom, cell.y * zoom, zoom, zoom);
-      // }
+      if (zoom > 2) {
+        context.fillRect(cell.x * zoom + 1, cell.y * zoom + 1, zoom - 2, zoom - 2);
+      } else {
+        context.fillRect(cell.x * zoom, cell.y * zoom, zoom, zoom);
+      }
     }
   }
 }
