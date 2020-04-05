@@ -1,40 +1,84 @@
-// ## Canvas
-const canvas = document.getElementById('snake');
-
-// ## Renderer Setup
-const canvaswidth = canvas.width = 800;// already set in HTML to prevent flash
-const canvasheight = canvas.height = 400;// already set in HTML to prevent flash
-const zoom = 8;
-// Number describing how much to zoom in when drawing. 
-// Must be a divisor of width and length in order to draw game properly
-// For example, with a zoom of 1, 1 unit in the game would be drawn over a 1x1 (1) pixel square 
-//              with a zoom of 8, 1 unit in the game would be drawn over a 8x8 (64 pixel square 
-if(canvaswidth % zoom || canvasheight % zoom){
-  throw new Error('zoom must be a divisor of canvas width and height');
-}
-
+// ## 0. imports
+// Main
+import GameLoop from './SnakeGame/loop.mjs';
 import rendererFactory from './SnakeGame/rendererFactories/canvas.mjs';
-const renderer = rendererFactory(canvas, canvaswidth, canvasheight, zoom);
 
-// ## Game Setup
-// ### Game Properties 
-const width = canvaswidth/zoom;
-const height = canvasheight/zoom;
-const appleNum = Math.ceil(0.01 * width * height);
-
-// ### Game Players
-
-// #### Brains
+// Brains
 import KeyBrain from './brains/human/keyboard.mjs';
 import GamePadBrain from './brains/human/gamepad.mjs';
 import SwipeBrain from './brains/human/swipe.mjs';
 import RandomBrain from './brains/ai/random.mjs';
+// Brain Configurations
 import { wasd, antiWasd, arrows, antiArrows } from './brains/configurations/keyboard.mjs';
 import { xbox, antiXbox } from './brains/configurations/gamepad.mjs';
 
-// #### Players
+// Utilities
+import createAnimationLoop from './createAnimationLoop.mjs';
+import { EPILEPSY_WARNING } from './messages.mjs';
+
+
+// ## Chapter 1: Canvas  
+// The **canvas** is place in the HTML code where we will render our game.
+// We've given it an id of "snake" and so that we can reference it in our code. 
+
+const canvas = document.getElementById('snake');
+
+// ## Chapter 2: Renderer Setup
+
+// Render setup involves creating a **renderer** that will be used to render
+// the output of the **game** object (created in the next chapter) on to the aforementioned **canvas**.
+
+// Before we create the **renderer**, we want to know the width and heigh
+// of the object upon which we're drawing, **canvaswidth** and **canvasheight**, 
+// respective. Note that we set these in the HTML as a practical measure to avoid flash, and are resetting them here for demonstration purposes.
+
+const canvaswidth = canvas.width = 800;// already set in HTML to prevent flash
+const canvasheight = canvas.height = 400;// already set in HTML to prevent flash
+
+// Next we need to create a **zoom**.
+// This is an integer how "zoomed-in" a game will be when used to draw a game on a canvas.
+// In order to make the game fit into the drawable areas, both the
+// **canvaswidth** and **canvasheight** are scaled down by this number when making
+//  calculations within the game.
+// For example, with a zoom of 1, 1 unit in the game would be drawn over a 1x1 (1) pixel square 
+//              with a zoom of 8, 1 unit in the game would be drawn over a 8x8 (64) pixel square 
+// We've picked 8, but as long as it's a divisor of both **canvaswidth** and **canvasheight**, it will work. 
+const zoom = 8;
+
+if(canvaswidth % zoom || canvasheight % zoom){
+  throw new Error('zoom must be a divisor of canvas width and height');
+}
+
+// Finally, we create the **renderer**, by passing these properties,
+// along the **canvas** from chapter 1 into the **rendererFactory**.
+
+const renderer = rendererFactory(canvas, canvaswidth, canvasheight, zoom);
+
+// ## Chapter 3: Game Setup
+
+// Game setup involves creating a **game** whose output is rendered using the **renderer** from the previous chapter.
+
+// Before creating the game, we scale down **canvaswidth** and **canvasheight** by a factor of **zoom** in order to make the game calculations match the renderer.
+// We call these  **width** and **height** respectively.
+const width = canvaswidth/zoom;
+const height = canvasheight/zoom;
+
+// The game calls for a specific quantity called **appleNumber** that representes the number of apples randomly distributed throught the game world. We've chosen an  calculation based on height and width to ensure that this number is around 1% of the total game area.
+const appleNum = Math.ceil(0.01 * width * height);
+
+// Each object in the **snakes** array represents the starting properties of a snake when spawned.
+// Hopefully the named properties are self explanatory
+// Snakes on a "teams" are given the same id as to signify their connection. 
+
+// The main differentiator between each snake is the "brains" array
+// Brains are an interface used to control entities from outside of the game.
+// Brains in "./brains/ai/" are controlled by the computer itself.
+
+// The *snakes* array represents a list of initialisations for each snake.
 const snakes = [];
-// Human controled snakes
+// Brains in the "./brains/human/" directory connect to human interface devices to allow for input.
+// The first snake can be controlled by the arrow keys, the d-pad on a game controller,
+// or via swiping on a touch screen. 
 snakes[0] = {
   id: 'green',
   color: '#4e9a06',
@@ -48,6 +92,7 @@ snakes[0] = {
     new SwipeBrain(30)
   ]
 };
+// The second snakes's movements mirrors the first's.
 snakes[1] = {
   id: 'green',
   color: '#8ae232',
@@ -61,6 +106,7 @@ snakes[1] = {
     new SwipeBrain(30, ['down', 'up', 'right', 'left'])
   ]
 };
+// The third snake is controlled by either the "wasd" keys or the d-pad on a _second_ game controller.
 snakes[2] = {
   id: 'yellow',
   color: '#c4a000',
@@ -73,6 +119,7 @@ snakes[2] = {
     new KeyBrain(wasd)
   ]
 };
+// The fourth snakes's movements mirror the third's.
 snakes[3] = {
   id: 'yellow',
   color: '#fce94f',
@@ -85,7 +132,7 @@ snakes[3] = {
     new KeyBrain(antiWasd)
   ]
 };
-// Computer controlled snakes
+// There is a fifth snake controlled by the computer. It turns clockwise, counterclockwise, or continues straight after every second.
 snakes[4] = {
   id: 'white',
   color: '#ffffff',
@@ -98,34 +145,45 @@ snakes[4] = {
   ]
 };
 
-// ### Game Instance
-import SnakeGame from './SnakeGame/index.mjs';
-const game = SnakeGame({ appleNum, width, height }, ...snakes);
+// Finally, we create the **game**, by passing these properties into **GameLoop**.
+const game = GameLoop({ appleNum, width, height }, ...snakes);
 
-// ## Run Game
-// ### Game Run Properties 
+
+// ## Chapter 4: Run Game
+
+// The objective of this sections is to run **createAnimationLoop**
+// on the previously created *game* and *renderer* objects to start the game.
+
+// We optionally set the **FPS** (Frames per second) of the loop as 12,
 const FPS = 12;
-if(60 % FPS){
-  throw new Error('FPS must be a divisor of 60: 60, 30, 20, 15, 12, 10, 6, 5, 4, 3, 2, 1');
+if(120 % FPS || FPS > 60){
+  throw new Error(`FPS must be a divisor of 120 and less than or equal to 60:
+1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 24, 30, 40, 60`);
 }
-let running = false;
 
-import createAnimationLoop from './createAnimationLoop.mjs';
+// We pass the **game**, **renderer**, and **FPS** to **createAnimationLoop** to start the game running.
+// We also passed an optional **running** flag as "false" to prevent the loop from starting immediately.
+let running = false;
 const { pause, resume } = createAnimationLoop(
   game,
   renderer,
   FPS,
   running);
 
-// ### Epilepsy Pre-Warning and Start
-import WARNING from './warning.mjs';
-if (confirm(WARNING)){
+// **createAnimationLoop** returns a **pause**, and **resume** functions to
+// control the loop outside of th game.
+
+// Because we haven't started the game, we can wait for the user to confirm the
+// the message before not starting. The game simply does not start if the user
+// rejects the dialog
+if (confirm(EPILEPSY_WARNING)){
   resume();
 }
 
-// ### Misc:
+// Finally, we attach a listener to allow the space key to toggle
+// the running program between paused and running states.
 window.document.addEventListener('keydown', ({which})=>{
-  if(which === 32) { // 32 is space key
+  if(which === 32) { // "32" corresponds to the  "space key"
     if(running){
       running = pause();
     }else{
