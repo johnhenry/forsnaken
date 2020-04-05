@@ -1,3 +1,7 @@
+// Function that builds atop the browser's native *requestAnimationFrame* to
+// run iterators at a specified framerate and render yielded elements.
+// Useful for game loops.
+
 export default (iterator, renderer, FPS=12, start=true)=>{// Set FPS to divisors of 60: 60, 30, 20, 15, 12, 10, 6, 5, 4, 3, 2, 1
   let count = 0;
   let running = false;
@@ -5,8 +9,8 @@ export default (iterator, renderer, FPS=12, start=true)=>{// Set FPS to divisors
     if(running){
       requestAnimationFrame(loop);
     }
-    // slow game loop to FPS fps instead of 60 (60/FPS = 4)
-    if (++count < 60/FPS) {
+    count +=0.5;
+    if (count < 30/FPS) {
       return;
     }
     count = 0;
