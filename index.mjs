@@ -1,6 +1,6 @@
 // ## 0. imports
 // Main
-import GameLoop from './SnakeGame/loop.mjs';
+import Game from './SnakeGame/game.mjs';
 import rendererFactory from './SnakeGame/rendererFactories/canvas.mjs';
 
 // Brains
@@ -13,7 +13,7 @@ import { wasd, antiWasd, arrows, antiArrows } from './brains/configurations/keyb
 import { xbox, antiXbox } from './brains/configurations/gamepad.mjs';
 
 // Utilities
-import createAnimationLoop from './createAnimationLoop.mjs';
+import { asyncLoop as createAnimationLoop } from './createAnimationLoop.mjs';
 import { EPILEPSY_WARNING } from './messages.mjs';
 
 
@@ -26,7 +26,7 @@ const canvas = document.getElementById('snake');
 // ## Chapter 2: Renderer Setup
 
 // Render setup involves creating a **renderer** that will be used to render
-// the output of the **game** object (created in the next chapter) on to the aforementioned **canvas**.
+// the output of the **gameInstance** object (created in the next chapter) on to the aforementioned **canvas**.
 
 // Before we create the **renderer**, we want to know the width and heigh
 // of the object upon which we're drawing, **canvaswidth** and **canvasheight**, 
@@ -56,7 +56,7 @@ const renderer = rendererFactory(canvas, canvaswidth, canvasheight, zoom);
 
 // ## Chapter 3: Game Setup
 
-// Game setup involves creating a **game** whose output is rendered using the **renderer** from the previous chapter.
+// Game setup involves creating a **gameInstance** whose output is rendered using the **renderer** from the previous chapter.
 
 // Before creating the game, we scale down **canvaswidth** and **canvasheight** by a factor of **zoom** in order to make the game calculations match the renderer.
 // We call these  **width** and **height** respectively.
@@ -145,49 +145,46 @@ snakes[4] = {
   ]
 };
 
-// Finally, we create the **game**, by passing these properties into **GameLoop**.
-const game = GameLoop({ appleNum, width, height }, ...snakes);
-
+// Finally, we create the **gameInstance**, by passing these properties into **Game**.
+const gameInstance = Game({ appleNum, width, height }, ...snakes);
 
 // ## Chapter 4: Run Game
 
 // The objective of this sections is to run **createAnimationLoop**
 // on the previously created *game* and *renderer* objects to start the game.
 
-// We optionally set the **FPS** (Frames per second) of the loop as 12,
-const FPS = 12;
+// We optionally set the **FPS** (Frames Per Second) of the loop as 12,
+const FPS = 20;
 if(120 % FPS || FPS > 60){
   throw new Error(`FPS must be a divisor of 120 and less than or equal to 60:
 1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 24, 30, 40, 60`);
 }
 
-// We pass the **game**, **renderer**, and **FPS** to **createAnimationLoop** to start the game running.
-// We also passed an optional **running** flag as "false" to prevent the loop from starting immediately.
-let running = false;
-const { pause, resume } = createAnimationLoop(
-  game,
+// We pass the **gameInstance**, **renderer**, and **FPS** to **createAnimationLoop** to start the game running.
+// We also passed an optional flag as "false" to prevent the loop from starting immediately.
+const loop = createAnimationLoop(
+  gameInstance,
   renderer,
   FPS,
-  running);
+  false);
 
-// **createAnimationLoop** returns a **pause**, and **resume** functions to
-// control the loop outside of th game.
+// **createAnimationLoop** returns an object **pause**, and **resume** methods to
+// control the loop outside of the game.
 
 // Because we haven't started the game, we can wait for the user to confirm the
 // the message before not starting. The game simply does not start if the user
 // rejects the dialog
 if (confirm(EPILEPSY_WARNING)){
-  resume();
-}
-
-// Finally, we attach a listener to allow the space key to toggle
-// the running program between paused and running states.
-window.document.addEventListener('keydown', ({which})=>{
-  if(which === 32) { // "32" corresponds to the  "space key"
-    if(running){
-      running = pause();
-    }else{
-      running = resume();
+  loop.resume();
+  // Finally, we attach a listener to allow the space key to toggle
+  // the running program between paused and running states.
+  window.document.addEventListener('keydown', ({which})=>{
+    if(which === 32) { // "32" corresponds to the  "space key"
+      if(loop.running){
+        loop.pause();
+      }else{
+        loop.resume();
+      }
     }
-  }
-});
+  });
+}

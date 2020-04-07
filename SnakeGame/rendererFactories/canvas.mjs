@@ -20,11 +20,12 @@ const deaths = {};
 export default (canvasElement, width, height, zoom=1) =>
   {
     const draw = makeDraw(canvasElement.getContext('2d'), width, height, zoom);  
-    return (events) => {
+    return async (events) => {
       for(const event of events){
         if (event instanceof DrawEvent){
           const { subjects } = event;
           draw(...subjects);
+          continue;
         } else if (event instanceof ScoreEvent){
           const { direction, color, id } = event.subject;
           const { score } = event;
@@ -34,12 +35,14 @@ export default (canvasElement, width, height, zoom=1) =>
             .stop('fade', true)
             .css('background-color', 'inherit')
             .animate({ backgroundColor: color}, 10);
+          await new Promise(r=>setTimeout(r, 250));
           if(scores[id]){
             scores[id] += score;
           }else{
             scores[id] = score;
           }
           console.log(`${id} score: ${scores[id]}`);
+          continue;
         } else if (event instanceof DeathEvent) {
           const { id } = event.subject;
           if(deaths[id]){
@@ -48,12 +51,8 @@ export default (canvasElement, width, height, zoom=1) =>
             deaths[id] = 1;
           }
           console.log(`${id} died ${deaths[id]} times`);
-        } else {
-          // Event not handled
-          return event;
+          continue;
         }
-        // Event handled
-        return;
       }
     }
   }

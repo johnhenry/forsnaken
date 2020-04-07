@@ -39,7 +39,7 @@ I've defined two modules: **[collide](./SnakeGame/collisions/collide.mjs)** and 
 
 ## Game as iterator
 
-We use **[createAnimationLoop](./createAnimationLoop.mjs)** to run and render the game,
+We use **[loop](./createAnimationLoop.mjs)** to run and render the game,
 but the result of **SnakeGame** is an *iterator* and can be used as such.
 
 This might be useful for debugging, rendering outside of the browser,
