@@ -1,7 +1,8 @@
 // ## 0. imports
 // Main
 import Game from './SnakeGame/game.mjs';
-import rendererFactory from './SnakeGame/rendererFactories/canvas.mjs';
+import combineRenderers from './combineRenderers.mjs';
+import { canvas as CRF, element as ERF } from './SnakeGame/rendererFactories/index.mjs';
 
 // Brains
 import KeyBrain from './brains/human/keyboard.mjs';
@@ -13,7 +14,7 @@ import { wasd, antiWasd, arrows, antiArrows } from './brains/configurations/keyb
 import { xbox, antiXbox } from './brains/configurations/gamepad.mjs';
 
 // Utilities
-import { asyncLoop as createAnimationLoop } from './createAnimationLoop.mjs';
+import { loop as createAnimationLoop } from './createAnimationLoop.mjs';
 import { EPILEPSY_WARNING } from './messages.mjs';
 
 
@@ -28,7 +29,11 @@ const canvas = document.getElementById('snake');
 // Render setup involves creating a **renderer** that will be used to render
 // the output of the **gameInstance** object (created in the next chapter) on to the aforementioned **canvas**.
 
-// Before we create the **renderer**, we want to know the width and heigh
+// Our **renderer** will actually be a combination of two renderers:
+// one concrened with rendering the game to a canvas context; 
+// another concerned with rendering effects on the HTML elemetn
+
+// Before we create the **canvasRenderer**, we want to know the width and heigh
 // of the object upon which we're drawing, **canvaswidth** and **canvasheight**, 
 // respective. Note that we set these in the HTML as a practical measure to avoid flash, and are resetting them here for demonstration purposes.
 
@@ -49,10 +54,21 @@ if(canvaswidth % zoom || canvasheight % zoom){
   throw new Error('zoom must be a divisor of canvas width and height');
 }
 
-// Finally, we create the **renderer**, by passing these properties,
+// We create the **canvasRenderer**, by passing these properties,
 // along the **canvas** from chapter 1 into the **rendererFactory**.
 
-const renderer = rendererFactory(canvas, canvaswidth, canvasheight, zoom);
+const canvasRenderer = CRF(canvas, canvaswidth, canvasheight, zoom);
+
+
+// The element renderer will also render to the **canvas**
+// Besause the element render needs a reference to the loop, (defined below)
+// and the loop is crated with a reference to the element, we define it now,
+// and pass it to the element via function call when once it's later defined.
+let loop;
+const elementRenderer = ERF(canvas, ()=>loop);
+// Finally, we create the **renderer**, by the original two renderes ,
+
+const renderer = combineRenderers(canvasRenderer, elementRenderer)
 
 // ## Chapter 3: Game Setup
 
@@ -162,7 +178,7 @@ if(120 % FPS || FPS > 60){
 
 // We pass the **gameInstance**, **renderer**, and **FPS** to **createAnimationLoop** to start the game running.
 // We also passed an optional flag as "false" to prevent the loop from starting immediately.
-const loop = createAnimationLoop(
+loop = createAnimationLoop(
   gameInstance,
   renderer,
   FPS,
@@ -176,15 +192,4 @@ const loop = createAnimationLoop(
 // rejects the dialog
 if (confirm(EPILEPSY_WARNING)){
   loop.resume();
-  // Finally, we attach a listener to allow the space key to toggle
-  // the running program between paused and running states.
-  window.document.addEventListener('keydown', ({which})=>{
-    if(which === 32) { // "32" corresponds to the  "space key"
-      if(loop.running){
-        loop.pause();
-      }else{
-        loop.resume();
-      }
-    }
-  });
 }

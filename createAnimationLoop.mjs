@@ -5,6 +5,7 @@
 export const loop = (iterator, renderer=console.log, FPS=12, start=true) => {
   let count = 0;
   let running = false;
+  let current;
   const loop = () => {
     if(running){
       requestAnimationFrame(loop);
@@ -14,7 +15,8 @@ export const loop = (iterator, renderer=console.log, FPS=12, start=true) => {
       return;
     }
     count = 0;
-    renderer(iterator.next().value);
+    current = iterator.next().value;
+    renderer(current);
   };
   const pause = () => running = false;
   const resume = () => {
@@ -27,17 +29,24 @@ export const loop = (iterator, renderer=console.log, FPS=12, start=true) => {
   if(start){
     resume();
   }
-  return { pause, resume, get running(){ return running} };
+  return { 
+    pause,
+    resume,
+    get running(){ return running },
+    get current(){ return current } 
+  };
 };
 
 export const asyncLoop = (iterator, renderer=console.log, FPS=12, start=true) => {
   let running = false;
+  let current;
   const MS = Math.floor(1000/FPS);
   const loop = async () => {
     if(!running){
       return;
     }
-    await renderer(await iterator.next().value);
+    current = await iterator.next().value;
+    await renderer(current );
     setTimeout(loop, MS);
   };
   const pause = () => running = false;
@@ -51,5 +60,10 @@ export const asyncLoop = (iterator, renderer=console.log, FPS=12, start=true) =>
   if(start){
     resume();
   }
-  return { pause, resume, get running(){ return running} };
+  return { 
+    pause,
+    resume,
+    get running(){ return running },
+    get current(){ return current } 
+  };
 };

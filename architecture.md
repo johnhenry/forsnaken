@@ -14,7 +14,7 @@ but it is worth it to break out some key components for the sake of organization
 
 The **game loop** and the **renderer** are directly connected in that **game loop** must yield objects that the **renderer** "understands".
 
-In this game, we use a shared event model to achieve this, but this could also be achieved in other ways including a type system.
+In this game, we use a shared event model to achieve this could be augmented or replaced with a type system.
 
 Modules in the "./SnakeGame/events/" folder are shared by both the **game loop** and the **renderer**.  Following principals of "separation of concerns", they are otherwise decoupled.
 
