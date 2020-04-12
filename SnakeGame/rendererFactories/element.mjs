@@ -5,7 +5,8 @@ const deaths = {};
 export default (element, getLoop=()=>{}) => (events) => {
   for(const event of events){
     if (event instanceof ScoreEvent){
-      const { direction, color, id } = event.subject;
+      const { subject } = event;
+      const { direction, color, id } = subject;
       const { score } = event;
       $(element)
         .effect('shake', { direction });
@@ -23,16 +24,21 @@ export default (element, getLoop=()=>{}) => (events) => {
       }else{
         scores[id] = score;
       }
-      console.log(`${id} score: ${scores[id]}`);
+      const scoreElement = window.document.getElementById(`score-${id}`);
+      scoreElement.style.color = subject.color;
+      scoreElement.innerText = scores[id];
       continue;
     } else if (event instanceof DeathEvent) {
-      const { id } = event.subject;
+      const { subject } = event;
+      const { id } = subject;
       if(deaths[id]){
         deaths[id] ++;
       }else{
         deaths[id] = 1;
       }
-      console.log(`${id} died ${deaths[id]} times`);
+      const deathElement = window.document.getElementById(`death-${id}`);
+      deathElement.style.color = subject.color;
+      deathElement.innerText = deaths[id];
       continue;
     }
   }

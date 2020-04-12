@@ -2,13 +2,33 @@
 <html>
   <head>
     <title>Forsnaken</title>
+    <script>
+      window.CSS.registerProperty({
+      name: '--bg-color',
+      syntax: '<color>',
+      inherits: false,
+      initialValue: 'green',
+    });
+    </script>
     <link rel="stylesheet" href="./index.css">
+    <link rel="stylesheet" href="./SnakeGame/snake.css">
     <script src="//code.jquery.com/jquery-1.12.4.js"></script>
     <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="./index.mjs" type="module"></script>
   </head>
   <body>
-    <link rel="stylesheet" href="./SnakeGame/index.css">
-    <canvas width="800" height="400" id="snake" ></canvas>
-    <script src="./index.mjs" type="module"></script>
+    <main class="stacked" data-thingy="red">
+      <div id="canvas" >
+        <canvas width="800" height="400" id="snake"></canvas>
+      </div>
+      <div id="hud" >
+        <div id="score-green"></div>
+        <div id="score-yellow"></div>
+        <div id="score-white"></div>
+        <div id="death-yellow"></div>
+        <div id="death-green"></div>
+        <div id="death-white"></div>
+      </div>
+    </main>
   </body>
 </html>

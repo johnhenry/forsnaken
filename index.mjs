@@ -1,7 +1,7 @@
-// ## 0. imports
+// ## Imports
 // Main
 import Game from './SnakeGame/game.mjs';
-import combineRenderers from './combineRenderers.mjs';
+import combineRenderers from './tee.mjs';
 import { canvas as CRF, element as ERF } from './SnakeGame/rendererFactories/index.mjs';
 
 // Brains
@@ -18,13 +18,13 @@ import { loop as createAnimationLoop } from './createAnimationLoop.mjs';
 import { EPILEPSY_WARNING } from './messages.mjs';
 
 
-// ## Chapter 1: Canvas  
+// ## Canvas  
 // The **canvas** is place in the HTML code where we will render our game.
 // We've given it an id of "snake" and so that we can reference it in our code. 
 
 const canvas = document.getElementById('snake');
 
-// ## Chapter 2: Renderer Setup
+// ## Renderer Setup
 
 // Render setup involves creating a **renderer** that will be used to render
 // the output of the **gameInstance** object (created in the next chapter) on to the aforementioned **canvas**.
@@ -37,8 +37,10 @@ const canvas = document.getElementById('snake');
 // of the object upon which we're drawing, **canvaswidth** and **canvasheight**, 
 // respective. Note that we set these in the HTML as a practical measure to avoid flash, and are resetting them here for demonstration purposes.
 
-const canvaswidth = canvas.width = 800;// already set in HTML to prevent flash
-const canvasheight = canvas.height = 400;// already set in HTML to prevent flash
+const canvaswidth = canvas.width;
+// const canvasWidth = 800;// already set in HTML to prevent flash
+const canvasheight = canvas.height// = 400;// already set in HTML to prevent flash
+// const canvasheight = 400;// already set in HTML to prevent flash
 
 // Next we need to create a **zoom**.
 // This is an integer how "zoomed-in" a game will be when used to draw a game on a canvas.
@@ -59,7 +61,6 @@ if(canvaswidth % zoom || canvasheight % zoom){
 
 const canvasRenderer = CRF(canvas, canvaswidth, canvasheight, zoom);
 
-
 // The element renderer will also render to the **canvas**
 // Besause the element render needs a reference to the loop, (defined below)
 // and the loop is crated with a reference to the element, we define it now,
@@ -70,7 +71,7 @@ const elementRenderer = ERF(canvas, ()=>loop);
 
 const renderer = combineRenderers(canvasRenderer, elementRenderer)
 
-// ## Chapter 3: Game Setup
+// ## Game Setup
 
 // Game setup involves creating a **gameInstance** whose output is rendered using the **renderer** from the previous chapter.
 
@@ -113,7 +114,7 @@ snakes[1] = {
   id: 'green',
   color: '#8ae232',
   x: 0,
-  y: height - 2,
+  y: height - 1,
   velocity: -1,
   horizontal:false,
   brains: [
@@ -140,7 +141,7 @@ snakes[3] = {
   id: 'yellow',
   color: '#fce94f',
   x: width - 1,
-  y: height - 2,
+  y: height - 1,
   velocity: -1,
   horizontal:true,
   brains: [
@@ -164,7 +165,7 @@ snakes[4] = {
 // Finally, we create the **gameInstance**, by passing these properties into **Game**.
 const gameInstance = Game({ appleNum, width, height }, ...snakes);
 
-// ## Chapter 4: Run Game
+// ## Run Game
 
 // The objective of this sections is to run **createAnimationLoop**
 // on the previously created *game* and *renderer* objects to start the game.
@@ -178,18 +179,20 @@ if(120 % FPS || FPS > 60){
 
 // We pass the **gameInstance**, **renderer**, and **FPS** to **createAnimationLoop** to start the game running.
 // We also passed an optional flag as "false" to prevent the loop from starting immediately.
-loop = createAnimationLoop(
-  gameInstance,
-  renderer,
-  FPS,
-  false);
-
-// **createAnimationLoop** returns an object **pause**, and **resume** methods to
-// control the loop outside of the game.
-
-// Because we haven't started the game, we can wait for the user to confirm the
-// the message before not starting. The game simply does not start if the user
-// rejects the dialog
-if (confirm(EPILEPSY_WARNING)){
-  loop.resume();
+window.onload = ()=>{
+  loop = createAnimationLoop(
+    gameInstance,
+    renderer,
+    FPS,
+    false);
+  
+  // **createAnimationLoop** returns an object **pause**, and **resume** methods to
+  // control the loop outside of the game.
+  
+  // Because we haven't started the game, we can wait for the user to confirm the
+  // the message before not starting. The game simply does not start if the user
+  // rejects the dialog
+  if (confirm(EPILEPSY_WARNING)){
+    loop.resume();
+  }
 }

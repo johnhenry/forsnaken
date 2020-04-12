@@ -13,6 +13,7 @@ export default function *({ appleNum=1, width=400, height=400 }, ...players){
   }
   while(true){
     // check for collision between each snake's head and each apple
+    const digesting = new Set([]);
     for (const [head, apple] of collideArray(snakes.map(({head})=>head), apples)){
       // if collision happens (snake eats apple)
       const snake = snakes.find((snake=>collide(head, snake.head)));
@@ -20,6 +21,7 @@ export default function *({ appleNum=1, width=400, height=400 }, ...players){
       apple.spawn(...snakes.map(({cells}) =>cells ).flat());
       // grow snake
       // shanke screen based on snake direction
+      digesting.add(snake);
       yield [new ScoreEvent(snake, apple.value)];
     }
 
@@ -60,7 +62,7 @@ export default function *({ appleNum=1, width=400, height=400 }, ...players){
       }
     }
     // move each snake
-    for(const snake of snakes){
+    for (const snake of snakes.filter(snake => !digesting.has(snake))) {
       snake.move({width, height})
     }
     yield [new DrawEvent(...apples, ...snakes)];
