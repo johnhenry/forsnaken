@@ -15,15 +15,11 @@ export default class extends EventTarget {
     this.#boundLock = this.lock.bind(this);
     this.#boundMove = this.move.bind(this);
     window.addEventListener('mousedown', this.#boundLock, false);
-    window.addEventListener('touchstart', this.#boundLock, false);
     window.addEventListener('mouseup', this.#boundMove, false);
-    window.addEventListener('touchend', this.#boundMove, false);
   }
   disable(){
     window.removeEventListener('mousedown', this.#boundLock, false);
-    window.removeEventListener('touchstart', this.#boundLock, false);
     window.removeEventListener('mouseup', this.#boundMove, false);
-    window.removeEventListener('touchend', this.#boundMove, false);
   }
   lock(event) {
     this.#x = unify(event).clientX;

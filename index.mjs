@@ -7,7 +7,8 @@ import { canvas as CRF, element as ERF } from './SnakeGame/rendererFactories/ind
 // Brains
 import KeyBrain from './brains/human/keyboard.mjs';
 import GamePadBrain from './brains/human/gamepad.mjs';
-import SwipeBrain from './brains/human/swipe.mjs';
+import MouseSwipeBrain from './brains/human/mouseswipe.mjs';
+import TouchSwipeBrain from './brains/human/touchswipe.mjs';
 import RandomBrain from './brains/ai/random.mjs';
 // Brain Configurations
 import { wasd, antiWasd, arrows, antiArrows } from './brains/configurations/keyboard.mjs';
@@ -106,7 +107,9 @@ snakes[0] = {
   brains: [
     new GamePadBrain(0, xbox),
     new KeyBrain(arrows),
-    new SwipeBrain(30)
+    new MouseSwipeBrain(30),
+    new TouchSwipeBrain(30)
+
   ]
 };
 // The second snakes's movements mirrors the first's.
@@ -120,7 +123,8 @@ snakes[1] = {
   brains: [
     new GamePadBrain(0, antiXbox),
     new KeyBrain(antiArrows),
-    new SwipeBrain(30, ['down', 'up', 'right', 'left'])
+    new MouseSwipeBrain(30, ['down', 'up', 'right', 'left']),
+    new TouchSwipeBrain(30, ['down', 'up', 'right', 'left'])
   ]
 };
 // The third snake is controlled by either the "wasd" keys or the d-pad on a _second_ game controller.
