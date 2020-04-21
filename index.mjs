@@ -12,7 +12,7 @@ import TouchSwipeBrain from './brains/human/touchswipe.mjs';
 import RandomBrain from './brains/ai/random.mjs';
 // Brain Configurations
 import { wasd, antiWasd, arrows, antiArrows } from './brains/configurations/keyboard.mjs';
-import { xbox, antiXbox } from './brains/configurations/gamepad.mjs';
+import { dpad, antiDpad } from './brains/configurations/gamepad.mjs';
 
 // Utilities
 import { loop as createAnimationLoop } from './createAnimationLoop.mjs';
@@ -105,7 +105,7 @@ snakes[0] = {
   velocity: +1,
   horizontal:true,
   brains: [
-    new GamePadBrain(0, xbox),
+    new GamePadBrain(0, dpad),
     new KeyBrain(arrows),
     new MouseSwipeBrain(30),
     new TouchSwipeBrain(30)
@@ -121,7 +121,7 @@ snakes[1] = {
   velocity: -1,
   horizontal:false,
   brains: [
-    new GamePadBrain(0, antiXbox),
+    new GamePadBrain(0, antiDpad),
     new KeyBrain(antiArrows),
     new MouseSwipeBrain(30, ['down', 'up', 'right', 'left']),
     new TouchSwipeBrain(30, ['down', 'up', 'right', 'left'])
@@ -136,7 +136,7 @@ snakes[2] = {
   velocity: +1,
   horizontal:false,
   brains: [
-    new GamePadBrain(1, xbox), 
+    new GamePadBrain(1, dpad), 
     new KeyBrain(wasd)
   ]
 };
@@ -149,7 +149,7 @@ snakes[3] = {
   velocity: -1,
   horizontal:true,
   brains: [
-    new GamePadBrain(1, antiXbox),
+    new GamePadBrain(1, antiDpad),
     new KeyBrain(antiWasd)
   ]
 };

@@ -10,8 +10,8 @@ const Snake = class{
   #color
   #brains
   #enabled
-  #boundChangeDirection
-  constructor({x, y, velocity, horizontal, maxCells=2, brains, color, id=0}){
+  #boundUpdateState
+  constructor({x, y, velocity, horizontal=false, maxCells=2, brains, color, id=0}){
     this.#enabled = true;
     this.#x = x;
     this.#y = y;
@@ -23,19 +23,23 @@ const Snake = class{
     this.#maxCells = maxCells;
     this.#color = color;
     for(let i = 0; i < this.#maxCells; i++){
-      this.cells.push({x,y});
+      if(horizontal){
+        this.#cells.push({ x: x - i, y });
+      } else {
+        this.#cells.push({ x, y: y - i });
+      }
     }
     this.#brains = brains;
-    this.#boundChangeDirection = this.changeDirection.bind(this);
+    this.#boundUpdateState = this.updateState.bind(this);
     // listen to keyboard events to move the snake
     for(const brain of this.#brains) {
-      brain.addEventListener('signal', this.#boundChangeDirection);
+      brain.addEventListener('signal', this.#boundUpdateState);
     }
   }
   disable(){
     this.#enabled = false;
     for(const brain of this.#brains) {
-      brain.removeEventListener('signal', this.#boundChangeDirection);
+      brain.removeEventListener('signal', this.#boundUpdateState);
     }
   }
   get id(){
@@ -112,7 +116,7 @@ const Snake = class{
       this.#cells.pop();
     }
   }
-  changeDirection({ which }) {
+  updateState({ which }) {
     // prevent snake from backtracking on itself by checking that it's 
     // not already moving on the same axis (pressing left while moving
     // left won't do anything, and pressing right while moving left
