@@ -39,8 +39,7 @@ I've defined two modules: **[collide](./SnakeGame/collisions/collide.mjs)** and 
 
 ## Game as iterator
 
-We use **[loop](./createAnimationLoop.mjs)** to run and render the game,
-but the result of **SnakeGame** is an *iterator* and can be used as such.
+The result of **SnakeGame** is an *iterator* and can be used as such.
 
 This might be useful for debugging, rendering outside of the browser,
 or usage withing other iterators.
@@ -64,7 +63,7 @@ for(const output of game) {
 ```
 
 ```javascript
-//...within  generator context
+//...within generator context
 const game = SnakeGame(/*...*/);
 switch(name){
   case 'snake': 
@@ -112,6 +111,8 @@ I'm not sure but this may note technically be a "real" model, but rather an abst
 In our game we use the "Check State" model within our main loop -- the loops continually checks the direction (state) of each snake and moves it accordingly.
 
 On the other hand, the "brains" that we use to change the direction the snakes use an "Event" model. They emit signal events which tell the snake their to change its direction, so when using the keyboard to control the snake, we're using both models.
+
+Note Brains are simply EventEmitters (EventTarget).
 
 To futher complicate this, the web gamepad API is based on the "Check State" model, and this must be tranlated into an "Event" model and back into the "Check State" model when using a game pad.
 

@@ -2,7 +2,7 @@ import ScoreEvent from '../events/ScoreEvent.mjs';
 import DeathEvent from '../events/DeathEvent.mjs';
 const scores = {};
 const deaths = {};
-export default (element, getLoop=()=>{}) => (events) => {
+export default (element) => async (events) => {
   for(const event of events){
     if (event instanceof ScoreEvent){
       const { subject } = event;
@@ -14,11 +14,7 @@ export default (element, getLoop=()=>{}) => (events) => {
         .stop('fade', true)
         .css('background-color', 'inherit')
         .animate({ backgroundColor: color}, 10);
-      const loop = getLoop();
-      if(loop){
-        loop.pause();
-        setTimeout(loop.resume, 250);
-      }
+      await new Promise(resolve=>setTimeout(resolve, 250));
       if(scores[id]){
         scores[id] += score;
       }else{
