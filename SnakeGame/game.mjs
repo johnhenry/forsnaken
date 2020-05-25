@@ -5,13 +5,19 @@ import Snake from './entities/Snake.mjs';
 import DrawEvent from './events/DrawEvent.mjs';
 import ScoreEvent from './events/ScoreEvent.mjs';
 import DeathEvent from './events/DeathEvent.mjs';
-export default function *({ appleNum=1, width=400, height=400 }, ...players){
+export default function *({ appleNum=1, width=400, height=400, control={} }, ...players){
   const snakes = players.map(config=>new Snake(config));
   const apples = [];
   for(let i = 0; i < appleNum; i++){
     apples.push(new Apple({xrange:[0, width], yrange:[0, height] }));
   }
   while(true){
+    if(control.over){
+      break;
+    }
+    if(control.paused){
+      continue;
+    }
     // check for collision between each snake's head and each apple
     const digesting = new Set([]);
     for (const [head, apple] of collideArray(snakes.map(({head})=>head), apples)){

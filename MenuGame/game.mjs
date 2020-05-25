@@ -1,4 +1,5 @@
 import MenuEvent from './events/MenuEvent.mjs';
+import HideEvent from './events/HideEvent.mjs';
 import Selector from './entities/Selector.mjs';
 export const next = Symbol('next');
 export const prev = Symbol('prev');
@@ -35,8 +36,9 @@ export default async function *({ options=[], index=0, brains }){
       }
     }
     if(exec){
-      yield [ new MenuEvent({ options:[] }) ];
+      yield [ new HideEvent(true) ];
       yield * options[index].subroutine();
+      yield [ new HideEvent(false) ];
     }
   }
 }

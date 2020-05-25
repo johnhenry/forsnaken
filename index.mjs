@@ -2,7 +2,7 @@
 // Main
 import Game from './SnakeGame/game.mjs';
 import { canvas as CRF, element as ERF } from './SnakeGame/rendererFactories/index.mjs';
-
+import Control from './Control.mjs';
 // Menu
 import MenuGame, { next, prev } from './MenuGame/game.mjs';
 import { element } from './MenuGame/rendererFactories/index.mjs';
@@ -166,7 +166,7 @@ window.onload = async () => {
     ]
   };
   // We create the synchronous instance by passing these properties into **Game**.
-  const syncInstance = Game({ appleNum, width, height }, ...snakes);
+  const syncInstance = Game({ appleNum, width, height, control:new Control({brains:[new KeyBrain({27:'end'})]}) }, ...snakes);
   
   // Based on the "MenuGame", we can choose which which "subroutine" we wish to run
   for await (const output of MenuGame({options:[
