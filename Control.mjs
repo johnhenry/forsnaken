@@ -1,37 +1,37 @@
 export default class {
-  #over
-  #paused
-  #brains 
-  #boundUpdateState
+  // #over
+  // #paused
+  // #brains 
+  // #boundUpdateState
   constructor({brains=[]}){
-    this.#paused = false;
-    this.#over = false;
-    this.#brains = brains;
-    this.#boundUpdateState = this.updateState.bind(this);
+    this._private_paused = false;
+    this._private_over = false;
+    this._private_brains = brains;
+    this._private_boundUpdateState = this.updateState.bind(this);
     // listen to keyboard events to move the snake
-    for(const brain of this.#brains) {
-      brain.addEventListener('thought', this.#boundUpdateState);
+    for(const brain of this._private_brains) {
+      brain.addEventListener('thought', this._private_boundUpdateState);
     }
   }
   disable(){
-    for(const brain of this.#brains) {
-      brain.removeEventListener('thought', this.#boundUpdateState);
+    for(const brain of this._private_brains) {
+      brain.removeEventListener('thought', this._private_boundUpdateState);
     }
   }
   updateState({ detail: { which } }){
     switch(which){
       case 'pause':
-        this.#paused = !this.#paused;
+        this._private_paused = !this._private_paused;
         break;
       case 'end':
-        this.#over = true;
+        this._private_over = true;
         break;
     }
   }
   get over(){
-    return this.#over;
+    return this._private_over;
   }
   get paused(){
-    return this.#paused;
+    return this._private_paused;
   }
 }

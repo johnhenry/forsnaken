@@ -1,7 +1,7 @@
 const Wall = class{
-  #cells
+  // #cells
   constructor({ x, y, x1, y1, diagonal, antiDiagonal, spread=1}){
-    this.#cells= [];
+    this._private_cells= [];
     const minX = Math.min(x, x1 || Infinity);
     const maxX = Math.max(x, x1 || -Infinity);
     const MaxWidth = maxX - minX;
@@ -17,14 +17,14 @@ const Wall = class{
       for(let j = minY; j <= maxY; j+=spread){
         if(diagonal){
           if(j0 - i0 === 0){
-            this.#cells.push({x:i, y:j});
+            this._private_cells.push({x:i, y:j});
           }
         }else if (antiDiagonal) {
           if(MaxWidth - i0 === j0){
-            this.#cells.push({x:i, y:j});
+            this._private_cells.push({x:i, y:j});
           }
         }else {
-          this.#cells.push({x:i, y:j});
+          this._private_cells.push({x:i, y:j});
         }
         j0+=spread;
       }
@@ -35,7 +35,7 @@ const Wall = class{
     return '#bbbbbbff';
   }
   get cells(){
-    return this.#cells;
+    return this._private_cells;
   }
 };
 export default Wall;

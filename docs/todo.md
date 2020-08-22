@@ -14,7 +14,6 @@
 
 - Render using HTML (alternative to canvas)
 
-- Eliminate private class variables (for compatibility)
 - Add Sonic Renderer
 
 - Properly set all attributes through html
@@ -49,6 +48,8 @@
   - write guide
 
 ## Recent
+- Eliminate private class variables for FF Compativility
+
 - Draggable builder
 - Add web component implementation for snake game
 - Create menu Component
