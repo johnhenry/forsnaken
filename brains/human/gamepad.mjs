@@ -1,4 +1,3 @@
-import SignalEvent from '../SignalEvent.mjs';
 export default class extends EventTarget {
   #index
   #map
@@ -26,7 +25,7 @@ export default class extends EventTarget {
       if(buttons[index].pressed){
         const which = this.#map[index];
         if(which){
-          this.dispatchEvent(new SignalEvent(which))
+          this.dispatchEvent(new CustomEvent('thought', {detail:{which}}))
         }
       }
     }

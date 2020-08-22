@@ -10,15 +10,15 @@ export default class {
     this.#boundUpdateState = this.updateState.bind(this);
     // listen to keyboard events to move the snake
     for(const brain of this.#brains) {
-      brain.addEventListener('signal', this.#boundUpdateState);
+      brain.addEventListener('thought', this.#boundUpdateState);
     }
   }
   disable(){
     for(const brain of this.#brains) {
-      brain.removeEventListener('signal', this.#boundUpdateState);
+      brain.removeEventListener('thought', this.#boundUpdateState);
     }
   }
-  updateState({ which }){
+  updateState({ detail: { which } }){
     switch(which){
       case 'pause':
         this.#paused = !this.#paused;

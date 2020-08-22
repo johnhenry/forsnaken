@@ -5,16 +5,18 @@ const getRandomInt = (min, max) => {
 }
 
 const Apple = class{
+  #hp
   #value
   #xrange
   #yrange
-  constructor({ xrange, yrange, avoid=[] }){
+  constructor({ xrange, yrange, avoid=[], hp=Infinity }){
     this.#xrange = xrange;
     this.#yrange = yrange
+    this.#hp = hp;
     this.spawn(...avoid);
   }
   spawn(...avoid){
-    this.#value=2
+    this.#value=2;
     do {
       this.x = getRandomInt(...this.#xrange);
       this.y = getRandomInt(...this.#yrange);
@@ -24,10 +26,16 @@ const Apple = class{
     return this.#value;
   }
   get color (){
-    return 'red';
+    return '#ff0000';
   }
   get cells(){
     return [this];
+  }
+  get alive(){
+    return this.#hp > 0;
+  }
+  damage(damage){
+    this.#hp -= damage;
   }
 };
 export default Apple;

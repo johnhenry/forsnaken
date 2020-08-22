@@ -1,4 +1,3 @@
-import SignalEvent from '../SignalEvent.mjs';
 export default class extends EventTarget {
   #values
   #interval
@@ -21,6 +20,7 @@ export default class extends EventTarget {
     clearInterval(this.#interval);
   }
   process(){
-    this.dispatchEvent(new SignalEvent(this.#values[Math.floor(Math.random() * this.#values.length)]));
+    const which = this.#values[Math.floor(Math.random() * this.#values.length)];
+    this.dispatchEvent(new CustomEvent('thought', {detail:{which}}));
   }
 };

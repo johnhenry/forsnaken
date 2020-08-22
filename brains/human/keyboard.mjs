@@ -1,4 +1,3 @@
-import SignalEvent from '../SignalEvent.mjs';
 export default class extends EventTarget {
   #map
   #boundProcess
@@ -14,7 +13,7 @@ export default class extends EventTarget {
   process(keyDownEvent){
     const which = this.#map[keyDownEvent.which];
     if(which){
-      this.dispatchEvent(new SignalEvent(which));
+      this.dispatchEvent(new CustomEvent('thought', {detail:{which}}));
     }
   }
 };

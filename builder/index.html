@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Builder</title>
+  <style>
+    *{
+      box-sizing: border-box;
+    }
+    .view {
+      display:none;
+    }
+    .view:last-child {
+      display:block;
+    }
+    .view:target {
+      display:block;
+    }
+    .view:target ~ * {
+      display:none;
+    }
+    .form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr;
+      width:100%;
+    }
+
+    html{
+      display:contents;
+      height: 100%;
+      width: 100%;
+    }
+    body {
+      margin: 0px;
+      padding: 0px;
+      display: flex;
+      flex-direction: row;
+      height:100%;
+    }
+    body #sidebar {
+      height: 100%;
+      width: min(256px, 50%);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    body #sidebar #create{
+      flex-grow: 0;
+      border: 1px solid black;
+      border-bottom: none;
+    }
+    body #sidebar #components{
+      flex-grow: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 32px;
+      margin:0;
+    }
+    body #sidebar #components{
+      border: 1px solid black;
+      border-bottom: none;
+    }
+    body #sidebar #components:empty::before{
+      content: 'Step 1. add components';
+      text-align:center;
+      width: 100%;
+      display: block;
+    }
+    body #sidebar #components *{
+      cursor: pointer;
+    } 
+
+    body #sidebar #playground, body #sidebar #playground div{
+      background-color: rgba(128, 128, 128, 0.25);
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      grid-gap: 1rem;
+    }
+
+    body #sidebar #playground{
+      border: 1px dashed black;
+      padding: 16px;
+      border-bottom: none;
+    }
+    body #sidebar #playground:empty::before{
+      content: 'Step 2. drag components here.';
+      text-align: center;
+      width: 100%;
+      display: block;
+    }
+    body #sidebar #playground *{
+      cursor: pointer;
+    } 
+    body #sidebar #playground div {
+      font-size: 0.1rem;
+      padding: 0.1rem;
+    }
+    body #sidebar #playground > div {
+      font-size: 0.6rem;
+      padding: 0.6rem;
+    }
+    body #sidebar #playground > div > div {
+      font-size: 0.5rem;
+      padding: 0.5rem;
+    }
+    body #sidebar #playground > div > div > div {
+      font-size: 0.4rem;
+      padding: 0.4rem;
+    }
+    body #sidebar #playground > div > div > div> div {
+      font-size: 0.3rem;
+      padding: 0.3rem;
+    }
+    body #sidebar #playground > div > div > div > div > div {
+      font-size: 0.2rem;
+      padding: 0.2rem;
+    }
+
+    body #sidebar #update{
+      flex-grow: 0;
+      border: 1px solid black;
+      border-bottom: none;
+    }
+    body #sidebar #style {
+      flex-grow: 1;
+      padding: 0;
+      margin:0;
+    }
+    body #sidebar #style {
+      border: 1px solid black;
+      border-bottom: none;
+    }
+    body #sidebar #style #style_box{
+      width:100%;
+      height:100%;
+      resize: none;
+    }
+
+    body main{
+      height:100%;
+      width:100%;
+      display: flex;
+      flex-direction: column;
+    }
+    body main #topbar{
+      width: 100%;
+      display:flex;
+      justify-content: space-around;
+    }
+    body main #topbar a{
+      padding:8px;
+      text-align:center;
+      display: block;
+      flex-grow:1;
+      border: 1px solid black;
+      border-left: none;
+    }
+    body main #topbar a:hover{
+      background-color: grey;
+    }
+    body main #topbar a, a:link, a:active, a:visited {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    body main #export{
+      padding: 16px;
+      width:100%;
+      height:100%;
+      position:relative;
+    }
+    body main #download_button{
+      position: absolute;
+      display:block;
+      padding: 8px 32px;
+      text-align:center;
+      right: 0px;
+      bottom: 0px;
+      border: 1px solid black;
+    }
+    body main #download_button{
+      position: absolute;
+      display:block;
+      padding: 8px 32px;
+      text-align:center;
+      right: 0px;
+      bottom: 0px;
+      border: 1px solid black;
+    }
+
+    body main #download_button:not([href]){
+      display:none;
+    }
+    body main #export #code{
+      padding: 16px;
+      margin: 0;
+      width:100%;
+      height:100%;
+    }
+    body main #export #code:empty::before{
+      content: 'view code and download application here.';
+      text-align:center;
+      width:100%;
+      display: block;
+    }
+    body main #output{
+      width:100%;
+      height:100%;
+      padding: 32px;
+    }
+    
+    body main #output:empty::before{
+      content: 'application renders here.';
+      text-align:center;
+      width:100%;
+      display: block;
+    }
+    body main #settings{
+      width:100%;
+      height:100%;
+      padding: 16px;
+
+    }
+    body main #guide{
+      width:100%;
+      height:100%;
+      padding: 16px;
+    }
+    body #sidebar #att_form input {
+      width: 100%;
+    }
+    body #sidebar #defaults_form input {
+      width: 100%;
+    }
+
+    body #sidebar #create #download_components_button:not([href]){
+      display:none;
+    }
+  </style>
+</head>
+<body>
+
+  <div id='sidebar'>
+    <div id='create' class='form'>
+      <label>Tag</label> <input id='add_tag' >
+      <label>Content</label> <input id="add_content">
+      <label>Definition</label> <input id='add_definition' >
+      <label><button id="defaults_button">+</button></label> <div id=defaults_form class='form'></div>
+      <span><a id="download_components_button" download="export.json">↓</a>
+      </span><button id='add_button'>Add</button>
+    </div>
+    <ul id='components'></ul>
+    <div id='playground'></div>
+    <div id='style'>
+      <textarea id="style_box" placeholder="Add styles here."></textarea>
+    </div>
+    <div id='update' class='form'>
+      <label>ID</label> <input id="update_id">
+      <label>Content</label> <input id="update_content">
+      <label><button id="attributes_button">+</button></label> <div id=att_form class='form'></div>
+      <span></span><button id='update_button'>Update</button>
+    </div>
+  </div>
+  <main>
+    <style>
+
+    </style>
+    <div id="topbar">
+      <a href="#guide">Guide</a>
+      <a href="#output">Output</a>
+      <a href="#export">Export</a>
+      <a href="#settings">Settings</a>
+    </div>
+    <div id='settings' class=view>
+      Settings
+    </div>
+    <div id='export' class=view>
+      <pre id='code' ></pre>
+      <a id="download_button" download="export.html">↓</a>
+    </div>
+    <div id='output' class=view></div>
+    <div id='guide' class=view>
+      Guide
+    </div>
+  </main>
+  <script>
+    const preamble = 
+    `<!DOCTYPE html>
+      <html lang="en">
+        <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Exported</title>`;
+    // NOTE: My testing enviornment injects code at the end of the page. Ths particular pattern confuses it.
+    const postamble = '<'
+      + '/body>'
+      + 
+    `</html>`;
+
+    const genId = (length=5)=>String(Math.random()).substr(2, length);
+    const stringifyAttributes = (attributes)=>Object.entries(attributes).map(([key, value])=>[key,'=','"',value,'"',' ']).flat().join('');
+
+    //https://stackoverflow.com/a/26361620
+    //https://stackoverflow.com/questions/26360414/javascript-how-to-correct-indentation-in-html-string
+    const format = (node, level) => {
+      const indentBefore = new Array(level++ + 1).join('  ');
+      const indentAfter  = new Array(level - 1).join('  ');
+      let textNode;
+
+      for (let i = 0; i < node.children.length; i++) {
+
+          textNode = document.createTextNode('\n' + indentBefore);
+          node.insertBefore(textNode, node.children[i]);
+
+          format(node.children[i], level);
+
+          if (node.lastElementChild == node.children[i]) {
+              textNode = document.createTextNode('\n' + indentAfter);
+              node.appendChild(textNode);
+          }
+      }
+      return node;
+    }
+    const process = (str) => {
+      const div = document.createElement('div');
+      div.innerHTML = str.trim();
+      return format(div, 0).innerHTML;
+    }
+
+    const clearOutput = () => {
+      output.innerHTML = '';
+      if(style_box.value && style_box.value.trim()){
+        const style = document.createElement('style');
+        style.innerHTML = "\n" + style_box.value + "\n";
+        output.appendChild(style);
+      }
+    };
+    const render = (playground, output) => {
+      for(const child of playground.children){
+        const tagName = child.dataset.tagName;
+        const attributes = JSON.parse(child.dataset.attributes);
+        const element = document.createElement(tagName);
+        child.title = process(`<${tagName} ${stringifyAttributes(attributes)}>` + (child.dataset.content || '')  + `</${tagName}>`);
+        for(const [key, value] of Object.entries(attributes)){
+          element.setAttribute(key, value)
+        }
+        if(child.dataset.content){
+          element.innerHTML = child.dataset.content;
+        }
+        output.appendChild(element);
+        if(child.children && child.children.length){
+          render(child, element);
+        }
+      }
+      const html = String(output.innerHTML) ;
+      console.log(html);
+      code.innerText = process(html);
+
+      const intermediate = [];
+      intermediate.push("<script type='module'>");
+
+      let count = 0;
+      for (const [id, [tag, defaults, definition]] of registeredComponents){
+        if(!definition){
+          continue;
+        }
+        intermediate.push(
+          `      import Instantiator_${count} from "${definition}";`
+        + "\n"
+        + `      customElements.define(${tag}, Instantiator_${count++});`
+        + "\n"
+        )
+      }
+      intermediate.push(
+      "<"
+      +
+      `/script>
+</head>
+<body>`
+);
+      download_button.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(`${preamble}${intermediate.join('')}${process(html)}${postamble}`)}`);
+    };
+    const allowDrop = (ev) => {
+      ev.preventDefault();
+    };
+    const dragComponent = (ev) => {
+      ev.dataTransfer.setData("tag", ev.target.innerText);
+      ev.dataTransfer.setData("componentId", ev.target.innerText);
+    };
+    const dragInstance = (ev) => {
+      ev.dataTransfer.setData("id", ev.target.id);
+    };
+    const drop = (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const tag = ev.dataTransfer.getData("tag");
+      const componentId = ev.dataTransfer.getData("componentId");
+      const id = ev.dataTransfer.getData("id");
+      if(componentId){
+        // add new element to playground
+        const [tag, defaults, definition, content, base_id] = registeredComponents.get(componentId);
+        const element = document.createElement('div');
+        const id = genId();
+        element.id = `component_${id}`;
+        element.dataset.tagName = tag;
+        element.appendChild(document.createTextNode(`${componentId}#${id}`));
+        element.dataset.attributes = defaults;
+        element.dataset.content = content || '';
+        element.draggable = true;
+        element.ondragstart = dragInstance;
+        element.ondrop = drop;
+        element.ondragover = allowDrop;
+        ev.target.prepend(element);
+      }
+      else if(id) {
+        // move withing playground
+        ev.target.prepend(document.getElementById(id));
+      }
+
+
+      clearOutput();
+      render(playground, output);
+    };
+    const dropFile = (ev) => {
+      ev.preventDefault();
+      const files = [];
+      if (ev.dataTransfer.items) {
+        // Use DataTransferItemList interface to access the file(s)
+        for (var i = 0; i < ev.dataTransfer.items.length; i++) {
+          // If dropped items aren't files, reject them
+          if (ev.dataTransfer.items[i].kind === 'file') {
+            var file = ev.dataTransfer.items[i].getAsFile();
+            files.push(file);
+          }
+        }
+      } else {
+        // Use DataTransfer interface to access the file(s)
+        for (var i = 0; i < ev.dataTransfer.files.length; i++) {
+          files.push(ev.dataTransfer.files[i]);
+        }
+      }
+
+      const reader = new FileReader();
+      reader.onload = async function (event, other) {
+        try{
+          const data = JSON.parse(event.target.result);
+          for(const {tag, defaults, definition, content, id} of data){
+            await createComponent({tag, defaults, definition, content, id});
+          }
+        }catch(e){
+          throw new Error(`Error reading file: ${e.message}`);
+        }
+        
+      };
+      for ( const file of files ) {
+        reader.readAsText(file)
+      }
+    }
+    const remove = (ev) => {
+      const id = ev.dataTransfer.getData("id");
+      if(id) {
+        const item = document.getElementById(id);
+        item.parentElement.removeChild(item)
+      }
+      clearOutput();
+      render(playground, output);
+    };
+    document.body.ondrop = remove;
+    document.body.ondragover = allowDrop;
+    const registeredComponents= new Map();
+    const showComponents = () =>{
+      components.innerHTML = '';
+      const backup = [];
+      for(const [id, [tag, defaults, definition, content, base_id]] of registeredComponents){
+        const li = document.createElement('li');
+        li.draggable = true;
+        li.ondragstart = dragComponent;
+        li.innerText = id;
+        const contentString = "<>" + (content || '')  + "</>";
+        li.title = process(`<${tag} ${stringifyAttributes(JSON.parse(defaults))} >` + (content || '')  + `</${tag}>`);
+        components.appendChild(li);
+        backup.push({
+          id:base_id,
+          content,
+          tag,
+          defaults:JSON.parse(defaults),
+          definition
+        });
+      }
+      download_components_button.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(JSON.stringify(backup, null, ' '))}`);
+    };
+    playground.ondrop=drop;
+    playground.ondragover=allowDrop;
+
+    const createComponent = async ({tag, definition, defaults, id, content})=>{
+        const base_id = id || genId();
+        const componentId = `${tag}[${base_id}]`;
+        if(tag.includes('-')){
+          if(definition) {
+            try{
+              const instantiator = await import(definition);
+              window.customElements.define(tag, instantiator.default);
+            }catch(e){
+              throw new Error (`Failed to instantiate ${definition} : ${e.message}`);
+            }
+          }
+        }
+        registeredComponents.set(componentId, [tag, JSON.stringify(defaults||{}), definition, content, base_id]);
+        showComponents();
+    }
+
+    add_button.addEventListener('click', async ()=>{
+      try{
+        const tag = (add_tag.value || '').toLowerCase();
+        add_tag.value = ''; // reset 
+
+        if(!tag){
+          return;
+        }
+
+        const content = add_content.value || '';
+        add_content.value = '';
+
+        const definition = add_definition.value || '';
+        add_definition.value = '';// reset 
+        
+        const defaults = {};
+        for(let i = 0; i < defaults_form.children.length; i+=2){
+          const k = defaults_form.children[i].value;
+          const v = defaults_form.children[i+1].value;
+          if(k){
+            defaults[k]=v;
+          }
+        }
+        defaults_form.innerHTML = '';
+        //
+        const id = genId();
+        await createComponent({tag, definition, defaults, content, id})
+      }catch(e){
+        alert(e.message);
+      }
+    });
+    playground.addEventListener('click', ({target})=>{
+      if(target!==playground){
+        update_id.value = target.id;
+        update_content.value = target.dataset.content ?? '';
+        const attributes = JSON.parse(target.dataset.attributes);
+        att_form.innerHTML = '';
+        for(const [key, value] of Object.entries(attributes)){
+          const k = document.createElement('input');
+          k.value = key;
+          const v = document.createElement('input');
+          v.value = value;
+          att_form.append(k, v);
+        }
+      }
+    });
+    update_button.addEventListener('click', ()=>{
+      const id = update_id.value;
+      let element;
+      if(id && (element = document.getElementById(id))){
+        const attributes = {};
+        for(let i = 0; i < att_form.children.length; i+=2){
+          const k = att_form.children[i].value;
+          const v = att_form.children[i+1].value;
+          if(k){
+            attributes[k]=v;
+          }
+        }
+        element.dataset.attributes = JSON.stringify(attributes);
+        element.dataset.content = update_content.value ?? null;
+        clearOutput();
+        render(playground, output);
+      }
+    });
+    attributes_button.addEventListener('click',()=>{
+      const k = document.createElement('input');
+      const v = document.createElement('input');
+      att_form.append(k, v);
+    });
+    defaults_button.addEventListener('click',()=>{
+      const k = document.createElement('input');
+      const v = document.createElement('input');
+      defaults_form.append(k, v);
+    });
+    const updateStyle = ()=>{
+      clearOutput();
+      render(playground, output);
+    }
+    style_box.addEventListener('paste', updateStyle);
+    style_box.addEventListener('keyup', updateStyle);
+    create.ondrop=dropFile
+    create.ondragover=allowDrop
+  </script>
+</body>
+</html>

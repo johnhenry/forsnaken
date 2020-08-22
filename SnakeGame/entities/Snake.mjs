@@ -1,7 +1,7 @@
 const Snake = class{
   #x
   #y
-  #id
+  #name
   #velocity
   #speed
   #horizontal
@@ -10,12 +10,12 @@ const Snake = class{
   #color
   #brains
   #enabled
-  #boundUpdateState
-  constructor({x, y, velocity, horizontal=false, maxCells=2, brains, color, id=0}){
-    this.#enabled = true;
+  #INITIAL
+  constructor({x, y, velocity, horizontal=false, maxCells=2, brains, color, name=''}){
+    this.#INITIAL = {x, y, velocity, horizontal, maxCells};
     this.#x = x;
     this.#y = y;
-    this.#id = id;
+    this.#name = name;
     this.#velocity = velocity;
     this.#speed = Math.abs(this.velocity);
     this.#horizontal = horizontal;
@@ -30,23 +30,39 @@ const Snake = class{
       }
     }
     this.#brains = brains;
-    this.#boundUpdateState = this.updateState.bind(this);
-    // listen to keyboard events to move the snake
-    for(const brain of this.#brains) {
-      brain.addEventListener('signal', this.#boundUpdateState);
+    this.boundUpdateState = this.updateState.bind(this);
+    this.enabled = true;
+  }
+  reset(){
+    const {x, y, velocity, horizontal, maxCells} = this.#INITIAL;
+    this.#x = x;
+    this.#y = y;
+    this.#velocity = velocity;
+    this.#speed = Math.abs(this.velocity);
+    this.#horizontal = horizontal;
+    this.#cells = [];
+    this.#maxCells = maxCells;
+    if(!this.enabled){
+      this.enabled = true;
     }
   }
-  disable(){
-    this.#enabled = false;
-    for(const brain of this.#brains) {
-      brain.removeEventListener('signal', this.#boundUpdateState);
-    }
+  get name(){
+    return this.#name;
   }
-  get id(){
-    return this.#id;
-  }
-  get enabled(){
+  get enabled() {
     return this.#enabled;
+  }
+  set enabled(detail) {
+    this.#enabled = !!detail;
+    if(detail){
+      for(const brain of this.#brains) {
+        brain.addEventListener('thought', this.boundUpdateState);
+      }
+    }else{
+      for(const brain of this.#brains) {
+        brain.removeEventListener('thought', this.boundUpdateState);
+      }
+    }
   }
   get color(){
     return this.#color;
@@ -116,7 +132,7 @@ const Snake = class{
       this.#cells.pop();
     }
   }
-  updateState({ which }) {
+  updateState({ detail: { which } }) {
     // prevent snake from backtracking on itself by checking that it's 
     // not already moving on the same axis (pressing left while moving
     // left won't do anything, and pressing right while moving left
