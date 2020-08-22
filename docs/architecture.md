@@ -16,14 +16,14 @@ The **game loop** and the **renderer** are directly connected in that **game loo
 
 In this game, we use a shared event model to achieve this could be augmented or replaced with a type system.
 
-Modules in the "./SnakeGame/events/" folder are shared by both the **game loop** and the **renderer**.  Following principals of "separation of concerns", they are otherwise decoupled.
+Modules in the "./SnakeGame/events/" folder are shared by both the **game loop** and the **renderer**. Following principals of "separation of concerns", they are otherwise decoupled.
 
 Separating concerns like this makes a program easier to reason about, and easier to modify parts without affecting others, but it may lead to slow application execution. This is a tradeoff that must be weighed when creating applications.
 
 ### entities
 
 Most games have easily identifyable types of entities.
-For this game, I've identified "[apples](./SnakeGame/entities/apples.mjs)" 
+For this game, I've identified "[apples](./SnakeGame/entities/apples.mjs)"
 and "[snakes](./SnakeGame/entities/snakes.mjs)".
 
 If we wanted to add another type of object, say a "wall",
@@ -39,7 +39,7 @@ I've defined two modules: **[collide](./SnakeGame/collisions/collide.mjs)** and 
 
 ## Game as iterator
 
-The result of **SnakeGame** is an *iterator* and can be used as such.
+The result of **SnakeGame** is an _iterator_ and can be used as such.
 
 This might be useful for debugging, rendering outside of the browser,
 or usage withing other iterators.
@@ -55,18 +55,18 @@ renderer(value);
 ```javascript
 //... within async context
 const time = Math.floor(1000 / 60); // 1/60 of a second => 60 FPS
-for(const output of game) {
-  await new Promise(resolve => setTimeout(resolve, time));
+for (const output of game) {
+  await new Promise((resolve) => setTimeout(resolve, time));
   renderer(output);
 }
-// 
+//
 ```
 
 ```javascript
 //...within generator context
 const game = SnakeGame(/*...*/);
-switch(name){
-  case 'snake': 
+switch (name) {
+  case "snake":
     yield * SnakeGame(/*...*/);
     break;
   default:
@@ -79,7 +79,7 @@ switch(name){
 
 One might consider the "main" purpose of this game loop to be to yield a "DrawEvent",
 with "DeathEvent"s and the "ScoreEvent"s being secondary.
-Disabling rendering for these latter two types actually has little effect on gameplay. 
+Disabling rendering for these latter two types actually has little effect on gameplay.
 
 There are some actions (changing the background color) that could be done within the main rendering engine itself with little effort. In these cases, sometimes the platform on which a game runs (the browser) provides facilities (via DOM and JQuery) that make it easy to offload this task.
 
@@ -100,7 +100,7 @@ Additional steps must be taken to prevent the rendering frequency from being cou
 
 ### Event
 
-In this model, a program listens for specific types of events and executes code based on their contents. 
+In this model, a program listens for specific types of events and executes code based on their contents.
 
 Applications like this are easy to reason about but may lack responsiveness.
 

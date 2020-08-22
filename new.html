@@ -4,23 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Forsnaken</title>
-    <link rel="stylesheet" href="./index.css">
+    <link rel="stylesheet" href="./index.css" />
     <!-- <script src="./vendor/gpu-browser.min.js"></script> -->
     <script src="./vendor/jquery-1.12.4.js"></script>
     <script src="./vendor/jquery-ui.js"></script>
     <script type="module" src="./register.mjs"></script>
     <script type="module">
-      import {EPILEPSY_WARNING} from './messages.mjs';
+      import { EPILEPSY_WARNING } from "./messages.mjs";
       window.EPILEPSY_WARNING = EPILEPSY_WARNING;
     </script>
   </head>
   <body>
-    <event-consumer 
+    <event-consumer
       events="pushed, popped, score"
-      onevent="console.log(event.type, event.detail);">
+      onevent="console.log(event.type, event.detail);"
+    >
       <stack-menu class="menu" id="menu">
         <menu-item>
-          <span style='color:red'>WARNING</span>
+          <span style="color: red;">WARNING</span>
           <template>
             <img
               src="data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA="
@@ -34,13 +35,12 @@
           Snake Demo - JS + Web Components
           <template>
             <event-consumer
-            events="score"
-            onevent="
+              events="score"
+              onevent="
               const { subject, score } = event.detail;
               const { direction, color, id } = subject;
               jQuery(this.parentElement)
                 .effect('shake', { direction });
-              console.log(this.parentElement)
               jQuery(this.parentElement)
                 .stop('fade', true)
                 .css('background-color', 'red')
@@ -49,45 +49,105 @@
                 .getElementById('menu')
                 .shadowRoot.getElementById('timer')
                 .dispatchEvent(new CustomEvent('pause', {detail:250}));
-            ">
-              <canvas-renderer border-size=0 width=800 height=400>
-              <!-- <canvas-renderer border-size=0 width=800 height=400 squares> -->
-                <shader-grid width=8 height=8 >
-                <shader-zoom value=8>
-                <forsnaken-game width=100 height=50 >
-                  <!-- <snake-objects zoom=8 squares></snake-objects> -->
-                  <snake-objects zoom=1 width=100 height=50 ></snake-objects>
-                  <internal-timer id="timer" fps="24"/>
-                  <forsnaken-apple multi=64 x-range="10,89" y-range="10,39" />
-                  <forsnaken-wall x=1 y=1 x1=9 y1=9 diagonal/>
-                  <forsnaken-wall x=1 y=40 x1=9 y1=48 anti-diagonal/>
-                  <forsnaken-wall x=90 y=1 x1=98 y1=9 anti-diagonal/>
-                  <forsnaken-wall x=90 y=40 x1=98 y1=48 diagonal/>
-                  <forsnaken-snake name="green" color="#4e9a06" x="0" y="0" velocity="1" horizontal>
-                    <brain-swipe threshold="30">
-                    <brain-swipe threshold="30" touch>
-                    <brain-gamepad index=0 dpad />
-                    <brain-keyboard arrows />
-                  </forsnaken-snake>
-                  <forsnaken-snake name="green" color="#8ae232" x="0" y="49" velocity="-1">
-                    <brain-swipe threshold="30" map="down,up,right,left">
-                    <brain-swipe threshold="30" map="down,up,right,left" touch>
-                    <brain-gamepad index=0 anti-dpad />
-                    <brain-keyboard anti-arrows />
-                  </forsnaken-snake>
-                  <forsnaken-snake name="yellow" color="#c4a000" x="99" y="0" velocity="1">
-                    <brain-gamepad index=1 dpad />
-                    <brain-keyboard wasd />
-                  </forsnaken-snake>
-                  <forsnaken-snake name="yellow" color="#fce94f" x="99" y="49" velocity="-1" horizontal>
-                    <brain-gamepad index=1 anti-dpad />
-                    <brain-keyboard anti-wasd />
-                  </forsnaken-snake>
-                  <forsnaken-snake name="white" color="#ffffff" x="50" y="25" velocity="1" horizontal >
-                    <brain-random weights='{ "clockwise":1,"counterclockwise":1, "":2 }'/>
-                  </forsnaken-snake>
-                </forsnaken-game>
-                </shader-zoom>
+            "
+            >
+              <canvas-renderer border-size="0" width="800" height="400">
+                <!-- <canvas-renderer border-size=0 width=800 height=400 squares> -->
+                <shader-grid width="8" height="8">
+                  <shader-zoom value="8">
+                    <forsnaken-game width="100" height="50">
+                      <!-- <snake-objects zoom=8 squares></snake-objects> -->
+                      <snake-objects
+                        zoom="1"
+                        width="100"
+                        height="50"
+                      ></snake-objects>
+                      <internal-timer id="timer" fps="24" />
+                      <forsnaken-apple
+                        multi="64"
+                        x-range="10,89"
+                        y-range="10,39"
+                      />
+                      <forsnaken-wall x="1" y="1" x1="9" y1="9" diagonal />
+                      <forsnaken-wall
+                        x="1"
+                        y="40"
+                        x1="9"
+                        y1="48"
+                        anti-diagonal
+                      />
+                      <forsnaken-wall
+                        x="90"
+                        y="1"
+                        x1="98"
+                        y1="9"
+                        anti-diagonal
+                      />
+                      <forsnaken-wall x="90" y="40" x1="98" y1="48" diagonal />
+                      <forsnaken-snake
+                        name="green"
+                        color="#4e9a06"
+                        x="0"
+                        y="0"
+                        velocity="1"
+                        horizontal
+                      >
+                        <brain-swipe threshold="30" />
+                        <brain-swipe threshold="30" touch />
+                        <brain-gamepad index="0" dpad />
+                        <brain-keyboard arrows />
+                      </forsnaken-snake>
+                      <forsnaken-snake
+                        name="green"
+                        color="#8ae232"
+                        x="0"
+                        y="49"
+                        velocity="-1"
+                      >
+                        <brain-swipe threshold="30" map="down,up,right,left" />
+                        <brain-swipe
+                          threshold="30"
+                          map="down,up,right,left"
+                          touch
+                        />
+                        <brain-gamepad index="0" anti-dpad />
+                        <brain-keyboard anti-arrows />
+                      </forsnaken-snake>
+                      <forsnaken-snake
+                        name="yellow"
+                        color="#c4a000"
+                        x="99"
+                        y="0"
+                        velocity="1"
+                      >
+                        <brain-gamepad index="1" dpad />
+                        <brain-keyboard wasd />
+                      </forsnaken-snake>
+                      <forsnaken-snake
+                        name="yellow"
+                        color="#fce94f"
+                        x="99"
+                        y="49"
+                        velocity="-1"
+                        horizontal
+                      >
+                        <brain-gamepad index="1" anti-dpad />
+                        <brain-keyboard anti-wasd />
+                      </forsnaken-snake>
+                      <forsnaken-snake
+                        name="white"
+                        color="#ffffff"
+                        x="50"
+                        y="25"
+                        velocity="1"
+                        horizontal
+                      >
+                        <brain-random
+                          weights='{ "clockwise":1,"counterclockwise":1, "":2 }'
+                        />
+                      </forsnaken-snake>
+                    </forsnaken-game>
+                  </shader-zoom>
                 </shader-grid>
               </canvas-renderer>
             </event-consumer>
@@ -101,7 +161,7 @@
         <menu-item data-key="snake-js-dom"
           >Snake Demo - JS + DOM (external)
           <template>
-            <iframe src="./" frameBorder="0"></iframe>
+            <iframe src="./" frameborder="0"></iframe>
             <button
               onClick="this.dispatchEvent(new Event('end', { bubbles: true }));"
             >
@@ -136,7 +196,7 @@
           </template>
         </menu-item>
         <menu-item>
-          Menu Demo - With Nested Menus 
+          Menu Demo - With Nested Menus
           <template>
             <stack-menu class="menu" exportparts="item, content">
               <menu-item>

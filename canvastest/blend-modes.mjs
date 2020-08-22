@@ -19,6 +19,6 @@ void main() {
     gl_FragColor = color1 ${operator} color2;
 }`;
 
-export const add = blendMode('+');
-export const subtract = blendMode('-'); 
-export const multiply = blendMode('*'); 
+export const add = blendMode("+");
+export const subtract = blendMode("-");
+export const multiply = blendMode("*");

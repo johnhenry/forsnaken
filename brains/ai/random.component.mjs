@@ -1,12 +1,15 @@
-import Random from './random.mjs';
-import BrainComponent from '../brain.component.mjs';
+import Random from "./random.mjs";
+import BrainComponent from "../brain.component.mjs";
 export default class extends BrainComponent {
-  constructor(){
+  constructor() {
     super();
   }
-  connectedCallback ( ) {
-    super.setBrain(new Random(
-      JSON.parse(this.getAttribute('weights')),
-      Number(this.getAttribute('interval')) || 1000));
+  connectedCallback() {
+    super.setBrain(
+      new Random(
+        JSON.parse(this.getAttribute("weights")),
+        Number(this.getAttribute("interval")) || 1000
+      )
+    );
   }
-};
+}

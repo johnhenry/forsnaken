@@ -1,7 +1,7 @@
-const Wall = class{
+const Wall = class {
   // #cells
-  constructor({ x, y, x1, y1, diagonal, antiDiagonal, spread=1}){
-    this._private_cells= [];
+  constructor({ x, y, x1, y1, diagonal, antiDiagonal, spread = 1 }) {
+    this._private_cells = [];
     const minX = Math.min(x, x1 || Infinity);
     const maxX = Math.max(x, x1 || -Infinity);
     const MaxWidth = maxX - minX;
@@ -12,29 +12,29 @@ const Wall = class{
     //   console.warn('dimensions must be square to properly draw diagonal')
     // }
     let i0 = 0;
-    for(let i = minX; i <= maxX; i+=spread){
+    for (let i = minX; i <= maxX; i += spread) {
       let j0 = 0;
-      for(let j = minY; j <= maxY; j+=spread){
-        if(diagonal){
-          if(j0 - i0 === 0){
-            this._private_cells.push({x:i, y:j});
+      for (let j = minY; j <= maxY; j += spread) {
+        if (diagonal) {
+          if (j0 - i0 === 0) {
+            this._private_cells.push({ x: i, y: j });
           }
-        }else if (antiDiagonal) {
-          if(MaxWidth - i0 === j0){
-            this._private_cells.push({x:i, y:j});
+        } else if (antiDiagonal) {
+          if (MaxWidth - i0 === j0) {
+            this._private_cells.push({ x: i, y: j });
           }
-        }else {
-          this._private_cells.push({x:i, y:j});
+        } else {
+          this._private_cells.push({ x: i, y: j });
         }
-        j0+=spread;
+        j0 += spread;
       }
-      i0+=spread;
+      i0 += spread;
     }
   }
-  get color (){
-    return '#bbbbbbff';
+  get color() {
+    return "#bbbbbbff";
   }
-  get cells(){
+  get cells() {
     return this._private_cells;
   }
 };

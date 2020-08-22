@@ -1,12 +1,12 @@
 // Connect Menu (top-level) to Hash navigation
 const menu = document.getElementById("menu");
-menu.addEventListener("pushed", ({ detail:{ pushed}, path:[initiator]}) => {
-  if(menu === initiator){
+menu.addEventListener("pushed", ({ detail: { pushed }, path: [initiator] }) => {
+  if (menu === initiator) {
     window.location.hash = pushed;
   }
 });
-menu.addEventListener("popped", ({ path:[initiator]} ) => {
-  if(menu === initiator){
+menu.addEventListener("popped", ({ path: [initiator] }) => {
+  if (menu === initiator) {
     window.location.hash = "";
   }
 });

@@ -2,33 +2,33 @@
   {
     "tag": "ul",
     "defaults": {
-      "style":"background-color:red"
+      "style": "background-color:red"
     },
-    "id":"0"
+    "id": "0"
   },
   {
     "tag": "li",
     "defaults": {
-      "style":"background-color:green"
+      "style": "background-color:green"
     },
-    "id":"0"
+    "id": "0"
   },
   {
     "tag": "ul",
     "defaults": {
-      "style":"background-color:blue"
+      "style": "background-color:blue"
     },
-    "id":"1"
+    "id": "1"
   },
   {
     "tag": "li",
     "defaults": {
-      "style":"background-color:yellow"
+      "style": "background-color:yellow"
     },
-    "id":"1"
+    "id": "1"
   },
   {
     "tag": "menu-component",
-    "definition":"http://localhost:8080/menu.component.mjs"
+    "definition": "http://localhost:8080/menu.component.mjs"
   }
 ]

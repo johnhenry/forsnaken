@@ -1,51 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scale Test</title>
-  <style>
-    html{
-      display: contents;
-      padding: 0;
-      margin: 0;
-    }
-    body{
-      display: contents;
-      padding: 0;
-      margin: 0;
-    }
-    canvas{
-      padding: 0;
-      margin: 0;
-    }
-  </style>
-</head>
-<body>
-  <script type="module">
-    import { scale } from "./utilities.mjs";
-    const paintBody = (data, width, X=1, Y=X) => {
-      const canvas = window.document.createElement('canvas');
-      canvas.width = X * width;
-      canvas.height = Y * data.length / width / 4;
-      const scaled = scale(data, width, X, Y);
-      const context = canvas.getContext('2d');
-      context.putImageData(new ImageData(scaled, canvas.width), 0, 0);
-      window.document.body.appendChild(canvas);
-    };
-    const SMILE = Uint8ClampedArray.from(
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scale Test</title>
+    <style>
+      html {
+        display: contents;
+        padding: 0;
+        margin: 0;
+      }
+      body {
+        display: contents;
+        padding: 0;
+        margin: 0;
+      }
+      canvas {
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="module">
+      import { scale } from "./utilities.mjs";
+      const paintBody = (data, width, X = 1, Y = X) => {
+        const canvas = window.document.createElement("canvas");
+        canvas.width = X * width;
+        canvas.height = (Y * data.length) / width / 4;
+        const scaled = scale(data, width, X, Y);
+        const context = canvas.getContext("2d");
+        context.putImageData(new ImageData(scaled, canvas.width), 0, 0);
+        window.document.body.appendChild(canvas);
+      };
+      // prettier-ignore
+      const SMILE = Uint8ClampedArray.from(
       [ 255,  0,  0,128,255,  0,  0,128,255,  0,  0,128,255,  0,  0,128,255,  0,  0,128,255,  0,  0,128,
           0,255,  0,128,  0,  0,  0,128,255,255,  0,128,255,255,  0,128,  0,  0,  0,128,  0,255,  0,128,
           0,255,  0,128,255,255,  0,128,255,255,  0,128,255,255,  0,128,255,255,  0,128,  0,255,  0,128,
           0,255,  0,128,  0,  0,  0,128,255,255,  0,128,255,255,  0,128,  0,  0,  0,128,  0,255,  0,128,
           0,255,  0,128,255,255,  0,128,  0,  0,  0,128,  0,  0,  0,128,255,255,  0,128,  0,255,  0,128,
         255,  0,  0,128,255,  0,  0,128,255,  0,  0,128,255,  0,  0,128,255,  0,  0,128,255,  0,  0,128,
-      ]
-    );
-    let i = 24;
-    while(i-- > 1) {
-      paintBody(SMILE, 6, i);
-    }
-  </script>
-</body>
+      ]);
+      let i = 24;
+      while (i-- > 1) {
+        paintBody(SMILE, 6, i);
+      }
+    </script>
+  </body>
 </html>

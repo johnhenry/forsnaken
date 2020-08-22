@@ -1,18 +1,19 @@
 import { scale } from "../ImageData/utilities.mjs";
 
 export default class extends HTMLElement {
-  constructor(){
+  constructor() {
     super();
-    this.style = 'display:contents';    
+    this.style = "display:contents";
     this.renderHandler = this.renderHandler.bind(this);
   }
-  connectedCallback(){
-    const protoZoom = this.getAttribute('value');
-    const zoom = protoZoom === null 
-      ? 1 
-      : protoZoom.indexOf(',') === -1 
+  connectedCallback() {
+    const protoZoom = this.getAttribute("value");
+    const zoom =
+      protoZoom === null
+        ? 1
+        : protoZoom.indexOf(",") === -1
         ? Number(protoZoom)
-        : protoZoom.split(',');
+        : protoZoom.split(",");
 
     const [zoomX, zoomY] = Array.isArray(zoom)
       ? zoom.map(Number)
@@ -20,16 +21,21 @@ export default class extends HTMLElement {
 
     this.zoomX = zoomX;
     this.zoomY = zoomY;
-    this.addEventListener('render', this.renderHandler);
+    this.addEventListener("render", this.renderHandler);
   }
-  disconnectedCallback(){
-    this.removeEventListener('render', this.renderHandler);
+  disconnectedCallback() {
+    this.removeEventListener("render", this.renderHandler);
   }
-  renderHandler(event){
-    const {type, bubbles, detail} = event;
+  renderHandler(event) {
+    const { type, bubbles, detail } = event;
     event.stopPropagation();
-    const {data, width} = detail; 
-    const scaled = new ImageData(scale(data, width, this.zoomX, this.zoomY), width*this.zoomX)
-    this.parentElement.dispatchEvent(new CustomEvent(type, {detail:scaled, bubbles}));
+    const { data, width } = detail;
+    const scaled = new ImageData(
+      scale(data, width, this.zoomX, this.zoomY),
+      width * this.zoomX
+    );
+    this.parentElement.dispatchEvent(
+      new CustomEvent(type, { detail: scaled, bubbles })
+    );
   }
 }

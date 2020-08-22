@@ -1,1 +1,1 @@
-export default (subject, {x, y}) => subject.x===x && subject.y===y;
+export default (subject, { x, y }) => subject.x === x && subject.y === y;

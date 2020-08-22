@@ -1,11 +1,12 @@
 # TODO
 
 ## Upcoming
-- Emsure apples don't spawn in walls 
+
+- Emsure apples don't spawn in walls
 - Properly destroy web components
 - Fix pausing (control) in stake game
 - Update renderer paragigm
--   game(init):CustomEvent<<Array<snake, apple, wall>>> 
+- game(init):CustomEvent<<Array<snake, apple, wall>>>
 - Add Score Renderer
 - Shader Components
 
@@ -26,7 +27,7 @@
     - https://threejs.org/
   - VR:
     - https://webvr.rocks/
-  - AR: 
+  - AR:
     - https://ar-js-org.github.io/AR.js-Docs/
     - https://aframe.io/
   - GPU:
@@ -38,30 +39,31 @@
 - Clean Up Code
 
 ### builder
-  - clicking component populates add form
-  - dragging components removes it
-  - add appended content in addition to prepended
-  - drag html code
-  - use insert first after instead of prepend
-  - Implement settings 
-  - css custome properties
-  - write guide
+
+- clicking component populates add form
+- dragging components removes it
+- add appended content in addition to prepended
+- drag html code
+- use insert first after instead of prepend
+- Implement settings
+- css custome properties
+- write guide
 
 ## Recent
+
 - Eliminate private class variables for FF Compativility
 
 - Draggable builder
 - Add web component implementation for snake game
 - Create menu Component
-   - Keyboard interaction works as expected?
-   - Events properly dispatched?
-   - Demos 
+  - Keyboard interaction works as expected?
+  - Events properly dispatched?
+  - Demos
 - Replace "MenuGame" with Component implementation
 - use Custom events API
-- Use 'thought' instead of 'signal' for name of events emitted from 'brains' (keeping with them) 
+- Use 'thought' instead of 'signal' for name of events emitted from 'brains' (keeping with them)
 - Consolodate TouchSwipe/MouseSwipe => Swipe
 - Connect brain web components to pure js implemntations
 - Add walls to snake game
 - Enable apples to have "lives" that dictate when then can respawn.
 - Fix Zoom, width, canvaswidth, height, canvasheight
-
