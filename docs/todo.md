@@ -40,14 +40,14 @@
 
 ### builder
 
-- clicking component populates add form
-- dragging components removes it
-- add appended content in addition to prepended
+- respond to Return Key
+- dragging components archives it
 - drag html code
-- use insert first after instead of prepend
-- Implement settings
-- css custome properties
+- implement settings
+- css custom properties
 - write guide
+- update attributes in playground
+- inconsistent ordering between Output, Playground and Export
 
 ## Recent
 
