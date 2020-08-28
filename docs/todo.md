@@ -41,13 +41,10 @@
 ### builder
 
 - respond to Return Key
-- dragging components archives it
-- drag html code
 - implement settings
 - css custom properties
 - write guide
-- update attributes in playground
-- inconsistent ordering between Output, Playground and Export
+- output in remote window
 
 ## Recent
 
