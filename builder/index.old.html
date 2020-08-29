@@ -332,12 +332,6 @@
           if(!playgroundElement.parentElement){
             const outputPartner = playgroundMap.get(playgroundElement);
             (outputPartner.parentElement || output).removeChild(outputPartner);
-            // console.log(outpupPartner)
-            // if(outputPartner && outputPartner.parentElement){
-            //   console.log({playgroundElement, outputPartner})
-
-            //   outputPartner.parentElement.removeChild(outputPartner);
-            // }
             return;
           }
           const element = playgroundMap.get(playgroundElement);

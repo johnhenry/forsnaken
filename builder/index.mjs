@@ -439,7 +439,6 @@ const handleDropOnBody = (event) => {
         event.preventDefault();
         event.stopPropagation();
         const target = registeredComponents[id];
-        console.log(target, target.archived)
         if(confirm(`${target.archived ? "Unarchive" : "Archive"} Component ${id}?`)){
           target.archived = !target.archived;
           updateComponentList(componentList);
