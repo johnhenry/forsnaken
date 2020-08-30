@@ -1,5 +1,5 @@
-//https://docs.microsoft.com/en-us/microsoft-edge/progressive-web-apps-chromium/serviceworker
-// import { pathToRegexp } from "https://johnhenry.github.io/vendor/path-to-regexp@6.1.0/index.js";
+// https://docs.microsoft.com/en-us/microsoft-edge/progressive-web-apps-chromium/serviceworker
+// lib: start
 const updateRequest = async (oldRequest, newURL, newInit ={}) => {
   const oldInit = {};
   for(const key of Object.keys(Request.prototype)){
@@ -16,12 +16,27 @@ const updateRequest = async (oldRequest, newURL, newInit ={}) => {
   }
   return new Request(newURL || oldRequest.url, {...oldInit, ...newInit});  
 }
+
+
+// Retries can be done by repeating the route 
+
+// subroutes:
+
+// const action = (request, response, matches) =>{
+//   const routeA;
+// }
+
+// Potential route strategies
+// Function => Most control
+const actionFromstring = (action)=>()=>fetch(action); // String => stagic get of single address
+const actionFromMap = (action)=>()=>fetch(action);// Map<string:number> => go to address with probability
+const actionFromArray = (action)=>()=>fetch(action); // Array<string> => Round robin
+const actionFromSet = (action)=>()=>fetch(action); // Set<string> => Sticky First
+
+
 const Route = class {
   constructor(action, match = false){
     this.__action = action;
-    if(typeof action === "string"){
-      this.__action = ()=>fetch(action);
-    }
     if(match === false){
       this.__match = {
         url: false,
@@ -29,7 +44,7 @@ const Route = class {
         headers: false,
         body: false,
       }
-    }else if(typeof match === 'string' || match instanceof RegExp){
+    }else if(typeof match === 'string' || match instanceof RegExp || Array.isArray(match)){
       this.__match = {
         url: match,
         method: false,
@@ -48,7 +63,25 @@ const Route = class {
   __test(request){
     let match = this.__match;
     if(match.url){
-      if(match.url instanceof RegExp){
+      if(Array.isArray(match.url)) {
+        let atLeastOne = false;
+        for(const m of match.url) {
+          if(m instanceof RegExp){
+            if(m.test(request.url)){
+              atLeastOne = true;
+              break;
+            }
+          } else {
+            if(m === request.url){
+              atLeastOne = true;
+              break;
+            }
+          }
+        }
+        if(!atLeastOne){
+          return false;
+        }
+      } else if(match.url instanceof RegExp){
         if(!match.url.test(request.url)){
           return false;
         };
@@ -100,11 +133,21 @@ const Route = class {
     const output = {};
     let match = this.__match;
     if(match.url) {
-
-      if(match.url instanceof RegExp){
+      if(Array.isArray(match.url)) { 
+        output.url = [];
+        for(const m of match.url){
+          if(m instanceof RegExp){
+            output.url.push[m.exec(request.url)];
+          }else{
+            if(m === request.url){
+              output.url.push([m, m === request.url]);
+            }
+          }
+        }
+      } else if(match.url instanceof RegExp){
         output.url = match.url.exec(request.url);
 
-      } else { 
+      } else {
         output.url = request.url;
       }
     }
@@ -142,33 +185,30 @@ const Route = class {
   }
 }
 
-const DefaultRoute = new Route((req)=>fetch(req));
-
 const Router = class {
   constructor( ...routes){
     this.__routes = routes;
   }
-  get DefaultRoute (){
+  get lastRoute (){
     return __routes[__routes.length -1];
   }
-  async routeEvent(event){
-    let currentRequest = event.request.clone();
+  async send(request){
+    let currentRequest = request.clone();
     let currentResponse;
     try{
       for(const route of this.__routes){
         const res = await route.send(currentRequest, currentResponse);
         if (res instanceof Response) {
           return res;
-        } else if (res === undefined) {
-          // skip current routes
+        }  else if (res === undefined) {
+          // skip to next route
           continue;
+        } else if (res === false) {
+          // send current request to default route... can this be more useful?
+          return this.lastRoute.send(currentRequest);
         } else if(res === null) {
-          // skip to default route;
-          try{
-            return this.DefaultRoute.send(event.request);
-          }catch(error){
-            return new Response(error.toString(), {status:500});
-          }
+          // send original original request route... can this be more useful?;
+          return this.lastRoute.send(request);
         } else if(typeof res === "number") {
           // return code with default message
           return new Response('', {status:res})
@@ -178,7 +218,7 @@ const Router = class {
           [currentRequest, currentResponse] = res;
         }
       }
-      return this.DefaultRoute.send(event.request);
+      throw new Error('matching route not found');
     } catch(error){
       return new Response(error, {status:500});
     }
@@ -187,21 +227,29 @@ const Router = class {
     return this.__routes;
   }
 }
+// lib: end
+// Note that https://github.com/pillarjs/path-to-regexp 
+// can be used to create regular expressions from express routes
 
+const pathname = globalThis.location.href;
+const local = pathname.substring(0, pathname.lastIndexOf('/')); // This folder's location
+const remote = `${local.substring(0, local.lastIndexOf('/'))}/builder`; // Remote folder's location
+const replacements = [// These routes replace calls to the remote application with calls to the local one.
+  new Route(actionFromstring(`${local}/backup.html`), `${local}/backup.html`)
+];
+
+// This route forwards requests to from local app to the target
+const GetApplication = new Route(
+  async (req, _ , match)=>fetch(await updateRequest(req, `${remote}/${match.url[1]||''}`, {mode:"cors"})),
+  new RegExp(`^${local}\/?(.+)?$`)
+);
+
+// This route simply forwards any requests.
+const DefaultRoute = new Route((request)=>fetch(request));
+
+// The router is a collectoin of routes.
 const router = new Router(
-  new Route(
-    `${globalThis.location.origin}/backup.html`,
-    `${globalThis.location.origin}/builder/backup.html`,
-  ),
-  new Route(
-    async (req, b, match)=>{
-      return fetch(await updateRequest(req, `http://localhost:8080/${match.url[1]||''}`, {mode:"cors"}));
-    },
-    new RegExp(`^${globalThis.location.origin}\/?(.+)?$`)
-  ),
-  DefaultRoute);
+  ...replacements, 
+  GetApplication, DefaultRoute);
 
-globalThis.addEventListener('fetch', (event) => {
-  event.respondWith(router.routeEvent(event));
-});
-
+globalThis.addEventListener('fetch', (event) => event.respondWith(router.send(event.request)));
