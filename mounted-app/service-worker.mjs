@@ -17,22 +17,75 @@ const updateRequest = async (oldRequest, newURL, newInit ={}) => {
   return new Request(newURL || oldRequest.url, {...oldInit, ...newInit});  
 }
 
+// Visit given url
+const ActionSingle = (url)=>()=>fetch(url); // String => stagic get of single address
 
-// Retries can be done by repeating the route 
+// URLs attempted based on given weight probabilty
+const ActionWeightedProbability = (weights, {check=()=>{}, tries=1}={})=>{
+  const values = Object.entries(weights)
+  .map(([url, weight]) => {
+    const result = [];
+    for (let i = 0; i < weight; i++) {
+      result.push(url);
+    }
+    return result;
+  })
+  .flat();
+  return async ()=>{
+    for(let i = 0; i < tries; i++){
+      try {
+        const response = await fetch(values[Math.floor(Math.random() * values.length)]);
+        check(response);
+        return response;
+      }catch{
+        continue;
+      }
+    }
+    throw new Error('could not connect');
+  }
+}
 
-// subroutes:
+// URLs attempted in order.
+const ActionRoundRobin = (urls, {check=()=>{}, tries=1}={})=>{
+  return async ()=>{
+    for(let i = 0; i < tries; i++){
+      for(const url of urls){
+        try {
+          const response = await fetch(url);
+          check(response);
+          return response;
+        }catch{
+          continue;
+        }
+      }
+    }
+    throw new Error('could not connect');
+  }
+}; 
 
-// const action = (request, response, matches) =>{
-//   const routeA;
-// }
-
-// Potential route strategies
-// Function => Most control
-const actionFromstring = (action)=>()=>fetch(action); // String => stagic get of single address
-const actionFromMap = (action)=>()=>fetch(action);// Map<string:number> => go to address with probability
-const actionFromArray = (action)=>()=>fetch(action); // Array<string> => Round robin
-const actionFromSet = (action)=>()=>fetch(action); // Set<string> => Sticky First
-
+// First successful url becomes used permanenty
+const ActionSticky = (urls, {check=()=>{}, tries=1}={})=>{
+  let saved = null;
+  return async ()=>{
+    for(let i = 0; i < tries; i++){
+      if(saved !== null){
+        await fetch(url)
+      }else{
+        for(const url of urls){
+          try {
+            const response = await fetch(url);
+            check(response);
+            saved = url;
+            return response;
+          }catch{
+            continue;
+          }
+        }
+      }
+    }
+    throw new Error('could not connect');
+  }
+}
 
 const Route = class {
   constructor(action, match = false){
@@ -228,19 +281,19 @@ const Router = class {
   }
 }
 // lib: end
-// Note that https://github.com/pillarjs/path-to-regexp 
-// can be used to create regular expressions from express routes
+
+
 
 const pathname = globalThis.location.href;
 const local = pathname.substring(0, pathname.lastIndexOf('/')); // This folder's location
 const remote = `${local.substring(0, local.lastIndexOf('/'))}/builder`; // Remote folder's location
 const replacements = [// These routes replace calls to the remote application with calls to the local one.
-  new Route(actionFromstring(`${local}/backup.html`), `${local}/backup.html`)
+  new Route(ActionSingle(`${local}/defaults.html`), `${local}/defaults.html`)
 ];
 
 // This route forwards requests to from local app to the target
 const GetApplication = new Route(
-  async (req, _ , match)=>fetch(await updateRequest(req, `${remote}/${match.url[1]||''}`, {mode:"cors"})),
+  async (request, _ , match)=>fetch(await updateRequest(request, `${remote}/${match.url[1]||''}`, {mode:"cors"})),
   new RegExp(`^${local}\/?(.+)?$`)
 );
 
@@ -253,3 +306,13 @@ const router = new Router(
   GetApplication, DefaultRoute);
 
 globalThis.addEventListener('fetch', (event) => event.respondWith(router.send(event.request)));
+
+
+// Additional Notes: 
+// Routes and routers can be nested using the send event.
+// const superRouter = new Router(
+//   new Route((request)=>router.send(request))
+// );
+// globalThis.addEventListener('fetch', (event) => event.respondWith(superRouter.send(event.request)));
+
+// https://github.com/pillarjs/path-to-regexp can be used to create regular expressions from express string syntax

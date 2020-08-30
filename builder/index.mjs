@@ -5,6 +5,7 @@ import insertAfter from "./insert-after.mjs";
 import merge from "./merge.mjs"
 import { match, rules } from "../style-utilities/index.mjs";
 // functional (should be imported)
+const DEFAULT_URL = "./defaults.html"
 const genId = (length = 5) => String(Math.random()).substr(2, length);
 const allowDrop = (event) => event.preventDefault();
 const dragComponent = (event) => {
@@ -699,8 +700,12 @@ export default async ({ path }) => {
 
   // initialize components
   try {
-    onFileLoaded(await (await window.fetch('./backup.html')).text());
-    console.log(`conponents loaded.`);
+    const loaded = await window.fetch(DEFAULT_URL);
+      if(!loaded.ok){
+        throw new Error(defaults.status)
+      }
+      onFileLoaded(await loaded.text());
+      console.log(`conponents loaded.`);
   }catch ({message}) {
     console.log(`conponents not loaded: ${message}`);
   }
