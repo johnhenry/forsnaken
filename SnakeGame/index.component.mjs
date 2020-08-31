@@ -1,5 +1,5 @@
 import Game from "./index.mjs";
-import Control from "../Control.mjs"; // TODO: remove
+import Control from "../control.mjs"; // TODO: remove
 import KeyBrain from "../brains/human/keyboard.mjs"; // TODO: remove
 
 const assignForSnakeGameComponent = function (child) {
