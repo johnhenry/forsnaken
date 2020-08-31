@@ -1,59 +1,102 @@
 // https://css-tricks.com/simple-swipe-with-vanilla-javascript/
-import SignalEvent from '../SignalEvent.mjs';
-const unify =  event => event.changedTouches ? event.changedTouches[0] : event;
+const unify = (event) =>
+  event.changedTouches ? event.changedTouches[0] : event;
 export default class extends EventTarget {
-  #x = null
-  #y = null
-  #threshold
-  #map
-  #boundLock
-  #boundMove
-  constructor(threshold=1, map = ['up', 'down', 'left', 'right']) {
+  // #x = null
+  // #y = null
+  // #threshold
+  // #map
+  // #boundLock
+  // #boundMove
+  // #events
+  constructor(
+    threshold = 1,
+    map = ["up", "down", "left", "right"],
+    touch = false
+  ) {
     super();
-    this.#map = map;
-    this.#threshold = threshold;
-    this.#boundLock = this.lock.bind(this);
-    this.#boundMove = this.move.bind(this);
-    window.addEventListener('mousedown', this.#boundLock, false);
-    window.addEventListener('touchstart', this.#boundLock, false);
-    window.addEventListener('mouseup', this.#boundMove, false);
-    window.addEventListener('touchend', this.#boundMove, false);
+    this._private_x = null;
+    this._private_y = null;
+    this._private_map = map;
+    this._private_threshold = threshold;
+    this._private_boundLock = this.lock.bind(this);
+    this._private_boundMove = this.move.bind(this);
+    this._private_events = touch
+      ? {
+          start: "touchstart",
+          end: "touchend",
+        }
+      : {
+          start: "mousedown",
+          end: "mouseup",
+        };
+    window.addEventListener(
+      this._private_events.start,
+      this._private_boundLock,
+      false
+    );
+    window.addEventListener(
+      this._private_events.end,
+      this._private_boundMove,
+      false
+    );
   }
-  disable(){
-    window.removeEventListener('mousedown', this.#boundLock, false);
-    window.removeEventListener('touchstart', this.#boundLock, false);
-    window.removeEventListener('mouseup', this.#boundMove, false);
-    window.removeEventListener('touchend', this.#boundMove, false);
+  disable() {
+    window.removeEventListener(
+      this._private_events.start,
+      this._private_boundLock,
+      false
+    );
+    window.removeEventListener(
+      this._private_events.end,
+      this._private_boundMove,
+      false
+    );
   }
   lock(event) {
-    this.#x = unify(event).clientX;
-    this.#y = unify(event).clientY;
+    this._private_x = unify(event).clientX;
+    this._private_y = unify(event).clientY;
   }
   move(event) {
     let dx = 0;
     let dy = 0;
-    if(this.#x !== null) {
-      dx = unify(event).clientX - this.#x
+    if (this._private_x !== null) {
+      dx = unify(event).clientX - this._private_x;
     }
-    if(this.#y !== null) {
-      dy = unify(event).clientY - this.#y;
+    if (this._private_y !== null) {
+      dy = unify(event).clientY - this._private_y;
     }
-    if(Math.abs(dy) >= this.#threshold){
+    if (Math.abs(dy) >= this._private_threshold) {
       if (dy < 0) {
-        this.dispatchEvent(new SignalEvent(this.#map[0]));
+        this.dispatchEvent(
+          new CustomEvent("thought", {
+            detail: { which: this._private_map[0] },
+          })
+        );
       } else {
-        this.dispatchEvent(new SignalEvent(this.#map[1]));
+        this.dispatchEvent(
+          new CustomEvent("thought", {
+            detail: { which: this._private_map[1] },
+          })
+        );
       }
     }
-    if(Math.abs(dx) >= this.#threshold){
+    if (Math.abs(dx) >= this._private_threshold) {
       if (dx < 0) {
-        this.dispatchEvent(new SignalEvent(this.#map[2]));
+        this.dispatchEvent(
+          new CustomEvent("thought", {
+            detail: { which: this._private_map[2] },
+          })
+        );
       } else {
-        this.dispatchEvent(new SignalEvent(this.#map[3]));
+        this.dispatchEvent(
+          new CustomEvent("thought", {
+            detail: { which: this._private_map[3] },
+          })
+        );
       }
     }
-    this.#x = null;
-    this.#y = null;
+    this._private_x = null;
+    this._private_y = null;
   }
-};
-
+}

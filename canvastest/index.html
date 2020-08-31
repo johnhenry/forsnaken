@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script src="https://twgljs.org/dist/3.x/twgl.min.js"></script>
+    <script type="module">
+      import { add, subtract, multiply } from "./blend-modes.mjs";
+      import blend from "./blend.mjs";
+      //
+      const canvas1 = document.createElement("canvas");
+      canvas1.width = canvas1.height = 128;
+      const ctx1 = canvas1.getContext("2d");
+      ctx1.fillStyle = "magenta";
+      ctx1.arc(64, 64, 30, 0, Math.PI * 2, false);
+      ctx1.fill();
+      const canvas2 = document.createElement("canvas");
+      canvas2.width = canvas2.height = 128;
+      const ctx2 = canvas2.getContext("2d");
+      ctx2.fillStyle = "cyan";
+      ctx2.fillRect(50, 10, 28, 108);
+      document.body.append(
+        document.createTextNode("  "),
+        canvas1,
+        document.createTextNode(" + "),
+        canvas2,
+        document.createTextNode("  "),
+        document.createTextNode(" => "),
+        blend(canvas1, canvas2, multiply)
+      );
+    </script>
+  </body>
+</html>
