@@ -1,4 +1,3 @@
-import Menu from "./menu.component.mjs";
 import BrainKeyboard from "./brains/human/keyboard.component.mjs";
 import BrainGamepad from "./brains/human/gamepad.component.mjs";
 import BrainSwipe from "./brains/human/swipe.component.mjs";
@@ -16,7 +15,6 @@ import SnakeComponentApple from "./SnakeGame/entities/Apple.component.mjs";
 import SnakeComponentWall from "./SnakeGame/entities/Wall.component.mjs";
 
 for (const [tagName, className] of [
-  ["stack-menu", Menu],
   ["brain-keyboard", BrainKeyboard],
   ["brain-gamepad", BrainGamepad],
   ["brain-random", BrainRandom],

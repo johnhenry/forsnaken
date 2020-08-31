@@ -197,7 +197,7 @@
         const deaths = {};
 
         while (true) {
-          await pauseFPS(20);
+          await pauseFPS(24);
           const { value: events } = syncInstance.next();
           let subject, score, direction, color, name;
           for (const { type, detail } of events) {

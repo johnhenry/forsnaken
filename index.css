@@ -13,16 +13,14 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
-}
-.menu::part(content) {
-  width: 100%;
-  height: 100%;
   display: flex;
-  flex-direction: column;
-  place-items: center;
-  justify-content: center;
+  place-content: center;
+  align-items: stretch;
 }
 
-.menu::part(item):focus {
-  color: red;
+canvas {
+  width: 100%;
+  height: 100%;
+  align-items: center;
+
 }
