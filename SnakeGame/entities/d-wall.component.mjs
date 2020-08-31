@@ -1,4 +1,4 @@
-import Wall from "./Wall.mjs";
+import Wall from "./wall.mjs";
 
 export default class extends HTMLElement {
   constructor() {

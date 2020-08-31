@@ -10,9 +10,9 @@ import GridShader from "./pixelshaders/grid-shader.component.mjs";
 
 import SnakeGame from "./SnakeGame/index.component.mjs";
 import SnakeObjects from "./SnakeGame/objects/index.component.mjs";
-import SnakeComponentSnake from "./SnakeGame/entities/Snake.component.mjs";
-import SnakeComponentApple from "./SnakeGame/entities/Apple.component.mjs";
-import SnakeComponentWall from "./SnakeGame/entities/Wall.component.mjs";
+import SnakeComponentSnake from "./SnakeGame/entities/snake.component.mjs";
+import SnakeComponentApple from "./SnakeGame/entities/apple.component.mjs";
+import SnakeComponentWall from "./SnakeGame/entities/wall.component.mjs";
 
 for (const [tagName, className] of [
   ["brain-keyboard", BrainKeyboard],
