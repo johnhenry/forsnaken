@@ -3,10 +3,10 @@ import { scale } from "../ImageData/utilities.mjs";
 export default class extends HTMLElement {
   constructor() {
     super();
-    this.style = "display:contents";
-    this.renderHandler = this.renderHandler.bind(this);
   }
   connectedCallback() {
+    this.setAttribute("style", "display:contents");
+    this.renderHandler = this.renderHandler.bind(this);
     const protoZoom = this.getAttribute("value");
     const zoom =
       protoZoom === null

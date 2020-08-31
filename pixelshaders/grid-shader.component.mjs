@@ -23,10 +23,10 @@ const addBorder = (array, width, boxwidth, boxheight = boxwidth) => {
 export default class extends HTMLElement {
   constructor() {
     super();
-    this.style = "display:contents";
-    this.renderHandler = this.renderHandler.bind(this);
   }
   connectedCallback() {
+    this.setAttribute("style", "display:contents");
+    this.renderHandler = this.renderHandler.bind(this);
     this.cellwidth = Number(this.getAttribute("width")) || 1;
     this.cellheight = Number(this.getAttribute("height")) || 1;
     this.addEventListener("render", this.renderHandler);

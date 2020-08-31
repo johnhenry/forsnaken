@@ -4,12 +4,12 @@ import renderSquares from "./squares.mjs";
 export default class extends HTMLElement {
   constructor() {
     super();
+  }
+  connectedCallback() {
     this.setAttribute("style", "display:contents");
     this.slotted = document.createElement("slot");
     this.slotted.setAttribute("style", "display:none");
     this.appendChild(this.slotted);
-  }
-  connectedCallback() {
     const width = Number(this.getAttribute("width")) || 1;
     const height = Number(this.getAttribute("height")) || 1;
     const border = Number(this.getAttribute("border-size")) ?? 0;
