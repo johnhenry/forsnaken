@@ -1,10 +1,12 @@
 export default class extends HTMLElement {
   constructor() {
     super();
-    this.style = "display:contents";
   }
   static get observedAttributes() {
     return ["events"];
+  }
+  connectedCallback(){
+    this.setAttribute("style",  "display:contents");
   }
   attributeChangedCallback(name, old, current) {
     if (name === "events") {
