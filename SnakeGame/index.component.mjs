@@ -31,10 +31,13 @@ export default class extends HTMLElement {
     this.slotted.addEventListener("slotchange", this.slotChange);
     this.addEventListener("tick", () => {
       if (this.syncInstance) {
-        for (const { type, detail } of this.syncInstance.next().value) {
-          this.dispatchEvent(
-            this.primTransform(new CustomEvent(type, { detail, bubbles: true }))
-          );
+        const { value } = this.syncInstance.next();
+        if(value){
+          for (const { type, detail } of value) {
+            this.dispatchEvent(
+              this.primTransform(new CustomEvent(type, { detail, bubbles: true }))
+            );
+          }
         }
       }
     });
@@ -71,6 +74,7 @@ export default class extends HTMLElement {
   }
 
   async reset() {
+    
     this.syncInstance = Game(
       {
         apples: this.apples,

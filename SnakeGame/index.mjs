@@ -13,7 +13,7 @@ export default function* (
     }
     //Check For End Conditions
     if (!apples.length) {
-      yield [new CustomEvent("game over", { detail: "" })];
+      yield [new CustomEvent("game over", { detail: {} })];
       break;
     }
     // check for collision between each snake's head and each apple
