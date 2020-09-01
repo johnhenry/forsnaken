@@ -1,25 +1,45 @@
 export default class extends HTMLElement {
   constructor() {
     super();
+    this.events = [];
+    this.callback = ($) => $;
   }
   static get observedAttributes() {
-    return ["events"];
+    return ["events", "onevent"];
   }
   connectedCallback(){
     this.setAttribute("style",  "display:contents");
   }
+  disconnectedCallback(){
+    for(const event of this.events){
+      this.removeEventListener(event, this.callback);
+    }
+  }
   attributeChangedCallback(name, old, current) {
     if (name === "events") {
-      for (const event of (old || "").split(",").map((event) => event.trim())) {
+      for(const event of this.events){
+        this.removeEventListener(event, this.callback);
+      }
+      if(current){
+        this.callback = this.callback.bind(this);
+        this.events = (current || "")
+        .split(",")
+        .map((event) => event.trim());
+      }
+      for(const event of this.events){
+        this.addEventListener(event, this.callback);
+      }
+    }
+    if (name === "onevent") {
+      for(const event of this.events){
         this.removeEventListener(event, this.callback);
       }
       let func;
       try {
-        if (this.getAttribute("onevent") === null) {
+        if (!current) {
           throw new Error("");
         }
-        const body = this.getAttribute("onevent") || "";
-        func = new Function("event", body);
+        func = new Function("event", current);
       } catch {
         func = ($) => $;
       }
@@ -30,10 +50,7 @@ export default class extends HTMLElement {
           event.stopPropagation();
         }
       };
-      this.callback = this.callback.bind(this);
-      for (const event of (current || "")
-        .split(",")
-        .map((event) => event.trim())) {
+      for(const event of this.events){
         this.addEventListener(event, this.callback);
       }
     }

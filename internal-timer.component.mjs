@@ -5,12 +5,22 @@ export default class extends HTMLElement {
   constructor() {
     super();
     this.shadow = this.attachShadow({ mode: "open" });
+  }
+  connectedCallback(){
     this.slotted = this.shadow.appendChild(document.createElement("slot"));
     this.slotted.style = "display:none";
     this.slotChange = this.slotChange.bind(this);
     this.slotted.addEventListener("slotchange", this.slotChange);
     this.handleEvent = this.handleEvent.bind(this);
     this.addEventListener("pause", this.handleEvent);
+    if(this.suspended){
+      this.suspended = false;
+      this.reset();
+    }
+  }
+  disconnectedCallback(){
+    this.break = true;
+    this.suspended = true;
   }
   slotChange() {
     this.fps = Number(this.getAttribute("fps") || 60);
