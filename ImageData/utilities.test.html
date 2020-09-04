@@ -24,6 +24,7 @@
   <body>
     <script type="module">
       import { scale } from "./utilities.mjs";
+      import SMILE from "./smile.mjs";
       const paintBody = (data, width, X = 1, Y = X) => {
         const canvas = window.document.createElement("canvas");
         canvas.width = X * width;
@@ -33,15 +34,6 @@
         context.putImageData(new ImageData(scaled, canvas.width), 0, 0);
         window.document.body.appendChild(canvas);
       };
-      // prettier-ignore
-      const SMILE = Uint8ClampedArray.from(
-      [ 255,  0,  0,128,255,  0,  0,128,255,  0,  0,128,255,  0,  0,128,255,  0,  0,128,255,  0,  0,128,
-          0,255,  0,128,  0,  0,  0,128,255,255,  0,128,255,255,  0,128,  0,  0,  0,128,  0,255,  0,128,
-          0,255,  0,128,255,255,  0,128,255,255,  0,128,255,255,  0,128,255,255,  0,128,  0,255,  0,128,
-          0,255,  0,128,  0,  0,  0,128,255,255,  0,128,255,255,  0,128,  0,  0,  0,128,  0,255,  0,128,
-          0,255,  0,128,255,255,  0,128,  0,  0,  0,128,  0,  0,  0,128,255,255,  0,128,  0,255,  0,128,
-        255,  0,  0,128,255,  0,  0,128,255,  0,  0,128,255,  0,  0,128,255,  0,  0,128,255,  0,  0,128,
-      ]);
       let i = 24;
       while (i-- > 1) {
         paintBody(SMILE, 6, i);

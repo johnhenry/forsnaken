@@ -23,9 +23,9 @@ export default class extends HTMLElement {
     const draw = squares
       ? renderSquares(this.canvas, border)
       : renderImageData(this.canvas);
-    this.draw = function({ detail }){
+    this.draw = function ({ detail }) {
       draw(detail);
-    }
+    };
     this.addEventListener("render", this.draw);
   }
 }

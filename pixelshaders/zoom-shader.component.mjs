@@ -5,7 +5,7 @@ export default class extends HTMLElement {
     super();
   }
   connectedCallback() {
-    this.setAttribute("style", "display:contents");
+    this.style = "display:contents";
     this.renderHandler = this.renderHandler.bind(this);
     const protoZoom = this.getAttribute("value");
     const zoom =

@@ -4,21 +4,21 @@ import pauseframespersecond from "https://johnhenry.github.io/std/pauseframesper
 export default class extends HTMLElement {
   constructor() {
     super();
-    this.shadow = this.attachShadow({ mode: "open" });
   }
-  connectedCallback(){
+  connectedCallback() {
+    this.shadow = this.shadow || this.attachShadow({ mode: "open" });
     this.slotted = this.shadow.appendChild(document.createElement("slot"));
     this.slotted.style = "display:none";
     this.slotChange = this.slotChange.bind(this);
     this.slotted.addEventListener("slotchange", this.slotChange);
     this.handleEvent = this.handleEvent.bind(this);
     this.addEventListener("pause", this.handleEvent);
-    if(this.suspended){
+    if (this.suspended) {
       this.suspended = false;
       this.reset();
     }
   }
-  disconnectedCallback(){
+  disconnectedCallback() {
     this.break = true;
     this.suspended = true;
   }

@@ -24,23 +24,6 @@ const assignForSnakeGameComponent = function (child) {
 export default class extends HTMLElement {
   constructor() {
     super();
-    this.shadow = this.attachShadow({ mode: "open" });
-    this.slotted = this.shadow.appendChild(document.createElement("slot"));
-    this.slotted.style = "display:none";
-    this.slotChange = this.slotChange.bind(this);
-    this.slotted.addEventListener("slotchange", this.slotChange);
-    this.addEventListener("tick", () => {
-      if (this.syncInstance) {
-        const { value } = this.syncInstance.next();
-        if(value){
-          for (const { type, detail } of value) {
-            this.dispatchEvent(
-              this.primTransform(new CustomEvent(type, { detail, bubbles: true }))
-            );
-          }
-        }
-      }
-    });
   }
   primTransform(event) {
     if (this.primitives.length) {
@@ -51,7 +34,25 @@ export default class extends HTMLElement {
     return event;
   }
   async connectedCallback() {
-    // this.reset();
+    this.shadow = this.shadow || this.attachShadow({ mode: "open" });
+    this.slotted = this.shadow.appendChild(document.createElement("slot"));
+    this.slotted.style = "display:none";
+    this.slotChange = this.slotChange.bind(this);
+    this.slotted.addEventListener("slotchange", this.slotChange);
+    this.addEventListener("tick", () => {
+      if (this.syncInstance) {
+        const { value } = this.syncInstance.next();
+        if (value) {
+          for (const { type, detail } of value) {
+            this.dispatchEvent(
+              this.primTransform(
+                new CustomEvent(type, { detail, bubbles: true })
+              )
+            );
+          }
+        }
+      }
+    });
   }
 
   static get observedAttributes() {
@@ -74,7 +75,6 @@ export default class extends HTMLElement {
   }
 
   async reset() {
-    
     this.syncInstance = Game(
       {
         apples: this.apples,

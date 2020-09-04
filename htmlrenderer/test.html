@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      html {
+        background-color: black;
+      }
+      div {
+        width: 80px;
+        height: 80px;
+      }
+      span {
+        cursor: pointer;
+        width: 10px;
+        height: 10px;
+        z-index: calc(var(--z));
+        transform: rotateX(var(--rotX)) rotateY(var(--rotY))
+          rotateZ(var(--rotZ));
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(80, 1fr);
+        grid-template-rows: repeat(80, 1fr);
+      }
+      .grid > * {
+        grid-column: calc(var(--x) + 1);
+        grid-row: calc(var(--y) + 1);
+      }
+      .absolute {
+        position: relative;
+      }
+      .absolute > * {
+        position: absolute;
+        left: calc(var(--x) * 1px);
+        top: calc(var(--y) * 1px);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grid">
+      <span
+        style="
+          --x: 1;
+          --y: 1;
+          --z: 0;
+          --rotX: 0;
+          --rotY: 0;
+          --rotZ: 45deg;
+          background-color: blue;
+        "
+      ></span>
+      <span
+        style="
+          --x: 2;
+          --y: 1;
+          --z: 0;
+          --rotX: 0;
+          --rotY: 0;
+          --rotZ: 45deg;
+          background-color: green;
+        "
+      ></span>
+      <span
+        style="
+          --x: 1;
+          --y: 2;
+          --z: 0;
+          --rotX: 0;
+          --rotY: 0;
+          --rotZ: 45deg;
+          background-color: red;
+        "
+      ></span>
+    </div>
+    <div class="absolute">
+      <span
+        style="
+          --x: 0;
+          --y: 0;
+          --z: 0;
+          --rotX: 0;
+          --rotY: 0;
+          --rotZ: 45deg;
+          background-color: yellow;
+        "
+      ></span>
+      <span
+        style="
+          --x: 10;
+          --y: 0;
+          --z: 0;
+          --rotX: 0;
+          --rotY: 0;
+          --rotZ: 45deg;
+          background-color: cyan;
+        "
+      ></span>
+      <span
+        style="
+          --x: 0;
+          --y: 10;
+          --z: 0;
+          --rotX: 0;
+          --rotY: 0;
+          --rotZ: 45deg;
+          background-color: magenta;
+        "
+      ></span>
+    </div>
+  </body>
+</html>

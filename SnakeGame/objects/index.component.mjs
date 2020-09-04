@@ -4,11 +4,10 @@ import createImageData from "./imagedata.mjs";
 export default class extends HTMLElement {
   constructor() {
     super();
-    this.shadow = this.attachShadow({ mode: "open" });
-
-    this.setAttribute("style", "display:contents");
   }
   connectedCallback() {
+    this.shadow = this.shadow || this.attachShadow({ mode: "open" });
+    this.setAttribute("style", "display:contents");
     const protoZoom = this.getAttribute("zoom");
 
     const zoom =

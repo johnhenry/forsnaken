@@ -42,7 +42,7 @@ export default class extends HTMLElement {
       addBorder(data, width, this.cellwidth, this.cellheight),
       width
     );
-    this.parentElement.dispatchEvent(
+    this.parentElement?.dispatchEvent(
       new CustomEvent(type, { detail: transformed, bubbles })
     );
   }

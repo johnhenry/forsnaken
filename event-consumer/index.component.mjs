@@ -7,31 +7,29 @@ export default class extends HTMLElement {
   static get observedAttributes() {
     return ["events", "onevent"];
   }
-  connectedCallback(){
-    this.setAttribute("style",  "display:contents");
+  connectedCallback() {
+    this.setAttribute("style", "display:contents");
   }
-  disconnectedCallback(){
-    for(const event of this.events){
+  disconnectedCallback() {
+    for (const event of this.events) {
       this.removeEventListener(event, this.callback);
     }
   }
   attributeChangedCallback(name, old, current) {
     if (name === "events") {
-      for(const event of this.events){
+      for (const event of this.events) {
         this.removeEventListener(event, this.callback);
       }
-      if(current){
+      if (current) {
         this.callback = this.callback.bind(this);
-        this.events = (current || "")
-        .split(",")
-        .map((event) => event.trim());
+        this.events = (current || "").split(",").map((event) => event.trim());
       }
-      for(const event of this.events){
+      for (const event of this.events) {
         this.addEventListener(event, this.callback);
       }
     }
     if (name === "onevent") {
-      for(const event of this.events){
+      for (const event of this.events) {
         this.removeEventListener(event, this.callback);
       }
       let func;
@@ -50,7 +48,7 @@ export default class extends HTMLElement {
           event.stopPropagation();
         }
       };
-      for(const event of this.events){
+      for (const event of this.events) {
         this.addEventListener(event, this.callback);
       }
     }
