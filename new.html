@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Forsnaken</title>
+    <link rel="stylesheet" href="./index.css" />
+    <!-- <script src="./vendor/gpu-browser.min.js"></script> -->
+    <script src="./vendor/jquery-1.12.4.js"></script>
+    <script src="./vendor/jquery-ui.js"></script>
+    <script type="module" src="./register.mjs"></script>
+    <script type="module">
+    </script>
+  </head>
+  <body>
+    <canvas-renderer border-size="0" width="800" height="400">
+      <!-- <canvas-renderer border-size=0 width=800 height=400 squares> -->
+      <shader-grid width="8" height="8">
+        <shader-zoom value="8">
+          <imagedata-emitter></imagedata-emitter>
+          <!-- <forsnaken-game width="100" height="50">
+            <snake-objects zoom=8 squares></snake-objects>
+            <snake-objects zoom="1" width="100" height="50"></snake-objects>
+            <internal-timer id="timer" fps="24" />
+            <forsnaken-apple multi="64" x-range="10,89" y-range="10,39" />
+          </forsnaken-game> -->
+        </shader-zoom>
+      </shader-grid>
+    </canvas-renderer>
+  </body>
+</html>

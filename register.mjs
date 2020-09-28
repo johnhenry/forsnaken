@@ -7,6 +7,7 @@ import EventConsumer from "./event-consumer/index.component.mjs";
 import CanvasRenderer from "./canvasrenderer/index.component.mjs";
 import ZoomShader from "./pixelshaders/zoom-shader.component.mjs";
 import GridShader from "./pixelshaders/grid-shader.component.mjs";
+import ImageDataEmitter from "./ImageData/imagedata-emitter.component.mjs";
 
 import SnakeGame from "./SnakeGame/index.component.mjs";
 import SnakeObjects from "./SnakeGame/objects/index.component.mjs";
@@ -29,6 +30,7 @@ for (const [tagName, className] of [
   ["forsnaken-snake", SnakeComponentSnake],
   ["forsnaken-apple", SnakeComponentApple],
   ["forsnaken-wall", SnakeComponentWall],
+  ["imagedata-emitter", ImageDataEmitter]
 ]) {
   customElements.define(tagName, className);
 }
