@@ -4762,8 +4762,11 @@
   // Support: IE8-IE9
   wrapMap.optgroup = wrapMap.option;
 
-  wrapMap.tbody = wrapMap.tfoot = wrapMap.colgroup = wrapMap.caption =
-    wrapMap.thead;
+  wrapMap.tbody =
+    wrapMap.tfoot =
+    wrapMap.colgroup =
+    wrapMap.caption =
+      wrapMap.thead;
   wrapMap.th = wrapMap.td;
 
   function getAll(context, tag) {
@@ -6126,7 +6129,8 @@
 
   var rinlinejQuery = / jQuery\d+="(?:null|\d+)"/g,
     rnoshimcache = new RegExp("<(?:" + nodeNames + ")[\\s/>]", "i"),
-    rxhtmlTag = /<(?!area|br|col|embed|hr|img|input|link|meta|param)(([\w:-]+)[^>]*)\/>/gi,
+    rxhtmlTag =
+      /<(?!area|br|col|embed|hr|img|input|link|meta|param)(([\w:-]+)[^>]*)\/>/gi,
     // Support: IE 10-11, Edge 10240+
     // In IE/Edge using regex groups here causes severe slowdowns.
     // See https://connect.microsoft.com/IE/feedback/details/1736512/
@@ -8177,10 +8181,8 @@
       );
       if (result) {
         if (jQuery.isFunction(result.stop)) {
-          jQuery._queueHooks(
-            animation.elem,
-            animation.opts.queue
-          ).stop = jQuery.proxy(result.stop, result);
+          jQuery._queueHooks(animation.elem, animation.opts.queue).stop =
+            jQuery.proxy(result.stop, result);
         }
         return result;
       }
@@ -8979,18 +8981,17 @@
     };
 
     // Some attributes are constructed with empty-string values when not defined
-    attrHandle.id = attrHandle.name = attrHandle.coords = function (
-      elem,
-      name,
-      isXML
-    ) {
-      var ret;
-      if (!isXML) {
-        return (ret = elem.getAttributeNode(name)) && ret.value !== ""
-          ? ret.value
-          : null;
-      }
-    };
+    attrHandle.id =
+      attrHandle.name =
+      attrHandle.coords =
+        function (elem, name, isXML) {
+          var ret;
+          if (!isXML) {
+            return (ret = elem.getAttributeNode(name)) && ret.value !== ""
+              ? ret.value
+              : null;
+          }
+        };
 
     // Fixing value retrieval on a button requires this module
     jQuery.valHooks.button = {
@@ -9399,7 +9400,8 @@
 
   var rquery = /\?/;
 
-  var rvalidtokens = /(,)|(\[|{)|(}|])|"(?:[^"\\\r\n]|\\["\\\/bfnrt]|\\u[\da-fA-F]{4})*"\s*:?|true|false|null|-?(?!0\d)\d+(?:\.\d+|)(?:[eE][+-]?\d+|)/g;
+  var rvalidtokens =
+    /(,)|(\[|{)|(}|])|"(?:[^"\\\r\n]|\\["\\\/bfnrt]|\\u[\da-fA-F]{4})*"\s*:?|true|false|null|-?(?!0\d)\d+(?:\.\d+|)(?:[eE][+-]?\d+|)/g;
 
   jQuery.parseJSON = function (data) {
     // Attempt to parse using the native JSON parser first
@@ -9480,7 +9482,8 @@
     // IE leaves an \r character at EOL
     rheaders = /^(.*?):[ \t]*([^\r\n]*)\r?$/gm,
     // #7653, #8125, #8152: local protocol detection
-    rlocalProtocol = /^(?:about|app|app-storage|.+-extension|file|res|widget):$/,
+    rlocalProtocol =
+      /^(?:about|app|app-storage|.+-extension|file|res|widget):$/,
     rnoContent = /^(?:GET|HEAD)$/,
     rprotocol = /^\/\//,
     rurl = /^([\w.+-]+:)(?:\/\/(?:[^\/?#]*@|)([^\/?#:]*)(?::(\d+)|)|)/,
@@ -11269,19 +11272,19 @@
   // getComputedStyle returns percent when specified for top/left/bottom/right
   // rather than make the css module depend on the offset module, we just check for it here
   jQuery.each(["top", "left"], function (i, prop) {
-    jQuery.cssHooks[prop] = addGetHookIf(support.pixelPosition, function (
-      elem,
-      computed
-    ) {
-      if (computed) {
-        computed = curCSS(elem, prop);
+    jQuery.cssHooks[prop] = addGetHookIf(
+      support.pixelPosition,
+      function (elem, computed) {
+        if (computed) {
+          computed = curCSS(elem, prop);
 
-        // if curCSS returns percentage, fallback to offset
-        return rnumnonpx.test(computed)
-          ? jQuery(elem).position()[prop] + "px"
-          : computed;
+          // if curCSS returns percentage, fallback to offset
+          return rnumnonpx.test(computed)
+            ? jQuery(elem).position()[prop] + "px"
+            : computed;
+        }
       }
-    });
+    );
   });
 
   // Create innerHeight, innerWidth, height, width, outerHeight and outerWidth methods

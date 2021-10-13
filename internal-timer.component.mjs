@@ -1,5 +1,5 @@
-import pause from "https://johnhenry.github.io/std/pause@0.0.0/index.mjs";
-import pauseframespersecond from "https://johnhenry.github.io/std/pauseframespersecond@0.0.0/index.mjs";
+import pause from "https://johnhenry.github.io/std/js/pause@0.0.0/index.mjs";
+import pauseframespersecond from "https://johnhenry.github.io/std/js/pauseframespersecond@0.0.0/index.mjs";
 
 export default class extends HTMLElement {
   constructor() {

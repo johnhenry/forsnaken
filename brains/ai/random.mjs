@@ -22,9 +22,10 @@ export default class extends EventTarget {
     clearInterval(this._private_interval);
   }
   process() {
-    const which = this._private_values[
-      Math.floor(Math.random() * this._private_values.length)
-    ];
+    const which =
+      this._private_values[
+        Math.floor(Math.random() * this._private_values.length)
+      ];
     this.dispatchEvent(new CustomEvent("thought", { detail: { which } }));
   }
 }

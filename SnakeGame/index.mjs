@@ -1,5 +1,6 @@
-import collide from "../collisions/collide.mjs";
-import collideArray from "../collisions/collideArrays.mjs";
+import collide from "https://johnhenry.github.io/std/js/collisions@0.0.0/collideXY.mjs";
+
+import collideArray from "https://johnhenry.github.io/std/js/collisions@0.0.0/collideiterators.mjs";
 export default function* (
   { apples = [], width = 400, height = 400, control = {}, walls = [] },
   ...snakes
@@ -17,13 +18,13 @@ export default function* (
       break;
     }
     // check for collision between each snake's head and each apple
-    const digesting = new Set([]);
+    const digesting = new Set([]); // digesting snakes will not move this round
     for (const [head, apple] of collideArray(
       snakes.map(({ head }) => head),
       apples
     )) {
       // if collision happens (snake eats apple)
-      const snake = snakes.find((snake) => collide(head, snake.head));
+      const snake = snakes.find((snake) => collide(head, snake.head, true));
       // grow snake
       snake.grow(apple.value);
       digesting.add(snake);
@@ -39,7 +40,7 @@ export default function* (
         const index = apples.indexOf(apple);
         apples.splice(index, 1);
       }
-      // shanke screen based on snake direction
+      // shake screen based on snake direction
       digesting.add(snake);
       yield [
         new CustomEvent("score", {
@@ -55,7 +56,7 @@ export default function* (
     )) {
       const snake = snakes
         .filter(({ enabled }) => enabled)
-        .find((snake) => collide(head, snake.head));
+        .find((snake) => collide(head, snake.head, true));
       const otherSnake = snakes
         .filter(({ enabled }) => enabled)
         .flat()
@@ -86,7 +87,7 @@ export default function* (
       walls.map(({ cells }) => cells).flat()
     )) {
       // if collision happens (snake hits apple)
-      const snake = snakes.find((snake) => collide(head, snake.head));
+      const snake = snakes.find((snake) => collide(head, snake.head, true));
       if (snake.enabled) {
         snake.enabled = false; // destory old snake (remove listeners)
         yield [new CustomEvent("death", { detail: snake })];

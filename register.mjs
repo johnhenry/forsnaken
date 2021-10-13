@@ -1,13 +1,15 @@
-import BrainKeyboard from "./brains/human/keyboard.component.mjs";
-import BrainGamepad from "./brains/human/gamepad.component.mjs";
-import BrainSwipe from "./brains/human/swipe.component.mjs";
-import BrainRandom from "./brains/ai/random.component.mjs";
-import InternalTimer from "./internal-timer.component.mjs";
-import EventConsumer from "./event-consumer/index.component.mjs";
-import CanvasRenderer from "./canvasrenderer/index.component.mjs";
-import ZoomShader from "./pixelshaders/zoom-shader.component.mjs";
-import GridShader from "./pixelshaders/grid-shader.component.mjs";
-import ImageDataEmitter from "./ImageData/imagedata-emitter.component.mjs";
+import BrainKeyboard from "https://johnhenry.github.io/std/js/brains@0.0.0/human/keyboard.component.mjs";
+import BrainGamepad from "https://johnhenry.github.io/std/js/brains@0.0.0/human/gamepad.component.mjs";
+import BrainSwipe from "https://johnhenry.github.io/std/js/brains@0.0.0/human/swipe.component.mjs";
+import BrainRandom from "https://johnhenry.github.io/std/js/brains@0.0.0/ai/random.component.mjs";
+import InternalTimer from "https://johnhenry.github.io/std/js/internal-timer.component@0.0.0/index.mjs";
+import EventConsumer from "https://johnhenry.github.io/std/js/event-consumer.component@0.0.0/index.mjs";
+import CanvasRenderer from "https://johnhenry.github.io/std/js/canvasrenderer.component@0.0.0/index.mjs";
+import {
+  zoom as ZoomShader,
+  grid as GridShader,
+} from "https://johnhenry.github.io/std/js/pixelshader.component@0.0.0/index.mjs";
+import ImageDataEmitter from "https://johnhenry.github.io/std/js/imagedata-emitter.component@0.0.0/index.mjs";
 
 import SnakeGame from "./SnakeGame/index.component.mjs";
 import SnakeObjects from "./SnakeGame/objects/index.component.mjs";
@@ -30,7 +32,7 @@ for (const [tagName, className] of [
   ["forsnaken-snake", SnakeComponentSnake],
   ["forsnaken-apple", SnakeComponentApple],
   ["forsnaken-wall", SnakeComponentWall],
-  ["imagedata-emitter", ImageDataEmitter]
+  ["imagedata-emitter", ImageDataEmitter],
 ]) {
   customElements.define(tagName, className);
 }

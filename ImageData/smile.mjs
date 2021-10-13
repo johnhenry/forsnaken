@@ -1,4 +1,3 @@
-
 // prettier-ignore
 export default Uint8ClampedArray.from(
   [ 255,  0,  0,128,255,  0,  0,128,255,  0,  0,128,255,  0,  0,128,255,  0,  0,128,255,  0,  0,128,

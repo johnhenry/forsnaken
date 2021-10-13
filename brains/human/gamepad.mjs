@@ -9,11 +9,13 @@ export default class extends EventTarget {
     this._private_map = map;
     this._private_boundProcess = this.process.bind(this);
     this._private_interval = setInterval(() => {
-      const gamePadState = (navigator.getGamepads
-        ? navigator.getGamepads()
-        : navigator.webkitGetGamepads
-        ? navigator.webkitGetGamepads
-        : [])[this._private_index];
+      const gamePadState = (
+        navigator.getGamepads
+          ? navigator.getGamepads()
+          : navigator.webkitGetGamepads
+          ? navigator.webkitGetGamepads
+          : []
+      )[this._private_index];
       this._private_boundProcess(gamePadState);
     }, interval);
   }

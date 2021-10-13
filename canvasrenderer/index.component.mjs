@@ -7,16 +7,16 @@ export default class extends HTMLElement {
   }
   disconnectedCallback() {
     this.removeEventListener("render", this.draw);
-    if(this.canvas){
+    if (this.canvas) {
       this.removeChild(this.canvas);
       delete this.canvas;
     }
 
-    console.log('disconnected');
+    console.log("disconnected");
   }
   connectedCallback() {
     this.setAttribute("style", "display:contents");
-    if(!this.slotted){
+    if (!this.slotted) {
       this.slotted = document.createElement("slot");
       this.slotted.setAttribute("style", "display:none");
       this.appendChild(this.slotted);
@@ -25,7 +25,7 @@ export default class extends HTMLElement {
     const height = Number(this.getAttribute("height")) || 1;
     const border = Number(this.getAttribute("border-size")) ?? 0;
     const squares = this.getAttribute("squares") !== null;
-    if(!this.canvas){
+    if (!this.canvas) {
       this.canvas = this.appendChild(document.createElement("canvas"));
     }
     this.canvas.width = width;
@@ -37,6 +37,6 @@ export default class extends HTMLElement {
       draw(detail);
     };
     this.addEventListener("render", this.draw);
-    console.log('connected');
+    console.log("connected");
   }
 }
