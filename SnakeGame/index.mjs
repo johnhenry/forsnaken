@@ -1,6 +1,6 @@
-import collide from "https://johnhenry.github.io/std/js/collisions@0.0.0/collideXY.mjs";
+import collide from "https://johnhenry.github.io/lib/js/collisions/0.0.0/collideXY.mjs";
 
-import collideArray from "https://johnhenry.github.io/std/js/collisions@0.0.0/collideiterators.mjs";
+import collideArray from "https://johnhenry.github.io/lib/js/collisions/0.0.0/collideiterators.mjs";
 export default function* (
   { apples = [], width = 400, height = 400, control = {}, walls = [] },
   ...snakes

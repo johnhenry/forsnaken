@@ -1,6 +1,6 @@
 import Game from "./index.mjs";
 import Control from "../control.mjs"; // TODO: remove
-import KeyBrain from "https://johnhenry.github.io/std/js/brains@0.0.0/human/keyboard.mjs"; // TODO: remove
+import KeyBrain from "https://johnhenry.github.io/lib/js/brains/0.0.0/human/keyboard.mjs"; // TODO: remove
 
 const assignForSnakeGameComponent = function (child) {
   const { snake, apple, wall, primitive } = child;

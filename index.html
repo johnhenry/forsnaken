@@ -30,14 +30,14 @@
       import Snake from "./SnakeGame/entities/snake.mjs";
       import Apple from "./SnakeGame/entities/apple.mjs";
       import createSquares from "./SnakeGame/objects/squares.mjs";
-      import renderSquares from "https://johnhenry.github.io/std/js/canvasrenderer.component@0.0.0/squares.mjs";
+      import renderSquares from "https://johnhenry.github.io/lib/js/canvasrenderer.component/0.0.0/squares.mjs";
       import Control from "./control.mjs";
 
       // Brains
-      import KeyBrain from "https://johnhenry.github.io/std/js/brains@0.0.0/human/keyboard.mjs";
-      import GamePadBrain from "https://johnhenry.github.io/std/js/brains@0.0.0/human/gamepad.mjs";
-      import SwipeBrain from "https://johnhenry.github.io/std/js/brains@0.0.0/human/swipe.mjs";
-      import RandomBrain from "https://johnhenry.github.io/std/js/brains@0.0.0/ai/random.mjs";
+      import KeyBrain from "https://johnhenry.github.io/lib/js/brains/0.0.0/human/keyboard.mjs";
+      import GamePadBrain from "https://johnhenry.github.io/lib/js/brains/0.0.0/human/gamepad.mjs";
+      import SwipeBrain from "https://johnhenry.github.io/lib/js/brains/0.0.0/human/swipe.mjs";
+      import RandomBrain from "https://johnhenry.github.io/lib/js/brains/0.0.0/ai/random.mjs";
 
       // Brain Configurations
       import {
@@ -45,14 +45,14 @@
         antiWasd,
         arrows,
         antiArrows,
-      } from "https://johnhenry.github.io/std/js/brains@0.0.0/configurations/keyboard.mjs";
+      } from "https://johnhenry.github.io/lib/js/brains/0.0.0/configurations/keyboard.mjs";
       import {
         dpad,
         antiDpad,
-      } from "https://johnhenry.github.io/std/js/brains@0.0.0/configurations/gamepad.mjs";
+      } from "https://johnhenry.github.io/lib/js/brains/0.0.0/configurations/gamepad.mjs";
 
       // Utilities
-      import pauseFPS from "https://johnhenry.github.io/std/js/pauseframespersecond@0.0.0/index.mjs";
+      import pauseFPS from "https://johnhenry.github.io/lib/js/pauseframespersecond/0.0.0/index.mjs";
 
       window.onload = async () => {
         // ## Renderer Setup
@@ -115,11 +115,11 @@
 
         // The main differentiator between each snake is the "brains" array
         // Brains are an interface used to control entities from outside of the game.
-        // Brains in "https://johnhenry.github.io/std/js/brains@0.0.0/ai/" are controlled by the computer itself.
+        // Brains in "https://johnhenry.github.io/lib/js/brains/0.0.0/ai/" are controlled by the computer itself.
 
         // The *snakes* array represents a list of initialisations for each snake.
         const snakes = [];
-        // Brains in the "https://johnhenry.github.io/std/js/brains@0.0.0/human/" directory connect to human interface devices to allow for input.
+        // Brains in the "https://johnhenry.github.io/lib/js/brains/0.0.0/human/" directory connect to human interface devices to allow for input.
         // Brains are basically just event emitters that emit a "thought" event.
         // The first snake can be controlled by the arrow keys, the d-pad on a game controller,
         // or via swiping on a touch screen.
