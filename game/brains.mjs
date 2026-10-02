@@ -12,6 +12,10 @@
 //
 // Write your own with defineSnakeBrain(name, (me, world, brain) => turn).
 
+// A snake element, under whatever tag it was registered as: it steers.
+// (Not an import of the class: elements.mjs imports this module.)
+const isSnake = (el) => typeof el?.steer === "function" && "snake" in el;
+
 const OPPOSITE = { up: "down", down: "up", left: "right", right: "left" };
 const DELTA = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
 
@@ -49,6 +53,10 @@ export function board(world) {
 }
 
 /**
+ * @attr {string} commandfor - The id of the snake to steer. Default the snake it's inside.
+ * @attr {number} interval - Think every this many steps.
+ * @attr {boolean} disabled - Don't steer.
+ *
  * A brain. Subclasses override `think(me, world)`, returning a turn (`up`,
  * `down`, `left`, `right`, `clockwise`, `counterclockwise`) or nothing to
  * carry on.
@@ -78,8 +86,12 @@ export class SnakeBrain extends HTMLElement {
   /** The snake it steers: the one `commandfor` names, or the one it's inside. */
   get snake() {
     const id = this.getAttribute("commandfor");
-    const target = id ? this.getRootNode().getElementById?.(id) : this.closest("forsnaken-snake");
-    return target?.localName === "forsnaken-snake" ? target : null;
+    if (id) {
+      const target = this.getRootNode().getElementById?.(id);
+      return isSnake(target) ? target : null;
+    }
+    for (let node = this.parentElement; node; node = node.parentElement) if (isSnake(node)) return node;
+    return null;
   }
 
   /** Think every this many steps (the `interval` attribute; default 1). */
@@ -134,6 +146,12 @@ export function defineSnakeBrain(name, think, { interval = 1 } = {}) {
 }
 
 /**
+ * @tag snake-brain-random
+ * @summary Turns at random, every 24 steps by default.
+ * @attr {number} clockwise - Weight of turning clockwise. Default 1.
+ * @attr {number} counterclockwise - Weight of turning counterclockwise. Default 1.
+ * @attr {number} straight - Weight of going straight. Default 2.
+ *
  * The original brain: every `interval` steps (default 24, about a second at 24 fps),
  * turn clockwise, counterclockwise, or go straight, at random, weighted by
  * the `clockwise`, `counterclockwise`, and `straight` attributes (1, 1, 2).
@@ -155,6 +173,9 @@ export class RandomBrain extends SnakeBrain {
 }
 
 /**
+ * @tag snake-brain-greedy
+ * @summary Heads for the nearest apple, avoiding walls and snakes.
+ *
  * Heads for the nearest apple, never stepping onto a wall or a snake if it
  * can help it.
  */
