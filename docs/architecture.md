@@ -1,125 +1,72 @@
-# Game Architecture Notes
+# Architecture notes
 
-These are notes on this game's architecture. They may be applicable in other situations.
+Notes on how the game is put together, and why. Some apply to games (and
+programs) in general.
 
-## Game Components
+## The game, then the page
 
-Most of the game's action takes place in the **game [loop](./SnakeGame/loop.mjs)**,
-and most of what the user experiences happens via the **[renderer](./SnakeGame/rendererFactories/canvas.mjs)**,
-but it is worth it to break out some key components for the sake of organization.
+[`game/model.mjs`](../game/model.mjs) is the game with no browser in it:
+plain classes (`Snake`, `Apple`, `Wall`) and one function, `step(world)`,
+that plays one turn and returns what happened (`score`, `death`,
+`gameover`). It can be tested in Node, run in a worker, or drawn anywhere.
 
-"Events", "entities", and "collisions" are useful to identify and breakout into their own components.
+[`game/elements.mjs`](../game/elements.mjs) wraps it in HTML elements.
+They hold settings (attributes), turn commands into calls (`steer()`),
+and draw. The page is mostly markup that puts them together.
 
-### Events
+Keeping these apart is "separation of concerns". It makes each part
+easier to reason about and change, at the cost of a little indirection.
 
-The **game loop** and the **renderer** are directly connected in that **game loop** must yield objects that the **renderer** "understands".
+## Events in, events out
 
-In this game, we use a shared event model to achieve this could be augmented or replaced with a type system.
+Two ways data gets into a program:
 
-Modules in the "./SnakeGame/events/" folder are shared by both the **game loop** and the **renderer**. Following principals of "separation of concerns", they are otherwise decoupled.
+- **Checking state**: a loop runs at a steady rate and looks at what's
+  changed. Most video games, and most hardware, work this way.
+- **Events**: something happens, and code runs in response.
 
-Separating concerns like this makes a program easier to reason about, and easier to modify parts without affecting others, but it may lead to slow application execution. This is a tradeoff that must be weighed when creating applications.
+Forsnaken uses both. The `<frame-timer>` is the loop: every `tick`, the
+game takes a step and checks every snake's direction (state). Steering is
+events: a key, a controller button, or a swipe sends a command to a
+snake, which changes its direction. The Gamepad API only offers state, so
+`<gamepad-input>` turns it into events by checking every frame.
 
-### entities
+Because every kind of input sends the same commands (`--up`, `--left`,
+…), a snake doesn't know or care whether a keyboard, a controller, a
+finger, or a network connection moved it.
 
-Most games have easily identifyable types of entities.
-For this game, I've identified "[apples](./SnakeGame/entities/apples.mjs)"
-and "[snakes](./SnakeGame/entities/snakes.mjs)".
+## Brains: deciding, not just reacting
 
-If we wanted to add another type of object, say a "wall",
-we might add a class in "./SnakeGame/entities/wall.mjs" to represent it.
+A keyboard steers a snake when you press a key. A brain steers it by
+deciding: at the start of each step the game fires `step` with a copy of
+the board, and each brain may answer with a command. Because brains send
+the same commands as every other input, a snake can't tell a person from
+a program, and swapping one for the other is swapping an element.
 
-In a card-based game, there would probably be a "card" class in "./entities/card.mjs".
+The board is a copy on purpose: a brain can look at everything but change
+nothing, so a buggy brain can't break the game. (In the 2020 version,
+brains never saw the board at all, so the only possible AI was random.)
 
-### collisions
+## Elements that work however they're made
 
-Collison detection may not be necessary in most turn-based games, but most real-time games use some method of detecting of whether or not two objects occupy the same space.
+The elements hold settings and the game reads them on every step, rather
+than collecting them once when the page loads. So the game works whether
+it's written in HTML, built one element at a time by a script or an
+editor, rearranged, or defined after the elements exist. An earlier
+version collected its pieces only when its children changed, and only
+worked because a markup mistake (`<custom-element />`, which doesn't
+close in HTML) happened to give it children.
 
-I've defined two modules: **[collide](./SnakeGame/collisions/collide.mjs)** and **[collideArray](./SnakeGame/collisions/collideArray.mjs)** that detect whether two components -- or array of components, occupy the same two-dimensional -- x,y -- coordinates, respectively.
+## Side effects stay outside
 
-## Game as iterator
+The game only reports what happened. Shaking the screen, the camouflage
+color, and the scoreboard are in [`effects.mjs`](../effects.mjs),
+listening to the game's events. Swapping them out (sound, say) doesn't
+touch the game.
 
-The result of **SnakeGame** is an _iterator_ and can be used as such.
+## Drawing
 
-This might be useful for debugging, rendering outside of the browser,
-or usage withing other iterators.
-
-```javascript
-//... within any context
-const { value } = game.next();
-console.log(value);
-renderer(value);
-//...
-```
-
-```javascript
-//... within async context
-const time = Math.floor(1000 / 60); // 1/60 of a second => 60 FPS
-for (const output of game) {
-  await new Promise((resolve) => setTimeout(resolve, time));
-  renderer(output);
-}
-//
-```
-
-```javascript
-//...within generator context
-const game = SnakeGame(/*...*/);
-switch (name) {
-  case "snake":
-    yield * SnakeGame(/*...*/);
-    break;
-  default:
-    yield * NoGame();
-}
-//...
-```
-
-## Side Effects
-
-One might consider the "main" purpose of this game loop to be to yield a "DrawEvent",
-with "DeathEvent"s and the "ScoreEvent"s being secondary.
-Disabling rendering for these latter two types actually has little effect on gameplay.
-
-There are some actions (changing the background color) that could be done within the main rendering engine itself with little effort. In these cases, sometimes the platform on which a game runs (the browser) provides facilities (via DOM and JQuery) that make it easy to offload this task.
-
-Other actions (as shaking the rendering surface) may be difficult or even impossible to do within the main rendering engine and must be offloaded.
-
-## Input Models
-
-There exactly two (maybe one?) ways of getting data into an application.
-
-### Check State
-
-In this model, a loop runs at a specific frequency and continually checks the state of values that may change.
-The loop yields values based on this state to be rendered.
-
-This efficient method is used in most video games as well as on low-level hardware -- think arduino.
-
-Additional steps must be taken to prevent the rendering frequency from being coupled to the game loop... Fun Fact: The game Space Invaders uses this as "feature". As you defeat enemies on screen, the game moves faster and is thus harder because there are less enemies on screen to render.
-
-### Event
-
-In this model, a program listens for specific types of events and executes code based on their contents.
-
-Applications like this are easy to reason about but may lack responsiveness.
-
-I'm not sure but this may note technically be a "real" model, but rather an abstraction atop the previous.
-
-### Hybrids
-
-In our game we use the "Check State" model within our main loop -- the loops continually checks the direction (state) of each snake and moves it accordingly.
-
-On the other hand, the "brains" that we use to change the direction the snakes use an "Event" model. They emit signal events which tell the snake their to change its direction, so when using the keyboard to control the snake, we're using both models.
-
-Note Brains are simply EventEmitters (EventTarget).
-
-To futher complicate this, the web gamepad API is based on the "Check State" model, and this must be tranlated into an "Event" model and back into the "Check State" model when using a game pad.
-
-It might be considered efficent to just put the code for the gamepad API directly into event loop -- and that's how a lot of games, particulary consoles with limited input options work. The way that we've created this allows us to flexibility in our ability to generalize how input works at the slight cost of performance within the gameloop. This is another tradeoff to consider.
-
-## Full Games
-
-Ultimately, each game has unique considerations as to what to do with its loop and how to render it's output.
-
-A full game likely involves a number of different sub-programs -- gameloops and types renderers -- working in conjunction to produce an interactive experience.
+The game draws one pixel per cell on its own canvas. Everything about how
+that looks (the 8× zoom, the grid) is domkit's `<pixel-canvas>`, which
+accepts any element with a `canvas` as a source. More effects are one
+attribute away: `effects="grid(8) crt()"`.
