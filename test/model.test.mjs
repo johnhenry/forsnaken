@@ -53,8 +53,14 @@ test("apples with lives run out, and then the game is over", () => {
   const apple = new Apple({ xRange: [1, 2], yRange: [1, 2], lives: 1 });
   const world = { width: 10, height: 10, snakes: [snake], apples: [apple], walls: [] };
   assert.deepEqual(step(world).map((e) => e.type), ["score"]);
-  assert.equal(world.apples.length, 0);
+  assert.equal(apple.alive, false);
   assert.deepEqual(step(world).map((e) => e.type), ["gameover"]);
+});
+
+test("a board with no apples isn't over: snakes just move", () => {
+  const snake = new Snake({ x: 1, y: 1, direction: "right" });
+  assert.deepEqual(step({ width: 10, height: 10, snakes: [snake], apples: [], walls: [] }), []);
+  assert.deepEqual(snake.head, { x: 2, y: 1 });
 });
 
 test("running into a body or a wall kills a snake, which respawns", () => {

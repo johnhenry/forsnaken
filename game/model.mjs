@@ -127,7 +127,7 @@ export class Wall {
 /**
  * One step of play. Returns what happened, as events:
  * `{ type: "score", snake, apple }`, `{ type: "death", snake }`, and
- * `{ type: "gameover" }` once no apples are left.
+ * `{ type: "gameover" }` once every apple has been eaten.
  * @param {{ width: number, height: number, snakes: Snake[], apples: Apple[], walls: Wall[] }} world
  * @param {() => number} [random]
  * @returns {{ type: string, [key: string]: unknown }[]}
@@ -135,7 +135,9 @@ export class Wall {
 export function step(world, random = Math.random) {
   const { width, height, snakes, walls } = world;
   const events = [];
-  if (!world.apples.some((apple) => apple.alive)) return [{ type: "gameover" }];
+  // Over once every apple has been eaten (a board with no apples yet is
+  // just a board, not a finished game).
+  if (world.apples.length && !world.apples.some((apple) => apple.alive)) return [{ type: "gameover" }];
 
   // Eat: a head on an apple grows the snake, which then pauses a step.
   const digesting = new Set();
@@ -151,7 +153,6 @@ export function step(world, random = Math.random) {
       events.push({ type: "score", snake, apple });
     }
   }
-  world.apples = world.apples.filter((apple) => apple.alive);
 
   // Collide: with any snake's body (its own included), or a wall. Two
   // heads meeting: one of them, at random.
