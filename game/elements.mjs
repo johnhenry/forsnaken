@@ -93,9 +93,24 @@ export class ForsnakenSnake extends Entity {
   }
 }
 
-/** `count` apples that respawn in a range when eaten, `lives` times each. */
+// "3,4 5,6", or JSON: [[3, 4], [5, 6]] or [{ "x": 3, "y": 4 }]
+const cells = (text) => {
+  if (!text?.trim()) return [];
+  try {
+    const parsed = JSON.parse(text);
+    if (Array.isArray(parsed)) return parsed.map((c) => (Array.isArray(c) ? { x: Number(c[0]), y: Number(c[1]) } : { x: Number(c.x), y: Number(c.y) }));
+  } catch {
+    // not JSON: pairs
+  }
+  return text.trim().split(/\s+/).map((pair) => pair.split(",").map(Number)).filter(([x, y]) => Number.isFinite(x) && Number.isFinite(y)).map(([x, y]) => ({ x, y }));
+};
+
+/**
+ * `count` apples that respawn in a range when eaten, `lives` times each,
+ * never on a cell listed in `avoid` ("3,4 5,6").
+ */
 export class ForsnakenApple extends Entity {
-  static observedAttributes = ["count", "x-range", "y-range", "lives", "value"];
+  static observedAttributes = ["count", "x-range", "y-range", "lives", "value", "avoid"];
   #apples = null;
 
   /** The models, one per apple. */
@@ -106,6 +121,7 @@ export class ForsnakenApple extends Entity {
         yRange: range(this, "y-range", [0, 8]),
         lives: number(this, "lives", Infinity),
         value: number(this, "value", 2),
+        avoid: cells(this.getAttribute("avoid")),
       }));
     return this.#apples;
   }
@@ -116,9 +132,9 @@ export class ForsnakenApple extends Entity {
   }
 }
 
-/** A wall: a filled rectangle, or one of its diagonals (`shape`). */
+/** A wall: a filled rectangle, or one of its diagonals (`shape`); `spread` dots it. */
 export class ForsnakenWall extends Entity {
-  static observedAttributes = ["x", "y", "x1", "y1", "shape"];
+  static observedAttributes = ["x", "y", "x1", "y1", "shape", "spread"];
   #wall = null;
 
   reset() {
@@ -128,7 +144,7 @@ export class ForsnakenWall extends Entity {
   get wall() {
     const x = number(this, "x", 0);
     const y = number(this, "y", 0);
-    this.#wall ??= new Wall({ x, y, x1: number(this, "x1", x), y1: number(this, "y1", y), shape: this.getAttribute("shape") ?? "rect" });
+    this.#wall ??= new Wall({ x, y, x1: number(this, "x1", x), y1: number(this, "y1", y), shape: this.getAttribute("shape") ?? "rect", spread: number(this, "spread", 1) });
     return this.#wall;
   }
 }
@@ -137,10 +153,13 @@ export class ForsnakenWall extends Entity {
  * The board: steps on each `tick` from a <frame-timer> inside it, and
  * draws. Each step starts with a `step` event whose `detail` is a snapshot
  * of the board (for brains), and may fire `score`, `death`, and `gameover`.
+ * After a score, the game holds still for `score-pause` milliseconds
+ * (default 250), a beat to notice it. `--end` ends the game.
  */
 export class ForsnakenGame extends HTMLElement {
   static observedAttributes = ["width", "height"];
   #canvas;
+  #holdUntil = 0; // after a score, steps wait until then
   #placed = new WeakSet(); // apples given a first position
   #steps = 0;
   #over = false;
@@ -177,6 +196,7 @@ export class ForsnakenGame extends HTMLElement {
     this.addEventListener("command", (event) => {
       if (event.command === "--restart") this.restart();
       if (event.command === "--step") this.step();
+      if (event.command === "--end") this.end();
     });
   }
   #sizing;
@@ -237,7 +257,7 @@ export class ForsnakenGame extends HTMLElement {
 
   /** Play one step: move, eat, collide, then draw. Fires score/death/gameover. */
   step() {
-    if (this.#over) return;
+    if (this.#over || performance.now() < this.#holdUntil) return;
     const elements = new Map(this.snakes.map((el) => [el.snake, el]));
     this.#steps++;
     const world = this.#world();
@@ -247,9 +267,13 @@ export class ForsnakenGame extends HTMLElement {
     for (const event of step(world)) {
       const snake = event.snake && elements.get(event.snake);
       if (event.type === "gameover") this.#over = true;
+      if (event.type === "score") this.#holdUntil = performance.now() + Math.max(0, number(this, "score-pause", 250));
+      // `subject` and `score` are the 2021 names for `snake` and `value`.
       this.dispatchEvent(new CustomEvent(event.type, {
         bubbles: true,
-        detail: snake ? { snake, color: event.snake.color, direction: event.snake.direction, value: event.apple?.value } : {},
+        detail: snake
+          ? { snake, subject: snake, color: event.snake.color, direction: event.snake.direction, value: event.apple?.value, score: event.apple?.value }
+          : {},
       }));
     }
     this.draw(world);
@@ -275,11 +299,19 @@ export class ForsnakenGame extends HTMLElement {
     };
   }
 
+  /** End the game now (fires `gameover`). */
+  end() {
+    if (this.#over) return;
+    this.#over = true;
+    this.dispatchEvent(new CustomEvent("gameover", { bubbles: true, detail: {} }));
+  }
+
   /** Start again: snakes back to their places, fresh apples. */
   restart() {
     for (const el of this.snakes) el.snake.reset();
     for (const el of this.apples) el.reset();
     this.#over = false;
+    this.#holdUntil = 0;
     this.draw();
   }
 

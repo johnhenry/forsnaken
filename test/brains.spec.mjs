@@ -75,7 +75,7 @@ test("interval, disabled, and the original random weights", async ({ page }) => 
   expect(await page.evaluate(() => {
     const plain = document.createElement("snake-brain-random");
     return plain.interval;
-  }), "about once a second at 12 fps, like the original").toBe(12);
+  }), "about once a second at 24 fps, like the original").toBe(24);
 });
 
 test("the greedy brain heads for the nearest apple and avoids what's in its way", async ({ page }) => {

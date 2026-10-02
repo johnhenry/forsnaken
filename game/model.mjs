@@ -72,9 +72,11 @@ export class Snake {
 
 export class Apple {
   /**
-   * @param {{ xRange?: [number, number], yRange?: [number, number], lives?: number, value?: number }} options
+   * @param {{ xRange?: [number, number], yRange?: [number, number], lives?: number, value?: number, avoid?: { x: number, y: number }[] }} options
+   *   `avoid`: cells it never spawns on, besides whatever it's told to avoid each time
    */
-  constructor({ xRange = [0, 8], yRange = [0, 8], lives = Infinity, value = 2 } = {}) {
+  constructor({ xRange = [0, 8], yRange = [0, 8], lives = Infinity, value = 2, avoid = [] } = {}) {
+    this.avoid = avoid;
     this.xRange = xRange;
     this.yRange = yRange;
     this.lives = lives;
@@ -94,20 +96,23 @@ export class Apple {
 
   /** Move somewhere in range that isn't one of `avoid` (if there's room). */
   spawn(avoid = [], random = Math.random) {
+    const cells = [...this.avoid, ...avoid];
     for (let tries = 0; tries < 1000; tries++) {
       this.x = randomInt(this.xRange[0], this.xRange[1], random);
       this.y = randomInt(this.yRange[0], this.yRange[1], random);
-      if (!avoid.some((cell) => same(cell, this))) return;
+      if (!cells.some((cell) => same(cell, this))) return;
     }
   }
 }
 
 export class Wall {
   /**
-   * A filled rectangle from x,y to x1,y1, or one of its diagonals.
-   * @param {{ x: number, y: number, x1?: number, y1?: number, shape?: "rect" | "diagonal" | "anti-diagonal" }} options
+   * A filled rectangle from x,y to x1,y1, or one of its diagonals; with
+   * `spread`, only every spread-th cell (a dotted wall).
+   * @param {{ x: number, y: number, x1?: number, y1?: number, shape?: "rect" | "diagonal" | "anti-diagonal", spread?: number }} options
    */
-  constructor({ x = 0, y = 0, x1 = x, y1 = y, shape = "rect" } = {}) {
+  constructor({ x = 0, y = 0, x1 = x, y1 = y, shape = "rect", spread = 1 } = {}) {
+    spread = Math.max(1, Math.floor(spread));
     this.color = "#bbbbbb";
     const [left, right] = [Math.min(x, x1), Math.max(x, x1)];
     const [top, bottom] = [Math.min(y, y1), Math.max(y, y1)];
@@ -116,6 +121,7 @@ export class Wall {
       for (let j = top; j <= bottom; j++) {
         const dx = i - left;
         const dy = j - top;
+        if (dx % spread || dy % spread) continue;
         if (shape === "diagonal" ? dx === dy : shape === "anti-diagonal" ? right - i === dy : true) {
           this.cells.push({ x: i, y: j });
         }

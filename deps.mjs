@@ -1,6 +1,6 @@
 // domkit, pinned to a commit and loaded from jsDelivr's GitHub mirror (no
 // build step, no npm). Change DOMKIT to move to another version.
-const DOMKIT = "https://cdn.jsdelivr.net/gh/johnhenry/domkit@7652163205b366ad9560beb5787ce33ae2979413/src";
+const DOMKIT = "https://cdn.jsdelivr.net/gh/johnhenry/domkit@c33787ccf5bf87f089f3f0bd90b6999fc9dc61cf/src";
 
 await Promise.all(
   [

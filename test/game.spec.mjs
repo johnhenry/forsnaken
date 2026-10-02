@@ -91,7 +91,7 @@ test.describe("the elements", () => {
   test("a <frame-timer> inside drives it; score, death, and gameover events bubble", async ({ page }) => {
     const events = await page.evaluate(async () => {
       await import("/game/global.mjs");
-      document.body.innerHTML = `<div id="host"><forsnaken-game id="g" width="10" height="3">
+      document.body.innerHTML = `<div id="host"><forsnaken-game id="g" width="10" height="3" score-pause="0">
         <forsnaken-apple count="1" x-range="3,4" y-range="1,2" lives="1"></forsnaken-apple>
         <forsnaken-snake id="s" x="1" y="1" direction="right"></forsnaken-snake>
       </forsnaken-game></div>`;
@@ -121,5 +121,47 @@ test.describe("the elements", () => {
       return { moved, restarted: document.getElementById("s").snake.head };
     });
     expect(result).toEqual({ moved: [{ x: 5, y: 6 }, "up"], restarted: { x: 5, y: 5 } });
+  });
+
+  test("a score holds the game still for score-pause ms; --end ends it", async ({ page }) => {
+    const result = await page.evaluate(async () => {
+      await import("/game/global.mjs");
+      document.body.innerHTML = `<forsnaken-game id="g" width="10" height="3" score-pause="200">
+        <forsnaken-apple count="1" x-range="2,3" y-range="1,2" lives="1"></forsnaken-apple>
+        <forsnaken-apple count="1" x-range="8,9" y-range="0,1"></forsnaken-apple>
+        <forsnaken-snake id="s" x="1" y="1"></forsnaken-snake>
+      </forsnaken-game>`;
+      const game = document.getElementById("g");
+      const head = () => document.getElementById("s").snake.head.x;
+      const details = [];
+      game.addEventListener("score", (e) => details.push(Object.keys(e.detail).sort().join()));
+      game.step(); // move onto the apple
+      game.step(); // eat it: score
+      const atScore = head();
+      game.step();
+      const held = head() === atScore;
+      await new Promise((r) => setTimeout(r, 250));
+      game.step();
+      const resumed = head() > atScore;
+      const over = [];
+      game.addEventListener("gameover", () => over.push("gameover"));
+      game.dispatchEvent(Object.assign(new Event("command"), { command: "--end" }));
+      const before = head();
+      game.step();
+      return { details, held, resumed, over, stopped: head() === before };
+    });
+    expect(result).toEqual({ details: ["color,direction,score,snake,subject,value"], held: true, resumed: true, over: ["gameover"], stopped: true });
+  });
+
+  test("the board's grid cuts gaps the background shows through", async ({ page }) => {
+    await page.goto("/");
+    await page.waitForFunction(() => customElements.get("pixel-canvas") && document.getElementById("screen").canvas.width);
+    const alpha = await page.evaluate(() => {
+      const screen = document.getElementById("screen");
+      screen.render();
+      const d = screen.canvas.getContext("2d").getImageData(0, 0, 16, 1).data;
+      return [d[3], d[4 * 5 + 3]]; // x=0 is a gap; x=5 is inside the first cell (empty, so also clear)
+    });
+    expect(alpha[0]).toBe(0);
   });
 });

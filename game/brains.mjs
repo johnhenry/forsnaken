@@ -134,12 +134,12 @@ export function defineSnakeBrain(name, think, { interval = 1 } = {}) {
 }
 
 /**
- * The original brain: every `interval` steps (default 12, about a second),
+ * The original brain: every `interval` steps (default 24, about a second at 24 fps),
  * turn clockwise, counterclockwise, or go straight, at random, weighted by
  * the `clockwise`, `counterclockwise`, and `straight` attributes (1, 1, 2).
  */
 export class RandomBrain extends SnakeBrain {
-  static interval = 12;
+  static interval = 24;
   think() {
     const weight = (name, fallback) => {
       const value = Number(this.getAttribute(name));

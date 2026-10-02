@@ -40,6 +40,7 @@ game.addEventListener("score", ({ detail: { snake, color, direction } }) => {
 game.addEventListener("gameover", () => {
   clock.pause();
   scores.insertAdjacentHTML("afterbegin", "<li>Game over. Press R to play again.</li>");
+  screen.getAnimations().forEach((animation) => animation.cancel());
 });
 
 game.addEventListener("command", (event) => {

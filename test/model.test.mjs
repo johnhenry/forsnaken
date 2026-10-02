@@ -98,3 +98,14 @@ test("apples spawn away from cells to avoid", () => {
   apple.spawn([{ x: 0, y: 0 }], sequence(0, 0, 0.9, 0));
   assert.deepEqual([apple.x, apple.y], [1, 0]);
 });
+
+test("apples never spawn on cells they're told to avoid", () => {
+  const apple = new Apple({ xRange: [0, 2], yRange: [0, 1], avoid: [{ x: 0, y: 0 }] });
+  apple.spawn([], sequence(0, 0, 0.9, 0));
+  assert.deepEqual([apple.x, apple.y], [1, 0]);
+});
+
+test("a spread wall is dotted", () => {
+  assert.deepEqual(new Wall({ x: 0, y: 0, x1: 4, y1: 0, spread: 2 }).cells, [{ x: 0, y: 0 }, { x: 2, y: 0 }, { x: 4, y: 0 }]);
+  assert.equal(new Wall({ x: 0, y: 0, x1: 4, y1: 4, shape: "diagonal", spread: 2 }).cells.length, 3);
+});

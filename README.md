@@ -10,9 +10,9 @@ it grew from.
 ## The whole game is HTML
 
 ```html
-<pixel-canvas width="800" effects="grid(8, rgb(0 0 0 / 0.4))">
+<pixel-canvas width="800" effects="grid(8, transparent, 3)">
   <forsnaken-game id="game" width="100" height="50">
-    <frame-timer id="clock" fps="12"></frame-timer>
+    <frame-timer id="clock" fps="24"></frame-timer>
     <forsnaken-apple count="64" x-range="10,89" y-range="10,39"></forsnaken-apple>
     <forsnaken-wall x="1" y="1" x1="9" y1="9" shape="diagonal"></forsnaken-wall>
     <forsnaken-snake id="green" color="#4e9a06" x="0" y="0" direction="right"></forsnaken-snake>
@@ -35,8 +35,10 @@ it grew from.
   `--up`, `--down`, `--left`, `--right`, `--clockwise`,
   `--counterclockwise`. A brain inside it steers it for you (see below),
   and `mirror="other-id"` steers it opposite to another snake.
-- **`<forsnaken-apple count x-range y-range lives value>`** and
-  **`<forsnaken-wall x y x1 y1 shape>`** fill the board.
+- **`<forsnaken-apple count x-range y-range lives value avoid>`** and
+  **`<forsnaken-wall x y x1 y1 shape spread>`** fill the board. `avoid`
+  lists cells apples never appear on (`avoid="3,4 5,6"`); `spread="2"`
+  makes a dotted wall.
 - **Steering is domkit's**: `<hot-key>` for keys, `<gamepad-input>` for
   controllers, `<swipe-input>` for touch. They all send the same commands,
   so a snake doesn't care which one moved it.
@@ -59,7 +61,7 @@ swapping elements:
 - A brain steers the snake it's inside, or the one its `commandfor` names.
   Several brains (and keys, controllers, swipes) can steer one snake.
 - `interval="n"` thinks every n steps; `disabled` switches a brain off.
-- `<snake-brain-random>` is the original: every 12 steps it turns
+- `<snake-brain-random>` is the original: every 24 steps (a second) it turns
   clockwise, counterclockwise, or goes straight, weighted by its
   `clockwise`, `counterclockwise`, and `straight` attributes (1, 1, 2).
 - `<snake-brain-greedy>` heads for the nearest apple, never onto a wall or
@@ -99,7 +101,8 @@ editor, moved around, nested in other elements, or defined after the fact.
 - **Green**: arrow keys, the first controller, or swipe the board.
 - **Yellow**: <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or the second controller.
 - Each has a light twin that mirrors it, and the white snake steers itself.
-- <kbd>Space</kbd> pauses, <kbd>R</kbd> restarts.
+- <kbd>Space</kbd> pauses, <kbd>R</kbd> restarts, <kbd>Esc</kbd> ends the game.
+- Eating an apple holds the game still for a beat (`score-pause`, 250 ms by default).
 
 **Camouflage:** the board turns the color of the snake that scored last,
 which hides that snake. Amateurs hate this. Experts use it to their
