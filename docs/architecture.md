@@ -35,6 +35,18 @@ Because every kind of input sends the same commands (`--up`, `--left`,
 …), a snake doesn't know or care whether a keyboard, a controller, a
 finger, or a network connection moved it.
 
+## Brains: deciding, not just reacting
+
+A keyboard steers a snake when you press a key. A brain steers it by
+deciding: at the start of each step the game fires `step` with a copy of
+the board, and each brain may answer with a command. Because brains send
+the same commands as every other input, a snake can't tell a person from
+a program, and swapping one for the other is swapping an element.
+
+The board is a copy on purpose: a brain can look at everything but change
+nothing, so a buggy brain can't break the game. (In the 2020 version,
+brains never saw the board at all, so the only possible AI was random.)
+
 ## Elements that work however they're made
 
 The elements hold settings and the game reads them on every step, rather

@@ -12,8 +12,10 @@
 // by an editor, moved), in any order, at any depth. Snakes are steered with
 // invoker commands (--up, --down, --left, --right, --clockwise,
 // --counterclockwise), so <hot-key>, <gamepad-input>, and <swipe-input>
-// from domkit drive them with no script.
+// from domkit drive them with no script, and so do brains (brains.mjs),
+// which decide for themselves from the board the game shows them.
 import { Snake, Apple, Wall, step } from "./model.mjs";
+import { RandomBrain, GreedyBrain } from "./brains.mjs";
 
 // Entities tell their game when they connect or change (an element that
 // upgrades after the game drew isn't a DOM mutation the game could see).
@@ -41,8 +43,9 @@ const range = (element, name, fallback) => {
 const MIRROR = { up: "down", down: "up", left: "right", right: "left", clockwise: "counterclockwise", counterclockwise: "clockwise" };
 
 /**
- * A snake. Steer it with commands; `ai="random"` steers itself, and
- * `mirror="other-id"` steers opposite to another snake.
+ * A snake. Steer it with commands, or put a brain inside it
+ * (<snake-brain-random>, <snake-brain-greedy>, your own); `mirror="other-id"`
+ * steers it opposite to another snake.
  */
 export class ForsnakenSnake extends Entity {
   static observedAttributes = ["x", "y", "direction", "length", "color", "name"];
@@ -130,9 +133,11 @@ export class ForsnakenWall extends Entity {
   }
 }
 
-const AI_TURNS = ["clockwise", "counterclockwise", "", ""]; // the original weights: 1, 1, and 2 to go straight
-
-/** The board: steps on each `tick` from a <frame-timer> inside it, and draws. */
+/**
+ * The board: steps on each `tick` from a <frame-timer> inside it, and
+ * draws. Each step starts with a `step` event whose `detail` is a snapshot
+ * of the board (for brains), and may fire `score`, `death`, and `gameover`.
+ */
 export class ForsnakenGame extends HTMLElement {
   static observedAttributes = ["width", "height"];
   #canvas;
@@ -235,15 +240,10 @@ export class ForsnakenGame extends HTMLElement {
     if (this.#over) return;
     const elements = new Map(this.snakes.map((el) => [el.snake, el]));
     this.#steps++;
-    for (const el of elements.values()) {
-      if (el.getAttribute("ai") !== "random") continue;
-      const every = Math.max(1, number(el, "ai-interval", 12));
-      if (this.#steps % every === 0) {
-        const turn = AI_TURNS[Math.floor(Math.random() * AI_TURNS.length)];
-        if (turn) el.steer(turn);
-      }
-    }
     const world = this.#world();
+    // Brains (and anyone else) see the board before anything moves; turns
+    // they send now take effect in this step.
+    this.dispatchEvent(new CustomEvent("step", { bubbles: true, detail: this.#snapshot(world, elements) }));
     for (const event of step(world)) {
       const snake = event.snake && elements.get(event.snake);
       if (event.type === "gameover") this.#over = true;
@@ -253,6 +253,26 @@ export class ForsnakenGame extends HTMLElement {
       }));
     }
     this.draw(world);
+  }
+
+  // A copy of the board for brains: they can look, not touch.
+  #snapshot(world, elements) {
+    return {
+      width: world.width,
+      height: world.height,
+      step: this.#steps,
+      snakes: world.snakes.map((snake) => ({
+        id: elements.get(snake)?.id ?? "",
+        element: elements.get(snake),
+        color: snake.color,
+        direction: snake.direction,
+        length: snake.length,
+        head: { ...snake.head },
+        cells: snake.cells.map((cell) => ({ ...cell })),
+      })),
+      apples: world.apples.filter((apple) => apple.alive).map(({ x, y, value }) => ({ x, y, value })),
+      walls: world.walls.flatMap((wall) => wall.cells.map((cell) => ({ ...cell }))),
+    };
   }
 
   /** Start again: snakes back to their places, fresh apples. */
@@ -288,6 +308,8 @@ export function define() {
     ["forsnaken-snake", ForsnakenSnake],
     ["forsnaken-apple", ForsnakenApple],
     ["forsnaken-wall", ForsnakenWall],
+    ["snake-brain-random", RandomBrain],
+    ["snake-brain-greedy", GreedyBrain],
   ]) {
     if (!customElements.get(name)) customElements.define(name, element);
   }

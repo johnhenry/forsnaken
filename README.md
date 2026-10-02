@@ -16,7 +16,9 @@ it grew from.
     <forsnaken-apple count="64" x-range="10,89" y-range="10,39"></forsnaken-apple>
     <forsnaken-wall x="1" y="1" x1="9" y1="9" shape="diagonal"></forsnaken-wall>
     <forsnaken-snake id="green" color="#4e9a06" x="0" y="0" direction="right"></forsnaken-snake>
-    <forsnaken-snake id="white" color="#ffffff" x="50" y="25" ai="random"></forsnaken-snake>
+    <forsnaken-snake id="white" color="#ffffff" x="50" y="25">
+      <snake-brain-random></snake-brain-random>
+    </forsnaken-snake>
   </forsnaken-game>
 </pixel-canvas>
 
@@ -31,13 +33,62 @@ it grew from.
 - **`<forsnaken-snake>`** is steered with
   [invoker commands](https://developer.mozilla.org/docs/Web/API/Invoker_Commands_API):
   `--up`, `--down`, `--left`, `--right`, `--clockwise`,
-  `--counterclockwise`. `ai="random"` steers itself, and
-  `mirror="other-id"` steers opposite to another snake.
+  `--counterclockwise`. A brain inside it steers it for you (see below),
+  and `mirror="other-id"` steers it opposite to another snake.
 - **`<forsnaken-apple count x-range y-range lives value>`** and
   **`<forsnaken-wall x y x1 y1 shape>`** fill the board.
 - **Steering is domkit's**: `<hot-key>` for keys, `<gamepad-input>` for
   controllers, `<swipe-input>` for touch. They all send the same commands,
   so a snake doesn't care which one moved it.
+
+## Brains
+
+A brain steers a snake by deciding for itself. At the start of every
+step, the game fires a `step` event with a snapshot of the board (every
+snake's cells and direction, the apples, the walls); each brain looks and
+may send its snake a command, exactly like a key press. Swap brains by
+swapping elements:
+
+```html
+<forsnaken-snake id="white" …>
+  <snake-brain-random></snake-brain-random>                  <!-- turns at random, about once a second -->
+</forsnaken-snake>
+<snake-brain-greedy commandfor="yellow"></snake-brain-greedy>  <!-- heads for apples, avoids crashing -->
+```
+
+- A brain steers the snake it's inside, or the one its `commandfor` names.
+  Several brains (and keys, controllers, swipes) can steer one snake.
+- `interval="n"` thinks every n steps; `disabled` switches a brain off.
+- `<snake-brain-random>` is the original: every 12 steps it turns
+  clockwise, counterclockwise, or goes straight, weighted by its
+  `clockwise`, `counterclockwise`, and `straight` attributes (1, 1, 2).
+- `<snake-brain-greedy>` heads for the nearest apple, never onto a wall or
+  a snake if it can help it.
+
+Write your own with one function. It gets the snake, the board, and the
+brain element (for its attributes), and returns a turn (`up`, `down`,
+`left`, `right`, `clockwise`, `counterclockwise`) or nothing:
+
+```js
+import { defineSnakeBrain, board } from "./game/brains.mjs";
+
+// Turn whenever the next cell is taken.
+defineSnakeBrain("snake-brain-careful", (me, world) => {
+  const b = board(world);
+  if (b.taken(b.next(me.head, me.direction))) return "clockwise";
+});
+```
+
+```html
+<forsnaken-snake id="yellow" …><snake-brain-careful></snake-brain-careful></forsnaken-snake>
+```
+
+`board(world)` has helpers: `next(cell, direction)` (wrapping at the
+edges), `taken(cell)`, `distance(a, b)`, and `choices(snake)` (every
+direction but reversing). For a class instead, extend `SnakeBrain` and
+override `think(me, world)`.
+
+## Elements that work however they're made
 
 The elements only hold settings; the game reads them each step. So they
 work however they're made: written in HTML, built by a script or an
@@ -61,6 +112,7 @@ visitors who prefer reduced motion).
 |---|---|
 | [`game/model.mjs`](game/model.mjs) | The game with no DOM: `Snake`, `Apple`, `Wall`, and `step(world)`, one turn of play |
 | [`game/elements.mjs`](game/elements.mjs) | The HTML elements that wrap them |
+| [`game/brains.mjs`](game/brains.mjs) | Brains: `SnakeBrain`, `defineSnakeBrain`, `board`, and the random and greedy brains |
 | [`index.html`](index.html) | The page: the game, wrapped and wired up, all in markup |
 | [`effects.mjs`](effects.mjs) | What happens around the game: start, shake, camouflage, scores |
 | [`deps.mjs`](deps.mjs) | [domkit](https://github.com/johnhenry/domkit), pinned to a commit, from jsDelivr |
@@ -80,6 +132,8 @@ npm test        # model tests (node:test), then the browser tests (Playwright)
 
 - Add a snake that's steered over the network (a WebSocket or WebRTC
   connection that sends the same commands).
+- Write a brain that plans further ahead, hunts other snakes, or learns
+  (TensorFlow.js), and race it against `<snake-brain-greedy>`.
 - Make apples worth different amounts, and show it (size? color?).
 - Draw the board another way: as HTML, SVG, or text in the console.
 - Run the board through more of domkit's pixel effects: `crt()`,
