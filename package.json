@@ -1,0 +1,15 @@
+{
+  "name": "forsnaken",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A snake game built from HTML elements, on domkit.",
+  "type": "module",
+  "scripts": {
+    "serve": "node scripts/serve.mjs",
+    "test": "node --test test/*.test.mjs && playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  },
+  "license": "ISC"
+}
