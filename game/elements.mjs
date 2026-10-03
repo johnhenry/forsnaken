@@ -21,12 +21,15 @@ import { RandomBrain, GreedyBrain } from "./brains.mjs";
 // upgrades after the game drew isn't a DOM mutation the game could see).
 const announce = (element) => element.dispatchEvent(new Event("forsnakenchange", { bubbles: true }));
 
+// Attribute changes apply to the running game (update()), so a page can be
+// edited live, in devtools or by an editor, without starting over.
 class Entity extends HTMLElement {
   connectedCallback() {
     announce(this);
   }
-  attributeChangedCallback() {
-    this.reset?.();
+  attributeChangedCallback(name, before, after) {
+    if (before === after) return;
+    this.update?.(name);
     if (this.isConnected) announce(this);
   }
 }
@@ -79,6 +82,15 @@ export class ForsnakenSnake extends Entity {
   /** Rebuilt (and restarted) from the attributes on next use. */
   reset() {
     this.#snake = null;
+  }
+
+  // Color and name change in place; x, y, direction, and length are where
+  // it starts, so changing one starts this snake over (only this one).
+  update(name) {
+    if (!this.#snake) return;
+    if (name === "color") this.#snake.color = this.getAttribute("color") ?? "#4e9a06";
+    else if (name === "name") this.#snake.name = this.getAttribute("name") ?? this.id;
+    else this.reset();
   }
 
   /** The model: its cells, direction, and length. */
@@ -138,17 +150,44 @@ export class ForsnakenApple extends Entity {
   static observedAttributes = ["count", "x-range", "y-range", "lives", "value", "avoid"];
   #apples = null;
 
+  #options() {
+    return {
+      xRange: range(this, "x-range", [0, 8]),
+      yRange: range(this, "y-range", [0, 8]),
+      lives: number(this, "lives", Infinity),
+      value: number(this, "value", 2),
+      avoid: cells(this.getAttribute("avoid")),
+    };
+  }
+
+  get #count() {
+    return Math.max(1, number(this, "count", 1));
+  }
+
   /** The models, one per apple. */
   get apples() {
-    this.#apples ??= Array.from({ length: Math.max(1, number(this, "count", 1)) }, () =>
-      new Apple({
-        xRange: range(this, "x-range", [0, 8]),
-        yRange: range(this, "y-range", [0, 8]),
-        lives: number(this, "lives", Infinity),
-        value: number(this, "value", 2),
-        avoid: cells(this.getAttribute("avoid")),
-      }));
+    this.#apples ??= Array.from({ length: this.#count }, () => new Apple(this.#options()));
     return this.#apples;
+  }
+
+  // Changes apply to the apples in play: a new count adds or removes
+  // apples (the rest stay put); the others apply from now on.
+  update(name) {
+    if (!this.#apples) return;
+    if (name === "count") {
+      const count = this.#count;
+      this.#apples = this.#apples.slice(0, count);
+      while (this.#apples.length < count) this.#apples.push(new Apple(this.#options()));
+      return;
+    }
+    const { xRange, yRange, lives, value, avoid } = this.#options();
+    for (const apple of this.#apples) {
+      if (name === "x-range") apple.xRange = xRange;
+      if (name === "y-range") apple.yRange = yRange;
+      if (name === "lives") apple.lives = lives;
+      if (name === "value") apple.value = value;
+      if (name === "avoid") apple.avoid = avoid;
+    }
   }
 
   /** Start over with fresh apples. */
@@ -174,6 +213,11 @@ export class ForsnakenWall extends Entity {
 
   reset() {
     this.#wall = null;
+  }
+
+  // A wall has no state: any change rebuilds it.
+  update() {
+    this.reset();
   }
 
   get wall() {

@@ -527,6 +527,15 @@
               "description": "Rebuilt (and restarted) from the attributes on next use."
             },
             {
+              "kind": "method",
+              "name": "update",
+              "parameters": [
+                {
+                  "name": "name"
+                }
+              ]
+            },
+            {
               "kind": "field",
               "name": "snake",
               "description": "The model: its cells, direction, and length.",
@@ -621,10 +630,30 @@
               "default": "null"
             },
             {
+              "kind": "method",
+              "name": "#options",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "#count",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
               "kind": "field",
               "name": "apples",
               "description": "The models, one per apple.",
               "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "update",
+              "parameters": [
+                {
+                  "name": "name"
+                }
+              ]
             },
             {
               "kind": "method",
@@ -701,6 +730,10 @@
             {
               "kind": "method",
               "name": "reset"
+            },
+            {
+              "kind": "method",
+              "name": "update"
             },
             {
               "kind": "field",
