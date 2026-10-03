@@ -14,7 +14,8 @@ test.describe("the page", () => {
     await page.waitForTimeout(300);
     expect(await heads(page), "the clock starts paused").toEqual(before);
     await page.getByRole("button", { name: "Start" }).click();
-    await expect.poll(async () => (await heads(page)).green.x).toBeGreaterThan(0);
+    // Past the diagonal wall at the top left (1,1 to 9,9), so turning down doesn't crash.
+    await expect.poll(async () => (await heads(page)).green.x, { timeout: 10000 }).toBeGreaterThan(12);
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("d"); // yellow: right (it's heading down)
     await expect.poll(async () => {

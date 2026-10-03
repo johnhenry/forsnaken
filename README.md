@@ -45,22 +45,36 @@ it grew from.
 
 ## Brains
 
-A brain steers a snake by deciding for itself. At the start of every
-step, the game fires a `step` event with a snapshot of the board (every
-snake's cells and direction, the apples, the walls); each brain looks and
-may send its snake a command, exactly like a key press. Swap brains by
-swapping elements:
+A brain is how a snake is controlled, by a person or by the computer. At
+the start of every step, the game fires a `step` event with a snapshot of
+the board (every snake's cells and direction, the apples, the walls); each
+brain looks and may send its snake a command. Who's in control is just
+which brain is in the snake, so handing over is swapping elements, even
+mid-game: a new brain takes over on its first step.
 
 ```html
+<forsnaken-snake id="green" …>
+  <snake-brain-player id="green-player"></snake-brain-player>  <!-- a person: keys, controller, swipes -->
+</forsnaken-snake>
+<hot-key hotkey="arrowup" commandfor="green-player" command="--up"></hot-key>
+<gamepad-input commandfor="green-player" up="--up" down="--down" left="--left" right="--right"></gamepad-input>
+
 <forsnaken-snake id="white" …>
   <snake-brain-random></snake-brain-random>                  <!-- turns at random, about once a second -->
 </forsnaken-snake>
 <snake-brain-greedy commandfor="yellow"></snake-brain-greedy>  <!-- heads for apples, avoids crashing -->
 ```
 
+- `<snake-brain-player>` steers by the commands its inputs send it
+  (`--up`, `--down`, `--left`, `--right`, `--clockwise`,
+  `--counterclockwise`), one per step, in the order they came. Swap it for
+  `<snake-brain-greedy>` and the computer plays; the inputs now point at
+  an element that's gone, so they steer nothing. Swap it back to play again.
 - A brain steers the snake it's inside, or the one its `commandfor` names.
-  Several brains (and keys, controllers, swipes) can steer one snake.
-- `interval="n"` thinks every n steps; `disabled` switches a brain off.
+  Several brains can steer one snake. (A snake also takes commands sent to
+  it directly; the pages here send them to player brains instead.)
+- `interval="n"` thinks every n steps, starting with its first; `disabled`
+  switches a brain off.
 - `<snake-brain-random>` is the original: every 24 steps (a second) it turns
   clockwise, counterclockwise, or goes straight, weighted by its
   `clockwise`, `counterclockwise`, and `straight` attributes (1, 1, 2).
@@ -101,7 +115,9 @@ same snake carries on under the new one. Change a snake's `color` or
 `name` and it changes in place; change its `x`, `y`, `direction`, or
 `length` (where it starts) and that snake alone starts over. A new apple
 `count` adds or removes apples and leaves the rest where they are. Walls
-rebuild, and the board can be resized mid-game.
+rebuild, and the board can be resized mid-game. Snakes, apples, walls, and
+the clock can be added, removed, or replaced while it runs, and the whole
+game can move to another part of the page and carry on.
 
 ### Under your own names
 

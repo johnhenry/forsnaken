@@ -103,3 +103,113 @@ test("moving elements and resizing the board keep the game going", async ({ page
   expect(result.wall).toBe(11);
   expect(result.canvas).toBe(60);
 });
+
+// --- brains: the one interface for control -----------------------------------
+
+const send = (page, id, command) =>
+  page.evaluate(([id, command]) => document.getElementById(id)?.dispatchEvent(Object.assign(new Event("command"), { command })), [id, command]);
+
+test("a player is a brain: inputs steer it; swap in a computer brain and it takes over; swap back and the player has control", async ({ page }) => {
+  await page.evaluate(() => {
+    const a = document.getElementById("a");
+    a.replaceChildren(Object.assign(document.createElement("snake-brain-player"), { id: "player" }));
+    a.setAttribute("x", "6"); // a new start (only this snake): heading right from 6,5
+    document.getElementById("apples").remove(); // a snake pauses a step to eat: none to eat here
+  });
+  const dir = () => page.evaluate(() => document.getElementById("a").snake.direction);
+  // The player steers, one turn per step, in the order pressed.
+  await send(page, "player", "--down");
+  await send(page, "player", "--left");
+  await page.evaluate(() => g.step());
+  expect(await dir()).toBe("down");
+  await page.evaluate(() => g.step());
+  expect(await dir()).toBe("left");
+  // A greedy brain takes the player's place: it decides on its very first step.
+  await page.evaluate(() => {
+    document.getElementById("player").remove();
+    document.getElementById("a").append(document.createElement("snake-brain-greedy"));
+    g.insertAdjacentHTML("beforeend", `<forsnaken-apple count="5" x-range="0,39" y-range="0,19"></forsnaken-apple>`); // something to chase
+  });
+  // Every turn now comes from the greedy brain; the player's keys go to an
+  // element that's gone, so they steer nothing.
+  const sources = await page.evaluate(() => {
+    const a = document.getElementById("a");
+    const from = [];
+    a.addEventListener("command", (e) => from.push(e.source?.localName ?? "input"));
+    document.getElementById("player")?.dispatchEvent(Object.assign(new Event("command"), { command: "--up" }));
+    for (let i = 0; i < 30; i++) g.step();
+    return { from: [...new Set(from)], player: document.getElementById("player") };
+  });
+  expect(sources).toEqual({ from: ["snake-brain-greedy"], player: null });
+  // Back to the player (from a known start, in case random play killed it).
+  await page.evaluate(() => {
+    const a = document.getElementById("a");
+    a.replaceChildren(Object.assign(document.createElement("snake-brain-player"), { id: "player" }));
+    a.setAttribute("x", "7");
+  });
+  await send(page, "player", "--up");
+  await page.evaluate(() => g.step());
+  expect(await dir()).toBe("up");
+});
+
+test("a new brain decides on its first step, whatever its interval", async ({ page }) => {
+  const turned = await page.evaluate(() => {
+    const b = document.getElementById("b"); // heading right, no brain
+    b.append(Object.assign(document.createElement("snake-brain-random"), { innerHTML: "" }));
+    b.querySelector("snake-brain-random").setAttribute("clockwise", "1");
+    b.querySelector("snake-brain-random").setAttribute("counterclockwise", "0");
+    b.querySelector("snake-brain-random").setAttribute("straight", "0"); // interval: 24 by default
+    g.step();
+    return b.snake.direction;
+  });
+  expect(turned).toBe("down");
+});
+
+// --- swapping everything else, mid-game --------------------------------------
+
+test("snakes, apples, walls, and the clock come and go mid-game; the rest carry on", async ({ page }) => {
+  const result = await page.evaluate(() => {
+    const a = document.getElementById("a");
+    const model = a.snake;
+    // A new snake joins at its start; another leaves.
+    g.insertAdjacentHTML("beforeend", `<forsnaken-snake id="c" x="20" y="15"></forsnaken-snake>`);
+    document.getElementById("b").remove();
+    g.step();
+    const snakes = g.snakes.map((s) => s.id);
+    // Apples swapped for a different set: the old ones go, the new ones are placed.
+    document.getElementById("apples").replaceWith(Object.assign(document.createElement("forsnaken-apple"), { id: "gold" }));
+    document.getElementById("gold").setAttribute("count", "3");
+    document.getElementById("gold").setAttribute("value", "10");
+    g.step();
+    const apples = g.apples.flatMap((el) => el.apples).map((apple) => apple.value);
+    // A wall removed and another added.
+    document.getElementById("wall").remove();
+    g.insertAdjacentHTML("beforeend", `<forsnaken-wall x="30" y="0" x1="30" y1="19"></forsnaken-wall>`);
+    g.step();
+    const walls = g.walls.flatMap((el) => el.wall.cells).length;
+    // A new clock: ticks move the game.
+    const timer = document.createElement("frame-timer-stub");
+    g.append(timer);
+    let ticked = false;
+    g.addEventListener("step", () => (ticked = true), { once: true });
+    timer.dispatchEvent(new Event("tick", { bubbles: true }));
+    return { snakes, apples, walls, same: a.snake === model, ticked };
+  });
+  expect(result).toEqual({ snakes: ["a", "c"], apples: [10, 10, 10], walls: 20, same: true, ticked: true });
+});
+
+test("the whole game moves to another container and carries on", async ({ page }) => {
+  const result = await page.evaluate(() => {
+    const model = document.getElementById("a").snake;
+    const steps = [];
+    g.addEventListener("step", (e) => steps.push(e.detail.step));
+    g.step();
+    const box = document.createElement("section");
+    document.body.append(box);
+    box.append(g);
+    g.step();
+    return { same: document.getElementById("a").snake === model, steps };
+  });
+  expect(result.same).toBe(true);
+  expect(result.steps[1]).toBe(result.steps[0] + 1);
+});

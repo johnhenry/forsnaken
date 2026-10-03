@@ -65,13 +65,15 @@ test("interval, disabled, and the original random weights", async ({ page }) => 
       <forsnaken-snake id="s" x="5" y="5"><snake-brain-random id="r" interval="3" clockwise="1" counterclockwise="0" straight="0"></snake-brain-random></forsnaken-snake>
     </forsnaken-game>`;
   });
-  await steps(page, 2);
-  expect(await direction(page, "s"), "not yet: every 3 steps").toBe("right");
   await steps(page, 1);
-  expect(await direction(page, "s")).toBe("down");
+  expect(await direction(page, "s"), "a new brain decides on its first step").toBe("down");
+  await steps(page, 2);
+  expect(await direction(page, "s"), "not yet: every 3 steps").toBe("down");
+  await steps(page, 1);
+  expect(await direction(page, "s")).toBe("left");
   await page.evaluate(() => (document.getElementById("r").disabled = true));
   await steps(page, 6);
-  expect(await direction(page, "s"), "disabled").toBe("down");
+  expect(await direction(page, "s"), "disabled").toBe("left");
   expect(await page.evaluate(() => {
     const plain = document.createElement("snake-brain-random");
     return plain.interval;

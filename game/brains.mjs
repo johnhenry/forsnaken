@@ -1,9 +1,16 @@
-// Brains: elements that steer a snake, the way a keyboard or controller
-// does, but by deciding for themselves. A brain steers the snake it's
-// inside, or the one its `commandfor` names. At the start of every step,
-// the game fires `step` with a snapshot of the board; each brain looks at
-// it and may send its snake a command (--up, --clockwise, …). Swap brains
-// by swapping elements.
+// Brains: elements that steer a snake. A brain is the one interface for
+// control: a player is a brain too (<snake-brain-player>, steered by keys,
+// a controller, or swipes), so who's in control is just which brain is in
+// the snake. A brain steers the snake it's inside, or the one its
+// `commandfor` names. At the start of every step, the game fires `step`
+// with a snapshot of the board; each brain looks at it and may send its
+// snake a command (--up, --clockwise, …). Swap brains by swapping
+// elements, mid-game too: a new brain decides on its first step.
+//
+//   <forsnaken-snake id="green" …>
+//     <snake-brain-player id="green-player"></snake-brain-player>
+//   </forsnaken-snake>
+//   <hot-key hotkey="arrowup" commandfor="green-player" command="--up"></hot-key>
 //
 //   <forsnaken-snake id="white" …>
 //     <snake-brain-random></snake-brain-random>
@@ -110,7 +117,8 @@ export class SnakeBrain extends HTMLElement {
   #step(event) {
     const snake = this.snake;
     if (this.disabled || !snake || !event.target.contains?.(snake)) return;
-    if (++this.#steps % this.interval) return;
+    // Decide on the first step after joining, then every `interval` steps.
+    if (this.#steps++ % this.interval) return;
     const world = event.detail;
     const me = world.snakes.find((s) => s.element === snake);
     if (!me) return;
@@ -192,5 +200,37 @@ export class GreedyBrain extends SnakeBrain {
       if (!best || distance < best.distance || (distance === best.distance && direction === me.direction)) best = { direction, distance };
     }
     if (best && best.direction !== me.direction) return best.direction;
+  }
+}
+
+const TURN = /^--(up|down|left|right|clockwise|counterclockwise)$/;
+
+/**
+ * @tag snake-brain-player
+ * @summary A player's brain: steers by the commands it's sent (--up, --down, --left, --right, --clockwise, --counterclockwise) from hot-key, gamepad-input, or swipe-input.
+ *
+ * A brain for a person: point inputs at it (`commandfor` its id) and it
+ * steers its snake with what they send, one turn per step, in the order
+ * they came. Swap it for another brain and the inputs no longer reach the
+ * snake; swap it back and the player is in control again.
+ */
+export class PlayerBrain extends SnakeBrain {
+  #turns = [];
+
+  constructor() {
+    super();
+    this.addEventListener("command", (event) => {
+      const turn = TURN.exec(event.command ?? "")?.[1];
+      if (turn) this.#turns.push(turn);
+    });
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.#turns = []; // keys pressed for another snake don't carry over
+  }
+
+  think() {
+    return this.#turns.shift();
   }
 }
