@@ -96,6 +96,13 @@ The elements only hold settings; the game reads them each step. So they
 work however they're made: written in HTML, built by a script or an
 editor, moved around, nested in other elements, or defined after the fact.
 
+They can also be edited while the game runs. Swap a snake's brain and the
+same snake carries on under the new one. Change a snake's `color` or
+`name` and it changes in place; change its `x`, `y`, `direction`, or
+`length` (where it starts) and that snake alone starts over. A new apple
+`count` adds or removes apples and leaves the rest where they are. Walls
+rebuild, and the board can be resized mid-game.
+
 ### Under your own names
 
 `game/global.mjs` registers the usual tags. To pick your own, import the
