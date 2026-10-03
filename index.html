@@ -18,7 +18,7 @@
       </form>
     </dialog>
 
-    <swipe-input commandfor="green" up="--up" down="--down" left="--left" right="--right">
+    <swipe-input commandfor="green-player" up="--up" down="--down" left="--left" right="--right">
       <pixel-canvas id="screen" width="800" effects="grid(8, transparent, 3)">
         <forsnaken-game id="game" width="100" height="50" aria-label="Five snakes and 64 apples">
           <frame-timer id="clock" fps="24" paused></frame-timer>
@@ -27,9 +27,13 @@
           <forsnaken-wall x="1" y="40" x1="9" y1="48" shape="anti-diagonal"></forsnaken-wall>
           <forsnaken-wall x="90" y="1" x1="98" y1="9" shape="anti-diagonal"></forsnaken-wall>
           <forsnaken-wall x="90" y="40" x1="98" y1="48" shape="diagonal"></forsnaken-wall>
-          <forsnaken-snake id="green" name="green" color="#4e9a06" x="0" y="0" direction="right"></forsnaken-snake>
+          <forsnaken-snake id="green" name="green" color="#4e9a06" x="0" y="0" direction="right">
+            <snake-brain-player id="green-player"></snake-brain-player>
+          </forsnaken-snake>
           <forsnaken-snake id="green-twin" name="green" color="#8ae232" x="0" y="49" direction="up" mirror="green"></forsnaken-snake>
-          <forsnaken-snake id="yellow" name="yellow" color="#c4a000" x="99" y="0" direction="down"></forsnaken-snake>
+          <forsnaken-snake id="yellow" name="yellow" color="#c4a000" x="99" y="0" direction="down">
+            <snake-brain-player id="yellow-player"></snake-brain-player>
+          </forsnaken-snake>
           <forsnaken-snake id="yellow-twin" name="yellow" color="#fce94f" x="99" y="49" direction="left" mirror="yellow"></forsnaken-snake>
           <forsnaken-snake id="white" name="white" color="#ffffff" x="50" y="25" direction="right">
             <snake-brain-random></snake-brain-random>
@@ -41,19 +45,19 @@
     <ol id="scores" aria-live="polite"></ol>
 
     <!-- Steering: keys, controllers, and the swipe area above all send the same commands. -->
-    <hot-key hotkey="arrowup" commandfor="green" command="--up"></hot-key>
-    <hot-key hotkey="arrowdown" commandfor="green" command="--down"></hot-key>
-    <hot-key hotkey="arrowleft" commandfor="green" command="--left"></hot-key>
-    <hot-key hotkey="arrowright" commandfor="green" command="--right"></hot-key>
-    <hot-key hotkey="w" commandfor="yellow" command="--up"></hot-key>
-    <hot-key hotkey="s" commandfor="yellow" command="--down"></hot-key>
-    <hot-key hotkey="a" commandfor="yellow" command="--left"></hot-key>
-    <hot-key hotkey="d" commandfor="yellow" command="--right"></hot-key>
+    <hot-key hotkey="arrowup" commandfor="green-player" command="--up"></hot-key>
+    <hot-key hotkey="arrowdown" commandfor="green-player" command="--down"></hot-key>
+    <hot-key hotkey="arrowleft" commandfor="green-player" command="--left"></hot-key>
+    <hot-key hotkey="arrowright" commandfor="green-player" command="--right"></hot-key>
+    <hot-key hotkey="w" commandfor="yellow-player" command="--up"></hot-key>
+    <hot-key hotkey="s" commandfor="yellow-player" command="--down"></hot-key>
+    <hot-key hotkey="a" commandfor="yellow-player" command="--left"></hot-key>
+    <hot-key hotkey="d" commandfor="yellow-player" command="--right"></hot-key>
     <hot-key hotkey="space p" commandfor="clock" command="--toggle"></hot-key>
     <hot-key hotkey="r" commandfor="game" command="--restart"></hot-key>
     <hot-key hotkey="escape" commandfor="game" command="--end"></hot-key>
-    <gamepad-input index="0" commandfor="green" up="--up" down="--down" left="--left" right="--right"></gamepad-input>
-    <gamepad-input index="1" commandfor="yellow" up="--up" down="--down" left="--left" right="--right"></gamepad-input>
+    <gamepad-input index="0" commandfor="green-player" up="--up" down="--down" left="--left" right="--right"></gamepad-input>
+    <gamepad-input index="1" commandfor="yellow-player" up="--up" down="--down" left="--left" right="--right"></gamepad-input>
 
     <script type="module" src="./effects.mjs"></script>
   </body>

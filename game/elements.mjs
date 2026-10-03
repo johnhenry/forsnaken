@@ -15,7 +15,7 @@
 // from domkit drive them with no script, and so do brains (brains.mjs),
 // which decide for themselves from the board the game shows them.
 import { Snake, Apple, Wall, step } from "./model.mjs";
-import { RandomBrain, GreedyBrain } from "./brains.mjs";
+import { RandomBrain, GreedyBrain, PlayerBrain } from "./brains.mjs";
 
 // Entities tell their game when they connect or change (an element that
 // upgrades after the game drew isn't a DOM mutation the game could see).
@@ -362,7 +362,8 @@ export class ForsnakenGame extends HTMLElement {
       const snake = event.snake && elements.get(event.snake);
       if (event.type === "gameover") this.#over = true;
       if (event.type === "score") {
-        this.#holdUntil = performance.now() + Math.max(0, number(this, "score-pause", 250));
+        const pause = Math.max(0, number(this, "score-pause", 250));
+        this.#holdUntil = pause ? performance.now() + pause : 0; // 0: no pause, not "until now"
         if (this.hasAttribute("camouflage")) this.#camouflage = event.snake.color;
       }
       // `subject` and `score` are the 2021 names for `snake` and `value`.
@@ -443,6 +444,7 @@ export const NAMES = {
   wall: "forsnaken-wall",
   randomBrain: "snake-brain-random",
   greedyBrain: "snake-brain-greedy",
+  playerBrain: "snake-brain-player",
 };
 
 /**
@@ -452,7 +454,7 @@ export const NAMES = {
  * @param {Partial<typeof NAMES>} [names]
  */
 export function define(names = {}) {
-  const classes = { game: ForsnakenGame, snake: ForsnakenSnake, apple: ForsnakenApple, wall: ForsnakenWall, randomBrain: RandomBrain, greedyBrain: GreedyBrain };
+  const classes = { game: ForsnakenGame, snake: ForsnakenSnake, apple: ForsnakenApple, wall: ForsnakenWall, randomBrain: RandomBrain, greedyBrain: GreedyBrain, playerBrain: PlayerBrain };
   for (const [key, element] of Object.entries(classes)) {
     const name = names[key] ?? NAMES[key];
     // A class can only be registered once, so a second define() under new

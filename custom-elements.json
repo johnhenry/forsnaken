@@ -458,6 +458,157 @@
               }
             }
           ]
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PlayerBrain",
+          "members": [
+            {
+              "kind": "field",
+              "name": "#turns",
+              "privacy": "private",
+              "type": {
+                "text": "array"
+              },
+              "default": "[]"
+            },
+            {
+              "kind": "method",
+              "name": "think",
+              "parameters": [
+                {
+                  "name": "me",
+                  "type": {
+                    "text": "SnakeView"
+                  }
+                },
+                {
+                  "name": "world",
+                  "type": {
+                    "text": "WorldView"
+                  }
+                }
+              ],
+              "description": "Decide a turn. The default carries on.",
+              "return": {
+                "type": {
+                  "text": "string | void"
+                }
+              },
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#onStep",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#steps",
+              "privacy": "private",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "description": "Mirrors the `disabled` attribute: a disabled brain doesn't steer.",
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "snake",
+              "description": "The snake it steers: the one `commandfor` names, or the one it's inside.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "interval",
+              "description": "Think every this many steps (the `interval` attribute; default 1).",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#step",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "event"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "SnakeBrain",
+            "module": "game/brains.mjs"
+          },
+          "tagName": "snake-brain-player",
+          "customElement": true,
+          "summary": "A player's brain: steers by the commands it's sent (--up, --down, --left, --right, --clockwise, --counterclockwise) from hot-key, gamepad-input, or swipe-input.\n\nA brain for a person: point inputs at it (`commandfor` its id) and it\nsteers its snake with what they send, one turn per step, in the order\nthey came. Swap it for another brain and the inputs no longer reach the\nsnake; swap it back and the player is in control again.",
+          "attributes": [
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "The id of the snake to steer. Default the snake it's inside.",
+              "name": "commandfor",
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Think every this many steps.",
+              "name": "interval",
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Don't steer. A brain. Subclasses override `think(me, world)`, returning a turn (`up`, `down`, `left`, `right`, `clockwise`, `counterclockwise`) or nothing to carry on.",
+              "name": "disabled",
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            }
+          ]
         }
       ],
       "exports": [
@@ -498,6 +649,14 @@
           "name": "GreedyBrain",
           "declaration": {
             "name": "GreedyBrain",
+            "module": "game/brains.mjs"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "PlayerBrain",
+          "declaration": {
+            "name": "PlayerBrain",
             "module": "game/brains.mjs"
           }
         }
@@ -1049,7 +1208,7 @@
           "type": {
             "text": "object"
           },
-          "default": "{ game: \"forsnaken-game\", snake: \"forsnaken-snake\", apple: \"forsnaken-apple\", wall: \"forsnaken-wall\", randomBrain: \"snake-brain-random\", greedyBrain: \"snake-brain-greedy\", }"
+          "default": "{ game: \"forsnaken-game\", snake: \"forsnaken-snake\", apple: \"forsnaken-apple\", wall: \"forsnaken-wall\", randomBrain: \"snake-brain-random\", greedyBrain: \"snake-brain-greedy\", playerBrain: \"snake-brain-player\", }"
         },
         {
           "kind": "function",
@@ -1172,6 +1331,14 @@
           "name": "snake-brain-greedy",
           "declaration": {
             "name": "GreedyBrain",
+            "module": "game/brains.mjs"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "snake-brain-player",
+          "declaration": {
+            "name": "PlayerBrain",
             "module": "game/brains.mjs"
           }
         }
