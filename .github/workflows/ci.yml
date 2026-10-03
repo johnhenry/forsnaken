@@ -15,3 +15,5 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps
       - run: npm test
+      - name: custom-elements.json is current
+        run: npm run manifest && git diff --exit-code custom-elements.json

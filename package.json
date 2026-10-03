@@ -6,10 +6,19 @@
   "type": "module",
   "scripts": {
     "serve": "node scripts/serve.mjs",
-    "test": "node --test test/*.test.mjs && playwright test"
+    "test": "node --test test/*.test.mjs && playwright test",
+    "manifest": "cem analyze && node scripts/manifest.mjs"
   },
   "devDependencies": {
-    "@playwright/test": "1.63.0"
+    "@playwright/test": "1.63.0",
+    "@custom-elements-manifest/analyzer": "^0.11.0"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "customElements": "custom-elements.json",
+  "exports": {
+    ".": "./game/index.mjs",
+    "./global": "./game/global.mjs",
+    "./custom-elements.json": "./custom-elements.json",
+    "./*": "./*"
+  }
 }

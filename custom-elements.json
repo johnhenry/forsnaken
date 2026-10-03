@@ -1,0 +1,1148 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "game/brains.mjs",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "board",
+          "parameters": [
+            {
+              "name": "world",
+              "type": {
+                "text": "WorldView"
+              }
+            }
+          ],
+          "description": "Helpers for thinking about the board: where a move leads (wrapping at\nthe edges), whether a cell is taken, and how far apart two cells are."
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "SnakeBrain",
+          "members": [
+            {
+              "kind": "field",
+              "name": "#onStep",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "#steps",
+              "privacy": "private",
+              "type": {
+                "text": "number"
+              },
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "description": "Mirrors the `disabled` attribute: a disabled brain doesn't steer."
+            },
+            {
+              "kind": "field",
+              "name": "snake",
+              "description": "The snake it steers: the one `commandfor` names, or the one it's inside.",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "interval",
+              "description": "Think every this many steps (the `interval` attribute; default 1).",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "think",
+              "parameters": [
+                {
+                  "name": "me",
+                  "type": {
+                    "text": "SnakeView"
+                  }
+                },
+                {
+                  "name": "world",
+                  "type": {
+                    "text": "WorldView"
+                  }
+                }
+              ],
+              "description": "Decide a turn. The default carries on.",
+              "return": {
+                "type": {
+                  "text": "string | void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#step",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "event"
+                }
+              ]
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "The id of the snake to steer. Default the snake it's inside.",
+              "name": "commandfor"
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Think every this many steps.",
+              "name": "interval"
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Don't steer. A brain. Subclasses override `think(me, world)`, returning a turn (`up`, `down`, `left`, `right`, `clockwise`, `counterclockwise`) or nothing to carry on.",
+              "name": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "customElement": true
+        },
+        {
+          "kind": "function",
+          "name": "defineSnakeBrain",
+          "parameters": [
+            {
+              "name": "name",
+              "description": "a custom element name",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "think",
+              "type": {
+                "text": "(me: SnakeView, world: WorldView, brain: SnakeBrain) => string | void"
+              }
+            },
+            {
+              "name": "{ interval = 1 }",
+              "default": "{}"
+            },
+            {
+              "description": "the default interval",
+              "name": "options",
+              "optional": true,
+              "type": {
+                "text": "{ interval?: number }"
+              }
+            }
+          ],
+          "description": "Define a brain from a function, with no class to write:\n`defineSnakeBrain(\"snake-brain-lefty\", (me) => \"counterclockwise\")`.\nThe function gets the snake, the board, and the brain element (to read\nits attributes), and returns a turn or nothing."
+        },
+        {
+          "kind": "variable",
+          "name": "Brain",
+          "default": "class extends SnakeBrain { static interval = interval; think(me, world) { return think(me, world, this); } }"
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "RandomBrain",
+          "members": [
+            {
+              "kind": "field",
+              "name": "interval",
+              "description": "Think every this many steps (the `interval` attribute; default 1).",
+              "readonly": true,
+              "type": {
+                "text": "number"
+              },
+              "static": true,
+              "default": "24",
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "think",
+              "parameters": [
+                {
+                  "name": "me",
+                  "type": {
+                    "text": "SnakeView"
+                  }
+                },
+                {
+                  "name": "world",
+                  "type": {
+                    "text": "WorldView"
+                  }
+                }
+              ],
+              "description": "Decide a turn. The default carries on.",
+              "return": {
+                "type": {
+                  "text": "string | void"
+                }
+              },
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#onStep",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#steps",
+              "privacy": "private",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "description": "Mirrors the `disabled` attribute: a disabled brain doesn't steer.",
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "snake",
+              "description": "The snake it steers: the one `commandfor` names, or the one it's inside.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#step",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "event"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Weight of turning clockwise. Default 1.",
+              "name": "clockwise"
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Weight of turning counterclockwise. Default 1.",
+              "name": "counterclockwise"
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Weight of going straight. Default 2. The original brain: every `interval` steps (default 24, about a second at 24 fps), turn clockwise, counterclockwise, or go straight, at random, weighted by the `clockwise`, `counterclockwise`, and `straight` attributes (1, 1, 2).",
+              "name": "straight"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "The id of the snake to steer. Default the snake it's inside.",
+              "name": "commandfor",
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Think every this many steps.",
+              "name": "interval",
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Don't steer. A brain. Subclasses override `think(me, world)`, returning a turn (`up`, `down`, `left`, `right`, `clockwise`, `counterclockwise`) or nothing to carry on.",
+              "name": "disabled",
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "SnakeBrain",
+            "module": "game/brains.mjs"
+          },
+          "tagName": "snake-brain-random",
+          "customElement": true,
+          "summary": "Turns at random, every 24 steps by default."
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "GreedyBrain",
+          "members": [
+            {
+              "kind": "method",
+              "name": "think",
+              "parameters": [
+                {
+                  "name": "me"
+                },
+                {
+                  "name": "world"
+                }
+              ],
+              "description": "Decide a turn. The default carries on.",
+              "return": {
+                "type": {
+                  "text": "string | void"
+                }
+              },
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#onStep",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#steps",
+              "privacy": "private",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "description": "Mirrors the `disabled` attribute: a disabled brain doesn't steer.",
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "snake",
+              "description": "The snake it steers: the one `commandfor` names, or the one it's inside.",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "interval",
+              "description": "Think every this many steps (the `interval` attribute; default 1).",
+              "readonly": true,
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#step",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "event"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "SnakeBrain",
+            "module": "game/brains.mjs"
+          },
+          "tagName": "snake-brain-greedy",
+          "customElement": true,
+          "summary": "Heads for the nearest apple, avoiding walls and snakes.\n\nHeads for the nearest apple, never stepping onto a wall or a snake if it\ncan help it.",
+          "attributes": [
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "The id of the snake to steer. Default the snake it's inside.",
+              "name": "commandfor",
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Think every this many steps.",
+              "name": "interval",
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Don't steer. A brain. Subclasses override `think(me, world)`, returning a turn (`up`, `down`, `left`, `right`, `clockwise`, `counterclockwise`) or nothing to carry on.",
+              "name": "disabled",
+              "inheritedFrom": {
+                "name": "SnakeBrain",
+                "module": "game/brains.mjs"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "board",
+          "declaration": {
+            "name": "board",
+            "module": "game/brains.mjs"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "SnakeBrain",
+          "declaration": {
+            "name": "SnakeBrain",
+            "module": "game/brains.mjs"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "defineSnakeBrain",
+          "declaration": {
+            "name": "defineSnakeBrain",
+            "module": "game/brains.mjs"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RandomBrain",
+          "declaration": {
+            "name": "RandomBrain",
+            "module": "game/brains.mjs"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "GreedyBrain",
+          "declaration": {
+            "name": "GreedyBrain",
+            "module": "game/brains.mjs"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "game/elements.mjs",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "A snake. Steer it with commands, or put a brain inside it\n(<snake-brain-random>, <snake-brain-greedy>, your own); `mirror=\"other-id\"`\nsteers it opposite to another snake.",
+          "name": "ForsnakenSnake",
+          "members": [
+            {
+              "kind": "field",
+              "name": "#snake",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "reset",
+              "description": "Rebuilt (and restarted) from the attributes on next use."
+            },
+            {
+              "kind": "field",
+              "name": "snake",
+              "description": "The model: its cells, direction, and length.",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "steer",
+              "parameters": [
+                {
+                  "name": "turn",
+                  "description": "up, down, left, right, clockwise, or counterclockwise",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Steer it, and any snake with `mirror` naming it (the opposite way)."
+            }
+          ],
+          "attributes": [
+            {
+              "name": "x",
+              "type": {
+                "text": "number"
+              },
+              "description": "Starting column. Default 0."
+            },
+            {
+              "name": "y",
+              "type": {
+                "text": "number"
+              },
+              "description": "Starting row. Default 0."
+            },
+            {
+              "name": "direction",
+              "type": {
+                "text": "\"up\" | \"down\" | \"left\" | \"right\""
+              },
+              "description": "Starting direction. Default right."
+            },
+            {
+              "name": "length",
+              "type": {
+                "text": "number"
+              },
+              "description": "Starting length. Default 2."
+            },
+            {
+              "name": "color",
+              "type": {
+                "text": "string"
+              },
+              "description": "Its color. Default #4e9a06."
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Its name in events. Default its id."
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "The id of a snake to steer opposite to.",
+              "name": "mirror"
+            }
+          ],
+          "superclass": {
+            "name": "Entity",
+            "module": "game/elements.mjs"
+          },
+          "tagName": "forsnaken-snake",
+          "customElement": true,
+          "summary": "A snake, steered by commands (--up, --down, --left, --right, --clockwise, --counterclockwise) or a brain inside it."
+        },
+        {
+          "kind": "class",
+          "description": "`count` apples that respawn in a range when eaten, `lives` times each,\nnever on a cell listed in `avoid` (\"3,4 5,6\").",
+          "name": "ForsnakenApple",
+          "members": [
+            {
+              "kind": "field",
+              "name": "#apples",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "apples",
+              "description": "The models, one per apple.",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "reset",
+              "description": "Start over with fresh apples."
+            }
+          ],
+          "attributes": [
+            {
+              "name": "count",
+              "type": {
+                "text": "number"
+              },
+              "description": "How many apples. Default 1."
+            },
+            {
+              "name": "x-range",
+              "type": {
+                "text": "string"
+              },
+              "description": "Columns they appear in, \"from,to\". Default 0,8."
+            },
+            {
+              "name": "y-range",
+              "type": {
+                "text": "string"
+              },
+              "description": "Rows they appear in, \"from,to\". Default 0,8."
+            },
+            {
+              "name": "lives",
+              "type": {
+                "text": "number"
+              },
+              "description": "Times each respawns. Default forever."
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "number"
+              },
+              "description": "Growth when eaten. Default 2."
+            },
+            {
+              "name": "avoid",
+              "type": {
+                "text": "string"
+              },
+              "description": "Cells never to appear on: \"3,4 5,6\", or JSON."
+            }
+          ],
+          "superclass": {
+            "name": "Entity",
+            "module": "game/elements.mjs"
+          },
+          "tagName": "forsnaken-apple",
+          "customElement": true,
+          "summary": "Apples that respawn in a range when eaten."
+        },
+        {
+          "kind": "class",
+          "description": "A wall: a filled rectangle, or one of its diagonals (`shape`); `spread` dots it.",
+          "name": "ForsnakenWall",
+          "members": [
+            {
+              "kind": "field",
+              "name": "#wall",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "reset"
+            },
+            {
+              "kind": "field",
+              "name": "wall",
+              "readonly": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "x",
+              "type": {
+                "text": "number"
+              },
+              "description": "First corner's column. Default 0."
+            },
+            {
+              "name": "y",
+              "type": {
+                "text": "number"
+              },
+              "description": "First corner's row. Default 0."
+            },
+            {
+              "name": "x1",
+              "type": {
+                "text": "number"
+              },
+              "description": "Opposite corner's column. Default x."
+            },
+            {
+              "name": "y1",
+              "type": {
+                "text": "number"
+              },
+              "description": "Opposite corner's row. Default y."
+            },
+            {
+              "name": "shape",
+              "type": {
+                "text": "\"rect\" | \"diagonal\" | \"anti-diagonal\""
+              },
+              "description": "Default rect."
+            },
+            {
+              "name": "spread",
+              "type": {
+                "text": "number"
+              },
+              "description": "Fill every this many cells. Default 1."
+            }
+          ],
+          "superclass": {
+            "name": "Entity",
+            "module": "game/elements.mjs"
+          },
+          "tagName": "forsnaken-wall",
+          "customElement": true,
+          "summary": "A wall: a filled rectangle or one of its diagonals."
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "ForsnakenGame",
+          "cssProperties": [
+            {
+              "description": "Screen pixels per cell. Default 8.",
+              "name": "--forsnaken-scale"
+            }
+          ],
+          "cssParts": [
+            {
+              "description": "The canvas. The board: steps on each `tick` from a <frame-timer> inside it, and draws. Each step starts with a `step` event whose `detail` is a snapshot of the board (for brains), and may fire `score`, `death`, and `gameover`. After a score, the game holds still for `score-pause` milliseconds (default 250), a beat to notice it. `--end` ends the game.",
+              "name": "board"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "#canvas",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "#camouflage",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#holdUntil",
+              "privacy": "private",
+              "type": {
+                "text": "number"
+              },
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "#placed",
+              "privacy": "private",
+              "default": "new WeakSet()"
+            },
+            {
+              "kind": "field",
+              "name": "#steps",
+              "privacy": "private",
+              "type": {
+                "text": "number"
+              },
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "#over",
+              "privacy": "private",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "#observer",
+              "privacy": "private",
+              "default": "new MutationObserver(() => this.#scheduleDraw())"
+            },
+            {
+              "kind": "field",
+              "name": "#pending",
+              "privacy": "private",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "#scheduleDraw",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "#sizing",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "width",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "height",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "canvas",
+              "description": "The board, one pixel per cell: a <pixel-canvas> source (domkit).",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "snakes",
+              "description": "Snake, apple, and wall elements inside, however deeply.",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "apples",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "walls",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "#world",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "step",
+              "description": "Play one step: move, eat, collide, then draw. Fires score/death/gameover."
+            },
+            {
+              "kind": "method",
+              "name": "#snapshot",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "world"
+                },
+                {
+                  "name": "elements"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "end",
+              "description": "End the game now (fires `gameover`)."
+            },
+            {
+              "kind": "method",
+              "name": "restart",
+              "description": "Start again: snakes back to their places, fresh apples."
+            },
+            {
+              "kind": "method",
+              "name": "#resize",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "draw",
+              "parameters": [
+                {
+                  "name": "world",
+                  "default": "this.#world()"
+                }
+              ],
+              "description": "Draw the board as it is now (it's drawn after every step anyway)."
+            }
+          ],
+          "events": [
+            {
+              "name": "step",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Before each step; detail is a snapshot of the board."
+            },
+            {
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "gameover",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Every snake is dead, or --end."
+            },
+            {
+              "name": "framechange",
+              "type": {
+                "text": "Event"
+              }
+            },
+            {
+              "description": "A snake ate an apple.",
+              "name": "score"
+            },
+            {
+              "description": "A snake died.",
+              "name": "death"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "width",
+              "type": {
+                "text": "number"
+              },
+              "description": "Columns. Default 100."
+            },
+            {
+              "name": "height",
+              "type": {
+                "text": "number"
+              },
+              "description": "Rows. Default 50."
+            },
+            {
+              "name": "background",
+              "type": {
+                "text": "string"
+              },
+              "description": "The board's color, drawn under everything. Default none (transparent)."
+            },
+            {
+              "name": "camouflage",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "After a score, the board takes the scoring snake's color, hiding it until another snake scores."
+            },
+            {
+              "type": {
+                "text": "number"
+              },
+              "description": "Milliseconds to hold still after a score. Default 250.",
+              "name": "score-pause"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "forsnaken-game",
+          "customElement": true,
+          "summary": "The board: steps on each tick from a <frame-timer> inside it, and draws the snakes, apples, and walls inside it."
+        },
+        {
+          "kind": "variable",
+          "name": "NAMES",
+          "type": {
+            "text": "object"
+          },
+          "default": "{ game: \"forsnaken-game\", snake: \"forsnaken-snake\", apple: \"forsnaken-apple\", wall: \"forsnaken-wall\", randomBrain: \"snake-brain-random\", greedyBrain: \"snake-brain-greedy\", }"
+        },
+        {
+          "kind": "function",
+          "name": "define",
+          "parameters": [
+            {
+              "name": "names",
+              "default": "{}",
+              "optional": true,
+              "type": {
+                "text": "Partial<typeof NAMES>"
+              }
+            }
+          ],
+          "description": "Register the elements, under their usual names or your own:\n`define({ game: \"snake-board\", snake: \"snake-player\" })`. Elements\nalready registered (under any name) are left alone."
+        },
+        {
+          "kind": "variable",
+          "name": "name"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ForsnakenSnake",
+          "declaration": {
+            "name": "ForsnakenSnake",
+            "module": "game/elements.mjs"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "ForsnakenApple",
+          "declaration": {
+            "name": "ForsnakenApple",
+            "module": "game/elements.mjs"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "ForsnakenWall",
+          "declaration": {
+            "name": "ForsnakenWall",
+            "module": "game/elements.mjs"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "ForsnakenGame",
+          "declaration": {
+            "name": "ForsnakenGame",
+            "module": "game/elements.mjs"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "NAMES",
+          "declaration": {
+            "name": "NAMES",
+            "module": "game/elements.mjs"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "define",
+          "declaration": {
+            "name": "define",
+            "module": "game/elements.mjs"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "game/global.mjs",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "forsnaken-snake",
+          "declaration": {
+            "name": "ForsnakenSnake",
+            "module": "game/elements.mjs"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "forsnaken-apple",
+          "declaration": {
+            "name": "ForsnakenApple",
+            "module": "game/elements.mjs"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "forsnaken-wall",
+          "declaration": {
+            "name": "ForsnakenWall",
+            "module": "game/elements.mjs"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "forsnaken-game",
+          "declaration": {
+            "name": "ForsnakenGame",
+            "module": "game/elements.mjs"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "snake-brain-random",
+          "declaration": {
+            "name": "RandomBrain",
+            "module": "game/brains.mjs"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "snake-brain-greedy",
+          "declaration": {
+            "name": "GreedyBrain",
+            "module": "game/brains.mjs"
+          }
+        }
+      ]
+    }
+  ]
+}

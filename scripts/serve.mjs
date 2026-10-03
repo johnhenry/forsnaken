@@ -13,7 +13,8 @@ createServer(async (request, response) => {
   try {
     if ((await stat(path)).isDirectory()) path = join(path, "index.html");
     const body = await readFile(path);
-    response.writeHead(200, { "content-type": TYPES[extname(path)] ?? "application/octet-stream", "cache-control": "no-store" }).end(body);
+    // CORS like GitHub Pages, so tools on other origins (a page builder) can load it.
+    response.writeHead(200, { "content-type": TYPES[extname(path)] ?? "application/octet-stream", "cache-control": "no-store", "access-control-allow-origin": "*" }).end(body);
   } catch {
     response.writeHead(404).end("not found");
   }

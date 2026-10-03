@@ -96,6 +96,37 @@ The elements only hold settings; the game reads them each step. So they
 work however they're made: written in HTML, built by a script or an
 editor, moved around, nested in other elements, or defined after the fact.
 
+### Under your own names
+
+`game/global.mjs` registers the usual tags. To pick your own, import the
+classes from `game/index.mjs` and register them yourself. The elements
+find each other by class, never by tag, so any names work:
+
+```html
+<script type="module">
+  import { define } from "https://cdn.jsdelivr.net/gh/johnhenry/forsnaken/game/index.mjs";
+  define({ game: "snake-board", snake: "snake-player", apple: "snake-food" }); // the rest keep their usual names
+</script>
+<snake-board><snake-player id="me"></snake-player><snake-food count="8"></snake-food>…</snake-board>
+```
+
+### In editors and page builders
+
+[`custom-elements.json`](custom-elements.json) is a standard
+[Custom Elements Manifest](https://github.com/webcomponents/custom-elements-manifest):
+every element's tag, attributes (with types), and events, and which module
+registers each tag (`game/global.mjs`). `package.json` points to it
+(`"customElements"`), so tools that read manifests find it on their own.
+It's generated from the JSDoc in `game/` by `npm run manifest`, and CI
+checks it's current.
+
+[`builder.html`](builder.html) is a small game written as plain HTML that
+plays as it is. It also carries what a page builder needs: its libraries
+(`data-library` scripts), their manifests (meta tags), and ready-made pieces
+(`<template data-snippet>`), all of which browsers ignore.
+[Open it in htmlbuilder](https://johnhenry.github.io/htmlbuilder/?project=https://johnhenry.github.io/forsnaken/builder.html)
+to rebuild it by drag and drop.
+
 ## Playing
 
 - **Green**: arrow keys, the first controller, or swipe the board.
@@ -109,15 +140,23 @@ which hides that snake. Amateurs hate this. Experts use it to their
 advantage. **Shaking:** the screen jolts toward a scoring snake (not for
 visitors who prefer reduced motion).
 
+Camouflage needs no script: `<forsnaken-game background="#4e9a06" camouflage>`
+draws the board in that color and, after each score, in the scorer's color
+(that's how [`builder.html`](builder.html) does it). This page colors the
+whole screen from `effects.mjs` instead, gaps between cells included.
+
 ## How it's put together
 
 | File | What's in it |
 |---|---|
 | [`game/model.mjs`](game/model.mjs) | The game with no DOM: `Snake`, `Apple`, `Wall`, and `step(world)`, one turn of play |
-| [`game/elements.mjs`](game/elements.mjs) | The HTML elements that wrap them |
+| [`game/elements.mjs`](game/elements.mjs) | The HTML elements that wrap them, and `define()` |
+| [`game/index.mjs`](game/index.mjs) / [`game/global.mjs`](game/global.mjs) | Everything, unregistered / registered under the usual tags |
 | [`game/brains.mjs`](game/brains.mjs) | Brains: `SnakeBrain`, `defineSnakeBrain`, `board`, and the random and greedy brains |
 | [`index.html`](index.html) | The page: the game, wrapped and wired up, all in markup |
 | [`effects.mjs`](effects.mjs) | What happens around the game: start, shake, camouflage, scores |
+| [`builder.html`](builder.html) | The game as a plain page with snippets, for page builders |
+| [`custom-elements.json`](custom-elements.json) | The elements described for tools (generated: `npm run manifest`) |
 | [`deps.mjs`](deps.mjs) | [domkit](https://github.com/johnhenry/domkit), pinned to a commit, from jsDelivr |
 
 There's no build step: serve the folder and open it. See
@@ -129,6 +168,7 @@ There's no build step: serve the folder and open it. See
 npm install
 npm run serve   # http://localhost:4820/
 npm test        # model tests (node:test), then the browser tests (Playwright)
+npm run manifest  # regenerate custom-elements.json after changing the JSDoc
 ```
 
 ## Ideas to try

@@ -40,12 +40,29 @@ const range = (element, name, fallback) => {
   return parts.length === 2 && parts.every(Number.isFinite) ? parts : fallback;
 };
 
+// Parts are found by class, never by tag name, so the elements work under
+// any names (see define()).
+const descendants = (root, Class) => [...root.querySelectorAll("*")].filter((el) => el instanceof Class);
+const ancestor = (el, Class) => {
+  for (let node = el.parentElement; node; node = node.parentElement) if (node instanceof Class) return node;
+  return null;
+};
+
 const MIRROR = { up: "down", down: "up", left: "right", right: "left", clockwise: "counterclockwise", counterclockwise: "clockwise" };
 
 /**
  * A snake. Steer it with commands, or put a brain inside it
  * (<snake-brain-random>, <snake-brain-greedy>, your own); `mirror="other-id"`
  * steers it opposite to another snake.
+ * @tag forsnaken-snake
+ * @summary A snake, steered by commands (--up, --down, --left, --right, --clockwise, --counterclockwise) or a brain inside it.
+ * @attr {number} x - Starting column. Default 0.
+ * @attr {number} y - Starting row. Default 0.
+ * @attr {"up" | "down" | "left" | "right"} direction - Starting direction. Default right.
+ * @attr {number} length - Starting length. Default 2.
+ * @attr {string} color - Its color. Default #4e9a06.
+ * @attr {string} name - Its name in events. Default its id.
+ * @attr {string} mirror - The id of a snake to steer opposite to.
  */
 export class ForsnakenSnake extends Entity {
   static observedAttributes = ["x", "y", "direction", "length", "color", "name"];
@@ -84,8 +101,8 @@ export class ForsnakenSnake extends Entity {
   steer(turn) {
     const changed = this.snake.steer(turn);
     if (this.id) {
-      const game = this.closest("forsnaken-game") ?? this.getRootNode();
-      for (const follower of game.querySelectorAll(`forsnaken-snake[mirror="${CSS.escape(this.id)}"]`)) {
+      const game = ancestor(this, ForsnakenGame) ?? this.getRootNode();
+      for (const follower of game.querySelectorAll(`[mirror="${CSS.escape(this.id)}"]`)) {
         if (follower !== this && follower instanceof ForsnakenSnake) follower.snake.steer(MIRROR[turn] ?? turn);
       }
     }
@@ -108,6 +125,14 @@ const cells = (text) => {
 /**
  * `count` apples that respawn in a range when eaten, `lives` times each,
  * never on a cell listed in `avoid` ("3,4 5,6").
+ * @tag forsnaken-apple
+ * @summary Apples that respawn in a range when eaten.
+ * @attr {number} count - How many apples. Default 1.
+ * @attr {string} x-range - Columns they appear in, "from,to". Default 0,8.
+ * @attr {string} y-range - Rows they appear in, "from,to". Default 0,8.
+ * @attr {number} lives - Times each respawns. Default forever.
+ * @attr {number} value - Growth when eaten. Default 2.
+ * @attr {string} avoid - Cells never to appear on: "3,4 5,6", or JSON.
  */
 export class ForsnakenApple extends Entity {
   static observedAttributes = ["count", "x-range", "y-range", "lives", "value", "avoid"];
@@ -132,7 +157,17 @@ export class ForsnakenApple extends Entity {
   }
 }
 
-/** A wall: a filled rectangle, or one of its diagonals (`shape`); `spread` dots it. */
+/**
+ * A wall: a filled rectangle, or one of its diagonals (`shape`); `spread` dots it.
+ * @tag forsnaken-wall
+ * @summary A wall: a filled rectangle or one of its diagonals.
+ * @attr {number} x - First corner's column. Default 0.
+ * @attr {number} y - First corner's row. Default 0.
+ * @attr {number} x1 - Opposite corner's column. Default x.
+ * @attr {number} y1 - Opposite corner's row. Default y.
+ * @attr {"rect" | "diagonal" | "anti-diagonal"} shape - Default rect.
+ * @attr {number} spread - Fill every this many cells. Default 1.
+ */
 export class ForsnakenWall extends Entity {
   static observedAttributes = ["x", "y", "x1", "y1", "shape", "spread"];
   #wall = null;
@@ -150,6 +185,20 @@ export class ForsnakenWall extends Entity {
 }
 
 /**
+ * @tag forsnaken-game
+ * @summary The board: steps on each tick from a <frame-timer> inside it, and draws the snakes, apples, and walls inside it.
+ * @attr {number} width - Columns. Default 100.
+ * @attr {number} height - Rows. Default 50.
+ * @attr {number} score-pause - Milliseconds to hold still after a score. Default 250.
+ * @attr {string} background - The board's color, drawn under everything. Default none (transparent).
+ * @attr {boolean} camouflage - After a score, the board takes the scoring snake's color, hiding it until another snake scores.
+ * @fires step - Before each step; detail is a snapshot of the board.
+ * @fires score - A snake ate an apple.
+ * @fires death - A snake died.
+ * @fires gameover - Every snake is dead, or --end.
+ * @cssprop --forsnaken-scale - Screen pixels per cell. Default 8.
+ * @csspart board - The canvas.
+ *
  * The board: steps on each `tick` from a <frame-timer> inside it, and
  * draws. Each step starts with a `step` event whose `detail` is a snapshot
  * of the board (for brains), and may fire `score`, `death`, and `gameover`.
@@ -157,8 +206,9 @@ export class ForsnakenWall extends Entity {
  * (default 250), a beat to notice it. `--end` ends the game.
  */
 export class ForsnakenGame extends HTMLElement {
-  static observedAttributes = ["width", "height"];
+  static observedAttributes = ["width", "height", "background", "camouflage"];
   #canvas;
+  #camouflage = null; // the color of the snake that scored last, with `camouflage`
   #holdUntil = 0; // after a score, steps wait until then
   #placed = new WeakSet(); // apples given a first position
   #steps = 0;
@@ -233,13 +283,13 @@ export class ForsnakenGame extends HTMLElement {
 
   /** Snake, apple, and wall elements inside, however deeply. */
   get snakes() {
-    return [...this.querySelectorAll("forsnaken-snake")].filter((el) => el instanceof ForsnakenSnake);
+    return descendants(this, ForsnakenSnake);
   }
   get apples() {
-    return [...this.querySelectorAll("forsnaken-apple")].filter((el) => el instanceof ForsnakenApple);
+    return descendants(this, ForsnakenApple);
   }
   get walls() {
-    return [...this.querySelectorAll("forsnaken-wall")].filter((el) => el instanceof ForsnakenWall);
+    return descendants(this, ForsnakenWall);
   }
 
   #world() {
@@ -267,7 +317,10 @@ export class ForsnakenGame extends HTMLElement {
     for (const event of step(world)) {
       const snake = event.snake && elements.get(event.snake);
       if (event.type === "gameover") this.#over = true;
-      if (event.type === "score") this.#holdUntil = performance.now() + Math.max(0, number(this, "score-pause", 250));
+      if (event.type === "score") {
+        this.#holdUntil = performance.now() + Math.max(0, number(this, "score-pause", 250));
+        if (this.hasAttribute("camouflage")) this.#camouflage = event.snake.color;
+      }
       // `subject` and `score` are the 2021 names for `snake` and `value`.
       this.dispatchEvent(new CustomEvent(event.type, {
         bubbles: true,
@@ -312,6 +365,7 @@ export class ForsnakenGame extends HTMLElement {
     for (const el of this.apples) el.reset();
     this.#over = false;
     this.#holdUntil = 0;
+    this.#camouflage = null;
     this.draw();
   }
 
@@ -325,6 +379,11 @@ export class ForsnakenGame extends HTMLElement {
   draw(world = this.#world()) {
     const context = this.#canvas.getContext("2d");
     context.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
+    const background = (this.hasAttribute("camouflage") && this.#camouflage) || this.getAttribute("background");
+    if (background) {
+      context.fillStyle = background;
+      context.fillRect(0, 0, this.#canvas.width, this.#canvas.height);
+    }
     for (const thing of [...world.walls, ...world.apples.filter((a) => a.alive), ...world.snakes]) {
       context.fillStyle = thing.color;
       for (const cell of thing.cells) context.fillRect(cell.x, cell.y, 1, 1);
@@ -333,16 +392,28 @@ export class ForsnakenGame extends HTMLElement {
   }
 }
 
-/** Register the elements under their names. */
-export function define() {
-  for (const [name, element] of [
-    ["forsnaken-game", ForsnakenGame],
-    ["forsnaken-snake", ForsnakenSnake],
-    ["forsnaken-apple", ForsnakenApple],
-    ["forsnaken-wall", ForsnakenWall],
-    ["snake-brain-random", RandomBrain],
-    ["snake-brain-greedy", GreedyBrain],
-  ]) {
-    if (!customElements.get(name)) customElements.define(name, element);
+export const NAMES = {
+  game: "forsnaken-game",
+  snake: "forsnaken-snake",
+  apple: "forsnaken-apple",
+  wall: "forsnaken-wall",
+  randomBrain: "snake-brain-random",
+  greedyBrain: "snake-brain-greedy",
+};
+
+/**
+ * Register the elements, under their usual names or your own:
+ * `define({ game: "snake-board", snake: "snake-player" })`. Elements
+ * already registered (under any name) are left alone.
+ * @param {Partial<typeof NAMES>} [names]
+ */
+export function define(names = {}) {
+  const classes = { game: ForsnakenGame, snake: ForsnakenSnake, apple: ForsnakenApple, wall: ForsnakenWall, randomBrain: RandomBrain, greedyBrain: GreedyBrain };
+  for (const [key, element] of Object.entries(classes)) {
+    const name = names[key] ?? NAMES[key];
+    // A class can only be registered once, so a second define() under new
+    // names is a no-op for it.
+    if (customElements.get(name) || customElements.getName?.(element)) continue;
+    customElements.define(name, element);
   }
 }
