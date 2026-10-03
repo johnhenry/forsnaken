@@ -140,6 +140,11 @@ which hides that snake. Amateurs hate this. Experts use it to their
 advantage. **Shaking:** the screen jolts toward a scoring snake (not for
 visitors who prefer reduced motion).
 
+Camouflage needs no script: `<forsnaken-game background="#4e9a06" camouflage>`
+draws the board in that color and, after each score, in the scorer's color
+(that's how [`builder.html`](builder.html) does it). This page colors the
+whole screen from `effects.mjs` instead, gaps between cells included.
+
 ## How it's put together
 
 | File | What's in it |

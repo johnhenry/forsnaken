@@ -59,3 +59,26 @@ test("builder.html plays as it is", async ({ page }) => {
   await expect.poll(() => page.evaluate(() => document.getElementById("green").snake.direction)).toBe("down");
   expect(await page.evaluate(() => document.querySelector("pixel-canvas").canvas.width)).toBe(800);
 });
+
+test("camouflage: the board is drawn in its background color, then the scorer's", async ({ page }) => {
+  await page.goto("/test/fixture.html");
+  const colors = await page.evaluate(async () => {
+    await import("/game/global.mjs");
+    document.body.innerHTML = `
+      <forsnaken-game id="g" width="10" height="3" background="#4e9a06" camouflage>
+        <forsnaken-apple x-range="3,3" y-range="0,0"></forsnaken-apple>
+        <forsnaken-snake x="1" y="0" color="#ffffff" direction="right"></forsnaken-snake>
+      </forsnaken-game>`;
+    const game = document.getElementById("g");
+    const pixel = () => [...game.canvas.getContext("2d").getImageData(9, 2, 1, 1).data.slice(0, 3)];
+    game.draw();
+    const before = pixel();
+    let scored = 0;
+    game.addEventListener("score", () => scored++);
+    for (let i = 0; i < 3 && !scored; i++) game.step(); // reaches the apple at 3,0
+    const after = pixel();
+    game.restart();
+    return { before, after, restarted: pixel() };
+  });
+  expect(colors).toEqual({ before: [78, 154, 6], after: [255, 255, 255], restarted: [78, 154, 6] });
+});

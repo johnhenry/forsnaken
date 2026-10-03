@@ -190,6 +190,8 @@ export class ForsnakenWall extends Entity {
  * @attr {number} width - Columns. Default 100.
  * @attr {number} height - Rows. Default 50.
  * @attr {number} score-pause - Milliseconds to hold still after a score. Default 250.
+ * @attr {string} background - The board's color, drawn under everything. Default none (transparent).
+ * @attr {boolean} camouflage - After a score, the board takes the scoring snake's color, hiding it until another snake scores.
  * @fires step - Before each step; detail is a snapshot of the board.
  * @fires score - A snake ate an apple.
  * @fires death - A snake died.
@@ -204,8 +206,9 @@ export class ForsnakenWall extends Entity {
  * (default 250), a beat to notice it. `--end` ends the game.
  */
 export class ForsnakenGame extends HTMLElement {
-  static observedAttributes = ["width", "height"];
+  static observedAttributes = ["width", "height", "background", "camouflage"];
   #canvas;
+  #camouflage = null; // the color of the snake that scored last, with `camouflage`
   #holdUntil = 0; // after a score, steps wait until then
   #placed = new WeakSet(); // apples given a first position
   #steps = 0;
@@ -314,7 +317,10 @@ export class ForsnakenGame extends HTMLElement {
     for (const event of step(world)) {
       const snake = event.snake && elements.get(event.snake);
       if (event.type === "gameover") this.#over = true;
-      if (event.type === "score") this.#holdUntil = performance.now() + Math.max(0, number(this, "score-pause", 250));
+      if (event.type === "score") {
+        this.#holdUntil = performance.now() + Math.max(0, number(this, "score-pause", 250));
+        if (this.hasAttribute("camouflage")) this.#camouflage = event.snake.color;
+      }
       // `subject` and `score` are the 2021 names for `snake` and `value`.
       this.dispatchEvent(new CustomEvent(event.type, {
         bubbles: true,
@@ -359,6 +365,7 @@ export class ForsnakenGame extends HTMLElement {
     for (const el of this.apples) el.reset();
     this.#over = false;
     this.#holdUntil = 0;
+    this.#camouflage = null;
     this.draw();
   }
 
@@ -372,6 +379,11 @@ export class ForsnakenGame extends HTMLElement {
   draw(world = this.#world()) {
     const context = this.#canvas.getContext("2d");
     context.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
+    const background = (this.hasAttribute("camouflage") && this.#camouflage) || this.getAttribute("background");
+    if (background) {
+      context.fillStyle = background;
+      context.fillRect(0, 0, this.#canvas.width, this.#canvas.height);
+    }
     for (const thing of [...world.walls, ...world.apples.filter((a) => a.alive), ...world.snakes]) {
       context.fillStyle = thing.color;
       for (const cell of thing.cells) context.fillRect(cell.x, cell.y, 1, 1);

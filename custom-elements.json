@@ -784,6 +784,15 @@
             },
             {
               "kind": "field",
+              "name": "#camouflage",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
               "name": "#holdUntil",
               "privacy": "private",
               "type": {
@@ -971,6 +980,20 @@
                 "text": "number"
               },
               "description": "Rows. Default 50."
+            },
+            {
+              "name": "background",
+              "type": {
+                "text": "string"
+              },
+              "description": "The board's color, drawn under everything. Default none (transparent)."
+            },
+            {
+              "name": "camouflage",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "After a score, the board takes the scoring snake's color, hiding it until another snake scores."
             },
             {
               "type": {
