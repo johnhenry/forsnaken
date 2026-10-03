@@ -54,7 +54,7 @@ test("custom-elements.json describes every element, as the code defines it", asy
 test("builder.html plays as it is", async ({ page }) => {
   await page.goto("/builder.html");
   await page.waitForFunction(() => document.querySelector("forsnaken-game")?.snakes?.length === 2);
-  await expect.poll(() => page.evaluate(() => document.getElementById("green").snake.head.x)).toBeGreaterThan(2);
+  await expect.poll(() => page.evaluate(() => document.getElementById("green").snake.head.x)).toBeGreaterThan(12);
   await page.keyboard.press("ArrowDown");
   await expect.poll(() => page.evaluate(() => document.getElementById("green").snake.direction)).toBe("down");
   expect(await page.evaluate(() => document.querySelector("pixel-canvas").canvas.width)).toBe(800);
