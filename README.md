@@ -54,10 +54,11 @@ mid-game: a new brain takes over on its first step.
 
 ```html
 <forsnaken-snake id="green" …>
-  <snake-brain-player id="green-player"></snake-brain-player>  <!-- a person: keys, controller, swipes -->
+  <snake-brain-player>                                       <!-- a person, with their controls inside -->
+    <hot-key hotkey="arrowup" command="--up"></hot-key>
+    <gamepad-input up="--up" down="--down" left="--left" right="--right"></gamepad-input>
+  </snake-brain-player>
 </forsnaken-snake>
-<hot-key hotkey="arrowup" commandfor="green-player" command="--up"></hot-key>
-<gamepad-input commandfor="green-player" up="--up" down="--down" left="--left" right="--right"></gamepad-input>
 
 <forsnaken-snake id="white" …>
   <snake-brain-random></snake-brain-random>                  <!-- turns at random, about once a second -->
@@ -65,11 +66,17 @@ mid-game: a new brain takes over on its first step.
 <snake-brain-greedy commandfor="yellow"></snake-brain-greedy>  <!-- heads for apples, avoids crashing -->
 ```
 
-- `<snake-brain-player>` steers by the commands its inputs send it
+- `<snake-brain-player>` steers by the commands its controls send
   (`--up`, `--down`, `--left`, `--right`, `--clockwise`,
-  `--counterclockwise`), one per step, in the order they came. Swap it for
-  `<snake-brain-greedy>` and the computer plays; the inputs now point at
-  an element that's gone, so they steer nothing. Swap it back to play again.
+  `--counterclockwise`), one per step, in the order they came. Controls
+  inside it need no ids: without `commandfor`, domkit's `<hot-key>`,
+  `<gamepad-input>`, and `<swipe-input>` send their commands bubbling up to
+  whatever they're inside. Swap the player brain for `<snake-brain-greedy>`
+  and the computer plays, and the controls leave with the brain; swap it
+  back to play again. (A swipe area wraps the board, so it can't be inside
+  a brain: it names the brain with `commandfor` instead.)
+- The same goes for the rest of the page: the restart and end keys sit
+  inside the game, and the pause key inside the clock.
 - A brain steers the snake it's inside, or the one its `commandfor` names.
   Several brains can steer one snake. (A snake also takes commands sent to
   it directly; the pages here send them to player brains instead.)

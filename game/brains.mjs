@@ -8,9 +8,10 @@
 // elements, mid-game too: a new brain decides on its first step.
 //
 //   <forsnaken-snake id="green" …>
-//     <snake-brain-player id="green-player"></snake-brain-player>
+//     <snake-brain-player>
+//       <hot-key hotkey="arrowup" command="--up"></hot-key>   <- its controls, inside it
+//     </snake-brain-player>
 //   </forsnaken-snake>
-//   <hot-key hotkey="arrowup" commandfor="green-player" command="--up"></hot-key>
 //
 //   <forsnaken-snake id="white" …>
 //     <snake-brain-random></snake-brain-random>
@@ -209,10 +210,12 @@ const TURN = /^--(up|down|left|right|clockwise|counterclockwise)$/;
  * @tag snake-brain-player
  * @summary A player's brain: steers by the commands it's sent (--up, --down, --left, --right, --clockwise, --counterclockwise) from hot-key, gamepad-input, or swipe-input.
  *
- * A brain for a person: point inputs at it (`commandfor` its id) and it
- * steers its snake with what they send, one turn per step, in the order
- * they came. Swap it for another brain and the inputs no longer reach the
- * snake; swap it back and the player is in control again.
+ * A brain for a person. Put its controls inside it (hot-key, gamepad-input,
+ * swipe-input, with no `commandfor`: their commands bubble up to it), or
+ * point controls elsewhere at it with `commandfor`. It steers its snake
+ * with what they send, one turn per step, in the order they came. Swap it
+ * for another brain and its controls go with it; swap it back and the
+ * player is in control again.
  */
 export class PlayerBrain extends SnakeBrain {
   #turns = [];
@@ -221,7 +224,9 @@ export class PlayerBrain extends SnakeBrain {
     super();
     this.addEventListener("command", (event) => {
       const turn = TURN.exec(event.command ?? "")?.[1];
-      if (turn) this.#turns.push(turn);
+      if (!turn) return;
+      this.#turns.push(turn);
+      event.stopPropagation(); // it steers through the brain, not straight to the snake
     });
   }
 

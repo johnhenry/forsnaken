@@ -13,28 +13,28 @@
       manifests, and the templates are ready-made pieces. A browser ignores
       all three; nothing here depends on the builder.
     -->
-    <meta name="htmlbuilder-manifest" content="domkit https://cdn.jsdelivr.net/gh/johnhenry/domkit@e7cfc1ce246fcdb88f194f87ae03bb3e28d2f11e/custom-elements.json">
+    <meta name="htmlbuilder-manifest" content="domkit https://cdn.jsdelivr.net/gh/johnhenry/domkit@6b06f9ae97fde22c367107f0c3c8967ed79c889e/custom-elements.json">
     <meta name="htmlbuilder-manifest" content="forsnaken ./custom-elements.json">
-    <script type="module" src="https://cdn.jsdelivr.net/gh/johnhenry/domkit@e7cfc1ce246fcdb88f194f87ae03bb3e28d2f11e/src/frame-timer/global.mjs" data-library="domkit"></script>
-    <script type="module" src="https://cdn.jsdelivr.net/gh/johnhenry/domkit@e7cfc1ce246fcdb88f194f87ae03bb3e28d2f11e/src/pixelable/pixel-canvas/global.mjs" data-library="domkit"></script>
-    <script type="module" src="https://cdn.jsdelivr.net/gh/johnhenry/domkit@e7cfc1ce246fcdb88f194f87ae03bb3e28d2f11e/src/hot-key/global.mjs" data-library="domkit"></script>
-    <script type="module" src="https://cdn.jsdelivr.net/gh/johnhenry/domkit@e7cfc1ce246fcdb88f194f87ae03bb3e28d2f11e/src/gamepad-input/global.mjs" data-library="domkit"></script>
-    <script type="module" src="https://cdn.jsdelivr.net/gh/johnhenry/domkit@e7cfc1ce246fcdb88f194f87ae03bb3e28d2f11e/src/swipe-input/global.mjs" data-library="domkit"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/gh/johnhenry/domkit@6b06f9ae97fde22c367107f0c3c8967ed79c889e/src/frame-timer/global.mjs" data-library="domkit"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/gh/johnhenry/domkit@6b06f9ae97fde22c367107f0c3c8967ed79c889e/src/pixelable/pixel-canvas/global.mjs" data-library="domkit"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/gh/johnhenry/domkit@6b06f9ae97fde22c367107f0c3c8967ed79c889e/src/hot-key/global.mjs" data-library="domkit"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/gh/johnhenry/domkit@6b06f9ae97fde22c367107f0c3c8967ed79c889e/src/gamepad-input/global.mjs" data-library="domkit"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/gh/johnhenry/domkit@6b06f9ae97fde22c367107f0c3c8967ed79c889e/src/swipe-input/global.mjs" data-library="domkit"></script>
     <script type="module" src="./game/global.mjs" data-library="forsnaken"></script>
     <template data-snippet="Screen (pixel-canvas with a grid)"><pixel-canvas width="800" effects="grid(8, transparent, 3)"></pixel-canvas></template>
     <template data-snippet="Game board"><forsnaken-game width="100" height="50" background="#4e9a06" camouflage></forsnaken-game></template>
     <template data-snippet="Clock (24 fps)"><frame-timer fps="24"></frame-timer></template>
     <template data-snippet="Apples"><forsnaken-apple count="64" x-range="10,89" y-range="10,39"></forsnaken-apple></template>
     <template data-snippet="Wall (diagonal)"><forsnaken-wall x="1" y="1" x1="9" y1="9" shape="diagonal"></forsnaken-wall></template>
-    <template data-snippet="Snake (green)"><forsnaken-snake id="green" color="#4e9a06" x="10" y="25" direction="right"><snake-brain-player id="green-player"></snake-brain-player></forsnaken-snake></template>
+    <template data-snippet="Snake (green)"><forsnaken-snake id="green" color="#4e9a06" x="10" y="25" direction="right"><snake-brain-player id="green-player"><hot-key hotkey="arrowup" command="--up"></hot-key><hot-key hotkey="arrowdown" command="--down"></hot-key><hot-key hotkey="arrowleft" command="--left"></hot-key><hot-key hotkey="arrowright" command="--right"></hot-key><gamepad-input up="--up" down="--down" left="--left" right="--right"></gamepad-input></snake-brain-player></forsnaken-snake></template>
     <template data-snippet="Snake (steers itself)"><forsnaken-snake color="#ffffff" x="50" y="25" direction="right"><snake-brain-random></snake-brain-random></forsnaken-snake></template>
     <template data-snippet="Snake (mirrors green)"><forsnaken-snake id="mirror" color="#c4a000" x="99" y="49" direction="left" mirror="green"></forsnaken-snake></template>
-    <template data-snippet="Brain: player (for the arrow keys, controller, and swipes)"><snake-brain-player id="green-player"></snake-brain-player></template>
+    <template data-snippet="Brain: player (arrow keys and a controller inside)"><snake-brain-player><hot-key hotkey="arrowup" command="--up"></hot-key><hot-key hotkey="arrowdown" command="--down"></hot-key><hot-key hotkey="arrowleft" command="--left"></hot-key><hot-key hotkey="arrowright" command="--right"></hot-key><gamepad-input up="--up" down="--down" left="--left" right="--right"></gamepad-input></snake-brain-player></template>
     <template data-snippet="Brain: random"><snake-brain-random></snake-brain-random></template>
     <template data-snippet="Brain: greedy (seeks apples)"><snake-brain-greedy></snake-brain-greedy></template>
-    <template data-snippet="Arrow keys for green"><hot-key hotkey="arrowup" commandfor="green-player" command="--up"></hot-key><hot-key hotkey="arrowdown" commandfor="green-player" command="--down"></hot-key><hot-key hotkey="arrowleft" commandfor="green-player" command="--left"></hot-key><hot-key hotkey="arrowright" commandfor="green-player" command="--right"></hot-key></template>
-    <template data-snippet="Controller for green"><gamepad-input commandfor="green-player" up="--up" down="--down" left="--left" right="--right"></gamepad-input></template>
-    <template data-snippet="Swipes for green"><swipe-input commandfor="green-player" up="--up" down="--down" left="--left" right="--right"></swipe-input></template>
+    <template data-snippet="Arrow keys (drop inside a player brain)"><hot-key hotkey="arrowup" command="--up"></hot-key><hot-key hotkey="arrowdown" command="--down"></hot-key><hot-key hotkey="arrowleft" command="--left"></hot-key><hot-key hotkey="arrowright" command="--right"></hot-key></template>
+    <template data-snippet="Controller (drop inside a player brain)"><gamepad-input up="--up" down="--down" left="--left" right="--right"></gamepad-input></template>
+    <template data-snippet="Swipes for green (wrap the board in it)"><swipe-input commandfor="green-player" up="--up" down="--down" left="--left" right="--right"></swipe-input></template>
     <style>
 body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: black; color: white; }
 body { gap: 0.75rem; align-content: center; font: 14px/1.4 system-ui, sans-serif; }
@@ -50,7 +50,13 @@ p { margin: 0; opacity: 0.8; text-align: center; }
           <frame-timer fps="24"></frame-timer>
           <forsnaken-apple count="64" x-range="10,89" y-range="10,39"></forsnaken-apple>
           <forsnaken-snake id="green" color="#4e9a06" x="10" y="25" direction="right">
-            <snake-brain-player id="green-player"></snake-brain-player>
+            <snake-brain-player id="green-player">
+              <hot-key hotkey="arrowup" command="--up"></hot-key>
+              <hot-key hotkey="arrowdown" command="--down"></hot-key>
+              <hot-key hotkey="arrowleft" command="--left"></hot-key>
+              <hot-key hotkey="arrowright" command="--right"></hot-key>
+              <gamepad-input up="--up" down="--down" left="--left" right="--right"></gamepad-input>
+            </snake-brain-player>
           </forsnaken-snake>
           <forsnaken-snake id="white" color="#ffffff" x="50" y="25" direction="right">
             <snake-brain-greedy></snake-brain-greedy>
@@ -58,10 +64,6 @@ p { margin: 0; opacity: 0.8; text-align: center; }
         </forsnaken-game>
       </pixel-canvas>
     </swipe-input>
-    <p>Arrow keys (or swipe) steer green through its player brain; white's brain plays by itself. Swap brains to hand over control. Camouflage: the board turns the color of the snake that scored last, hiding it, so green starts out hidden. In an editor's preview, click the board first.</p>
-    <hot-key hotkey="arrowup" commandfor="green-player" command="--up"></hot-key>
-    <hot-key hotkey="arrowdown" commandfor="green-player" command="--down"></hot-key>
-    <hot-key hotkey="arrowleft" commandfor="green-player" command="--left"></hot-key>
-    <hot-key hotkey="arrowright" commandfor="green-player" command="--right"></hot-key>
+    <p>Arrow keys (or swipe) steer green: its player brain holds its controls. White's brain plays by itself. Swap brains to hand over control. Camouflage: the board turns the color of the snake that scored last, hiding it, so green starts out hidden. In an editor's preview, click the board first.</p>
   </body>
 </html>
