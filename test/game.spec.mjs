@@ -48,6 +48,8 @@ test.describe("the page", () => {
   test("markup has explicit closing tags: every entity is a direct child of the game", async ({ page }) => {
     const children = await page.evaluate(() => [...document.getElementById("game").children].map((el) => el.localName));
     expect(children).toEqual([
+      "hot-key", // restart and end: controls inside what they control
+      "hot-key",
       "frame-timer",
       "forsnaken-apple",
       ...Array(4).fill("forsnaken-wall"),

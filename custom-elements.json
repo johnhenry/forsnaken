@@ -573,7 +573,7 @@
           },
           "tagName": "snake-brain-player",
           "customElement": true,
-          "summary": "A player's brain: steers by the commands it's sent (--up, --down, --left, --right, --clockwise, --counterclockwise) from hot-key, gamepad-input, or swipe-input.\n\nA brain for a person: point inputs at it (`commandfor` its id) and it\nsteers its snake with what they send, one turn per step, in the order\nthey came. Swap it for another brain and the inputs no longer reach the\nsnake; swap it back and the player is in control again.",
+          "summary": "A player's brain: steers by the commands it's sent (--up, --down, --left, --right, --clockwise, --counterclockwise) from hot-key, gamepad-input, or swipe-input.\n\nA brain for a person. Put its controls inside it (hot-key, gamepad-input,\nswipe-input, with no `commandfor`: their commands bubble up to it), or\npoint controls elsewhere at it with `commandfor`. It steers its snake\nwith what they send, one turn per step, in the order they came. Swap it\nfor another brain and its controls go with it; swap it back and the\nplayer is in control again.",
           "attributes": [
             {
               "type": {

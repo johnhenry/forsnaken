@@ -213,3 +213,39 @@ test("the whole game moves to another container and carries on", async ({ page }
   expect(result.same).toBe(true);
   expect(result.steps[1]).toBe(result.steps[0] + 1);
 });
+
+// --- controls inside what they control (no ids) ------------------------------
+
+test("keys inside a player brain steer through it; swapping the brain takes its keys along", async ({ page }) => {
+  const DOMKIT = "https://cdn.jsdelivr.net/gh/johnhenry/domkit@aca00df766ff879e6daa0a162beac4816c42178c/src";
+  await page.evaluate(async (DOMKIT) => {
+    await import(`${DOMKIT}/hot-key/global.mjs`);
+    document.getElementById("apples").remove(); // a snake pauses a step to eat: none to eat here
+    const a = document.getElementById("a");
+    a.innerHTML = `<snake-brain-player><hot-key hotkey="arrowdown" command="--down"></hot-key><hot-key hotkey="r" command="--restart"></hot-key></snake-brain-player>`;
+    a.setAttribute("x", "6"); // a new start: heading right from 6,5
+    window.direct = 0;
+    a.addEventListener("command", (e) => e.source?.localName === "hot-key" && direct++);
+    window.restarts = 0;
+    g.addEventListener("command", (e) => e.command === "--restart" && restarts++);
+  }, DOMKIT);
+  const dir = () => page.evaluate(() => document.getElementById("a").snake.direction);
+  await page.keyboard.press("ArrowDown");
+  await page.evaluate(() => g.step());
+  expect(await dir()).toBe("down");
+  // The key's command stopped at the brain: the snake only heard it from the brain.
+  expect(await page.evaluate(() => direct)).toBe(0);
+  // Commands the brain doesn't handle keep bubbling (here, to the game).
+  await page.keyboard.press("r");
+  expect(await page.evaluate(() => restarts)).toBe(1);
+  // Swap in a greedy brain: the keys went with the player brain.
+  await page.evaluate(() => {
+    const a = document.getElementById("a");
+    a.replaceChildren(document.createElement("snake-brain-greedy"));
+    a.setAttribute("x", "8");
+  });
+  expect(await page.evaluate(() => document.querySelectorAll("hot-key").length)).toBe(0);
+  await page.keyboard.press("ArrowDown");
+  await page.evaluate(() => g.step());
+  expect(await dir(), "no apples: greedy carries on, and the key did nothing").toBe("right");
+});
