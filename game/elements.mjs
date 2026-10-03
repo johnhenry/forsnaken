@@ -4,16 +4,20 @@
 //     <frame-timer fps="12"></frame-timer>                 <- its clock (domkit)
 //     <forsnaken-apple count="64" x-range="10,89" y-range="10,39"></forsnaken-apple>
 //     <forsnaken-wall x="1" y="1" x1="9" y1="9" shape="diagonal"></forsnaken-wall>
-//     <forsnaken-snake id="green" color="#4e9a06" x="0" y="0" direction="right"></forsnaken-snake>
+//     <forsnaken-snake id="green" color="#4e9a06" x="0" y="0" direction="right">
+//       <snake-brain-player>                                 <- who steers it (brains.mjs)
+//         <hot-key hotkey="arrowup" command="--up"></hot-key>  <- its controls (domkit)
+//       </snake-brain-player>
+//     </forsnaken-snake>
 //   </forsnaken-game>
 //
 // The entity elements only hold configuration; the game reads them
 // whenever it steps, so they work however they're created (parsed, built
-// by an editor, moved), in any order, at any depth. Snakes are steered with
-// invoker commands (--up, --down, --left, --right, --clockwise,
-// --counterclockwise), so <hot-key>, <gamepad-input>, and <swipe-input>
-// from domkit drive them with no script, and so do brains (brains.mjs),
-// which decide for themselves from the board the game shows them.
+// by an editor, moved), in any order, at any depth, and can be edited or
+// swapped while the game runs. Snakes are steered with invoker commands
+// (--up, --down, --left, --right, --clockwise, --counterclockwise), sent by
+// brains: a player's brain passes on what its controls send; others decide
+// for themselves from the board the game shows them.
 import { Snake, Apple, Wall, step } from "./model.mjs";
 import { RandomBrain, GreedyBrain, PlayerBrain } from "./brains.mjs";
 

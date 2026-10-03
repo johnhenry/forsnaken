@@ -27,21 +27,29 @@ Two ways data gets into a program:
 
 Forsnaken uses both. The `<frame-timer>` is the loop: every `tick`, the
 game takes a step and checks every snake's direction (state). Steering is
-events: a key, a controller button, or a swipe sends a command to a
-snake, which changes its direction. The Gamepad API only offers state, so
-`<gamepad-input>` turns it into events by checking every frame.
+events: a key, a controller button, or a swipe sends a command (`--up`,
+`--left`, …), which changes a direction. The Gamepad API only offers
+state, so `<gamepad-input>` turns it into events by checking every frame.
 
-Because every kind of input sends the same commands (`--up`, `--left`,
-…), a snake doesn't know or care whether a keyboard, a controller, a
-finger, or a network connection moved it.
+## Brains: the one interface for control
 
-## Brains: deciding, not just reacting
+Everything that steers a snake is a brain. At the start of each step the
+game fires `step` with a copy of the board, and each brain may answer with
+a command. A program decides from the board (`<snake-brain-greedy>`); a
+person is a brain too (`<snake-brain-player>`), which answers with what
+its controls sent since the last step. So a snake can't tell a person
+from a program, and handing control from one to the other is swapping one
+element for another, mid-game included: a new brain decides on its first
+step.
 
-A keyboard steers a snake when you press a key. A brain steers it by
-deciding: at the start of each step the game fires `step` with a copy of
-the board, and each brain may answer with a command. Because brains send
-the same commands as every other input, a snake can't tell a person from
-a program, and swapping one for the other is swapping an element.
+A player's controls live inside its brain. domkit's inputs without
+`commandfor` send their commands bubbling up to whatever they're inside,
+and the brain keeps the turns it takes (it stops them there), so the snake
+only ever hears from its brain. Swap the brain and its controls go with
+it: no ids to rewire, and no keys left steering a snake that someone else
+now controls. The same pattern runs through the page: restart and end are
+keys inside the game, pause a key inside the clock. (The swipe area is the
+exception: it has to wrap the board to see swipes, so it names its brain.)
 
 The board is a copy on purpose: a brain can look at everything but change
 nothing, so a buggy brain can't break the game. (In the 2020 version,
@@ -56,6 +64,16 @@ editor, rearranged, or defined after the elements exist. An earlier
 version collected its pieces only when its children changed, and only
 worked because a markup mistake (`<custom-element />`, which doesn't
 close in HTML) happened to give it children.
+
+It goes further: the elements can be edited while the game runs, which is
+what lets an editor (htmlbuilder) patch a running page instead of
+reloading it. Swapping brains, adding or removing snakes, apples, walls,
+or the clock, or moving the whole game keeps everything else as it was. An
+attribute change applies to the running game: a snake's color and name
+change in place; its `x`, `y`, `direction`, and `length` are where it
+starts, so changing one starts that snake over (only it); a new apple
+`count` adds or removes apples and leaves the rest. Elements are found by
+class, never by tag name, so any names work (`define({ snake: "…" })`).
 
 ## Side effects stay outside
 
