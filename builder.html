@@ -13,13 +13,14 @@
       manifests, and the templates are ready-made pieces. A browser ignores
       all three; nothing here depends on the builder.
     -->
-    <meta name="htmlbuilder-manifest" content="domkit https://cdn.jsdelivr.net/gh/johnhenry/domkit@6b06f9ae97fde22c367107f0c3c8967ed79c889e/custom-elements.json">
+    <meta name="htmlbuilder-manifest" content="domkit https://cdn.jsdelivr.net/gh/johnhenry/domkit@86b39db7a6d2807efed30a77cb295e72e6289c94/custom-elements.json">
+    <meta name="htmlbuilder-manifest" content="pixelable https://cdn.jsdelivr.net/gh/johnhenry/pixelable@73c544ab05ccedc3089dfee81a105f8539d5f944/custom-elements.json">
     <meta name="htmlbuilder-manifest" content="forsnaken ./custom-elements.json">
-    <script type="module" src="https://cdn.jsdelivr.net/gh/johnhenry/domkit@6b06f9ae97fde22c367107f0c3c8967ed79c889e/src/frame-timer/global.mjs" data-library="domkit"></script>
-    <script type="module" src="https://cdn.jsdelivr.net/gh/johnhenry/domkit@6b06f9ae97fde22c367107f0c3c8967ed79c889e/src/pixelable/pixel-canvas/global.mjs" data-library="domkit"></script>
-    <script type="module" src="https://cdn.jsdelivr.net/gh/johnhenry/domkit@6b06f9ae97fde22c367107f0c3c8967ed79c889e/src/hot-key/global.mjs" data-library="domkit"></script>
-    <script type="module" src="https://cdn.jsdelivr.net/gh/johnhenry/domkit@6b06f9ae97fde22c367107f0c3c8967ed79c889e/src/gamepad-input/global.mjs" data-library="domkit"></script>
-    <script type="module" src="https://cdn.jsdelivr.net/gh/johnhenry/domkit@6b06f9ae97fde22c367107f0c3c8967ed79c889e/src/swipe-input/global.mjs" data-library="domkit"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/gh/johnhenry/domkit@86b39db7a6d2807efed30a77cb295e72e6289c94/src/frame-timer/global.mjs" data-library="domkit"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/gh/johnhenry/pixelable@73c544ab05ccedc3089dfee81a105f8539d5f944/src/pixel-canvas/global.mjs" data-library="pixelable"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/gh/johnhenry/domkit@86b39db7a6d2807efed30a77cb295e72e6289c94/src/hot-key/global.mjs" data-library="domkit"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/gh/johnhenry/domkit@86b39db7a6d2807efed30a77cb295e72e6289c94/src/gamepad-input/global.mjs" data-library="domkit"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/gh/johnhenry/domkit@86b39db7a6d2807efed30a77cb295e72e6289c94/src/swipe-input/global.mjs" data-library="domkit"></script>
     <script type="module" src="./game/global.mjs" data-library="forsnaken"></script>
     <template data-snippet="Screen (pixel-canvas with a grid)"><pixel-canvas width="800" effects="grid(8, transparent, 3)"></pixel-canvas></template>
     <template data-snippet="Game board"><forsnaken-game width="100" height="50" background="#4e9a06" camouflage></forsnaken-game></template>
