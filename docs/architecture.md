@@ -85,6 +85,6 @@ touch the game.
 ## Drawing
 
 The game draws one pixel per cell on its own canvas. Everything about how
-that looks (the 8× zoom, the grid) is pixelable's `<pixel-canvas>`, which
+that looks (the 8× zoom, the grid) is canvas-fx's `<pixel-canvas>`, which
 accepts any element with a `canvas` as a source. More effects are one
 attribute away: `effects="grid(8) crt()"`.
