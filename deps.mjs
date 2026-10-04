@@ -1,8 +1,8 @@
 // domkit and pixelable, each pinned to a commit and loaded from jsDelivr's
 // GitHub mirror (no build step, no npm). Change DOMKIT or PIXELABLE to move
 // to another version.
-const PIXELABLE = "https://cdn.jsdelivr.net/gh/johnhenry/pixelable@869ee5f4af8f7bbfeb24ea481f2843835800f849/src";
-const DOMKIT = "https://cdn.jsdelivr.net/gh/johnhenry/domkit@6b06f9ae97fde22c367107f0c3c8967ed79c889e/src";
+const PIXELABLE = "https://cdn.jsdelivr.net/gh/johnhenry/pixelable@73c544ab05ccedc3089dfee81a105f8539d5f944/src";
+const DOMKIT = "https://cdn.jsdelivr.net/gh/johnhenry/domkit@86b39db7a6d2807efed30a77cb295e72e6289c94/src";
 
 await Promise.all(
   [

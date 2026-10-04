@@ -217,7 +217,7 @@ test("the whole game moves to another container and carries on", async ({ page }
 // --- controls inside what they control (no ids) ------------------------------
 
 test("keys inside a player brain steer through it; swapping the brain takes its keys along", async ({ page }) => {
-  const DOMKIT = "https://cdn.jsdelivr.net/gh/johnhenry/domkit@6b06f9ae97fde22c367107f0c3c8967ed79c889e/src";
+  const DOMKIT = "https://cdn.jsdelivr.net/gh/johnhenry/domkit@86b39db7a6d2807efed30a77cb295e72e6289c94/src";
   await page.evaluate(async (DOMKIT) => {
     await import(`${DOMKIT}/hot-key/global.mjs`);
     document.getElementById("apples").remove(); // a snake pauses a step to eat: none to eat here
