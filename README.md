@@ -29,7 +29,7 @@ it grew from.
 - **`<forsnaken-game>`** is the board. It steps on every `tick` from the
   `<frame-timer>` inside it, and fires `score`, `death`, and `gameover`
   events. It draws itself one pixel per cell, so it's also a source for
-  domkit's `<pixel-canvas>`, which scales it up and adds the grid.
+  [pixelable](https://github.com/johnhenry/pixelable)'s `<pixel-canvas>`, which scales it up and adds the grid.
 - **`<forsnaken-snake>`** is steered with
   [invoker commands](https://developer.mozilla.org/docs/Web/API/Invoker_Commands_API):
   `--up`, `--down`, `--left`, `--right`, `--clockwise`,
@@ -209,7 +209,7 @@ npm run manifest  # regenerate custom-elements.json after changing the JSDoc
   (TensorFlow.js), and race it against `<snake-brain-greedy>`.
 - Make apples worth different amounts, and show it (size? color?).
 - Draw the board another way: as HTML, SVG, or text in the console.
-- Run the board through more of domkit's pixel effects: `crt()`,
+- Run the board through more of pixelable's pixel effects: `crt()`,
   `palette(gameboy, ordered)`, `glitch()`.
 - Give the same treatment to @straker's
   [Pong](https://gist.github.com/straker/81b59eecf70da93af396f963596dfdc5),
